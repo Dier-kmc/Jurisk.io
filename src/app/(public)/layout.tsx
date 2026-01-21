@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 // Layout corrigé
-export default function RootLayout({
+export default function PublicLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -33,7 +33,11 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="bg-[#111111] text-white min-h-screen flex flex-col">
-        {children}
+        <Header />
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

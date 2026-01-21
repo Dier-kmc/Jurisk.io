@@ -1,0 +1,58 @@
+/* ===== src/components/ui/ProgressBar.tsx ===== */
+interface ProgressBarProps {
+  value: number;
+  max?: number;
+  label?: string;
+  showValue?: boolean;
+  color?: 'yellow' | 'green' | 'red' | 'blue';
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+
+const ProgressBar = ({
+  value,
+  max = 100,
+  label,
+  showValue = true,
+  color = 'yellow',
+  size = 'md',
+  className,
+}: ProgressBarProps) => {
+  const percentage = Math.min(100, Math.max(0, (value / max) * 100));
+  
+  const colorClasses = {
+    yellow: 'bg-yellow-600',
+    green: 'bg-green-500',
+    red: 'bg-red-500',
+    blue: 'bg-blue-500',
+  };
+
+  const sizeClasses = {
+    sm: 'h-1',
+    md: 'h-2',
+    lg: 'h-3',
+  };
+
+  return (
+    <div className={className}>
+      {(label || showValue) && (
+        <div className="flex justify-between items-center mb-1">
+          {label && <span className="text-sm text-gray-400">{label}</span>}
+          {showValue && (
+            <span className="text-sm font-medium text-gray-300">
+              {value.toFixed(1)}/{max}
+            </span>
+          )}
+        </div>
+      )}
+      <div className={`bg-gray-800 rounded-full overflow-hidden ${sizeClasses[size]}`}>
+        <div
+          className={`${colorClasses[color]} rounded-full transition-all duration-300 ${sizeClasses[size]}`}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default ProgressBar;
