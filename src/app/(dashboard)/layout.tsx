@@ -1,148 +1,211 @@
 "use client";
-import { useState } from "react";
-import {
-  FileText,
-  Plus,
-  LogOut,
-  Settings,
-  User,
-  Sparkles,
-  MoreHorizontal,
-} from "lucide-react";
-import Link from "next/link";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { Loader2 } from "lucide-react";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { AnalysisStats, ContractAnalysis } from "@/types/contract";
+import { AnalysisApiService, AnalysisFilters } from "@/lib/services/global-analysis";
+import { useRouter, usePathname } from "next/navigation";
+import { toast } from "sonner";
+import DeleteConfirmationModal from "@/components/layout/dashboard/DeleteConfirmation";
+import Sidebar from "@/components/layout/dashboard/SideBar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [selectedChat, setSelectedChat] = useState<number | null>(null);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [analysisToDelete, setAnalysisToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  const { user, logout, isAuthenticated, isLoading } = useAuth();
+  const [analyses, setAnalyses] = useState<ContractAnalysis[]>([]);
+  const [stats, setStats] = useState<AnalysisStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
+  const [filters, setFilters] = useState<AnalysisFilters>({
+    limit: 10,
+    page: 1,
+  });
+  
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // Données exemple pour l'historique
-  const recentAnalyses = [
-    {
-      id: 1,
-      title: "Contrat de prestation",
-      date: "Aujourd'hui",
-    },
-    {
-      id: 2,
-      title: "Bail commercial 2026",
-      date: "Hier",
-    },
-    {
-      id: 3,
-      title: "NDA Partenaire",
-      date: "Il y a 2 jours",
-    },
-    {
-      id: 4,
-      title: "Contrat SaaS",
-      date: "Il y a 5 jours",
-    },
-    {
-      id: 5,
-      title: "Accord de confidentialité",
-      date: "Il y a 1 semaine",
-    },
-  ];
+  useEffect(() => {
+    if (!isAuthenticated || isLoading) return;
+    fetchAnalyses();
+  }, [pathname, isAuthenticated, isLoading]);
+
+  useEffect(() => {
+    if (pathname === "/upload") {
+      setSelectedChat(null);
+    }
+  }, [pathname]);
+
+  // Fermer le menu quand on clique ailleurs
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openMenuId) {
+        setOpenMenuId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openMenuId]);
+
+  const fetchAnalyses = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await AnalysisApiService.getAnalyses(filters);
+      
+      if (response.success) {
+        setAnalyses(response.data.contracts);
+        setStats(response.data.stats);
+      }
+    } catch (error) {
+      console.error('Failed to fetch analyses:', error);
+      toast.error("Erreur lors du chargement des analyses");
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      fetchAnalyses();
+    }
+  }, [fetchAnalyses, isAuthenticated, isLoading]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const hasProcessing = analyses.some(a => a.status === "PROCESSING");
+      if (hasProcessing) {
+        fetchAnalyses();
+      }
+    }, 20000);
+    
+    return () => clearInterval(interval);
+  }, [analyses, fetchAnalyses]);
+
+  const handleOpenDeleteModal = useCallback((analysis: ContractAnalysis) => {
+    setAnalysisToDelete({ 
+      id: analysis.id, 
+      name: analysis.fileName 
+    });
+    setDeleteModalOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!analysisToDelete) return;
+
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/analysis/${analysisToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.success("Analyse supprimée avec succès");
+        fetchAnalyses(); // Rafraîchir la liste
+
+        // Si on supprime l'analyse actuellement sélectionnée
+        if (
+          selectedChat === analysisToDelete.id ||
+          pathname.includes(analysisToDelete.id)
+        ) {
+          router.push("/upload");
+          setSelectedChat(null);
+        }
+
+        // Fermer le modal
+        setDeleteModalOpen(false);
+        setAnalysisToDelete(null);
+      } else {
+        const error = await response.json();
+        toast.error(error.error || "Erreur lors de la suppression");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Erreur lors de la suppression");
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [analysisToDelete, selectedChat, pathname, router, fetchAnalyses, setSelectedChat]);
+
+
+  const handleFilterChange = useCallback((newFilters: Partial<AnalysisFilters>) => {
+    setFilters(prev => ({ 
+      ...prev, 
+      ...newFilters,
+      page: newFilters.page || 1 
+    }));
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-black/90">
+        <Loader2 className="h-8 w-8 animate-spin text-yellow-600" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated && !isLoading) {
+    router.push('/login');
+    return null;
+  }
 
   return (
-    <div className="flex h-screen bg-black/90 text-white">
-      {/* Sidebar */}
-      <div className="fixed w-64 h-screen border-r border-gray-300/20 flex flex-col bg-black">
-        {/* Header */}
-        <div className="p-3 mt-3 pb-6 border-b border-gray-300/20">
-          <div className="flex items-center gap-2 mb-3 px-2">
-            <FileText className="h-5 w-5 text-yellow-600" />
-            <span className="font-semibold text-sm">ContractScope</span>
-          </div>
+    <>
+      <div className="flex h-screen bg-black/90 text-white">
+        <Sidebar
+          analyses={analyses}
+          stats={stats}
+          loading={loading}
+          filters={filters}
+          selectedChat={selectedChat}
+          userMenuOpen={userMenuOpen}
+          filterMenuOpen={filterMenuOpen}
+          searchQuery={searchQuery}
+          selectedStatus={selectedStatus}
+          hoveredItem={hoveredItem}
+          openMenuId={openMenuId}
+          onFetchAnalyses={fetchAnalyses}
+          onSetSelectedChat={setSelectedChat}
+          onSetUserMenuOpen={setUserMenuOpen}
+          onSetFilterMenuOpen={setFilterMenuOpen}
+          onSetSearchQuery={setSearchQuery}
+          onSetSelectedStatus={setSelectedStatus}
+          onSetHoveredItem={setHoveredItem}
+          onSetOpenMenuId={setOpenMenuId}
+          onHandleFilterChange={handleFilterChange}
+          onOpenDeleteModal={handleOpenDeleteModal}
+        />
 
-          <Link href="/upload" className="w-full bg-transparent hover:bg-gray-300/15 hover:cursor-pointer border border-gray-300/20 text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
-            <Plus className="h-4 w-4" />
-            Nouvelle analyse
-          </Link>
-        </div>
-
-        {/* Liste des analyses */}
-        <div className="flex-1 overflow-y-auto py-2 px-2">
-          {recentAnalyses.map((analysis) => (
-            <button
-              key={analysis.id}
-              onClick={() => setSelectedChat(analysis.id)}
-              className={`w-full text-left px-3 py-2 rounded-lg mb-1 transition-colors group ${
-                selectedChat === analysis.id
-                  ? "bg-gray-300/15"
-                  : "hover:bg-gray-300/15 hover:cursor-pointer"
-              }`}
-            >
-              <h4 className="text-sm font-medium text-white truncate group-hover:text-yellow-600 transition-colors">
-                {analysis.title}
-              </h4>
-            </button>
-          ))}
-        </div>
-
-        {/* Footer - User Menu */}
-        <div className="p-3 border-t border-gray-300/20 relative">
-          <button
-            onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-300/15 hover:cursor-pointer transition-colors"
-          >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center font-semibold text-black text-sm flex-shrink-0">
-              JD
-            </div>
-            <div className="flex-1 text-left overflow-hidden">
-              <div className="text-sm font-medium text-white truncate">
-                John Doe
-              </div>
-              <div className="text-xs text-gray-500 truncate">Plan gratuit</div>
-            </div>
-            <MoreHorizontal
-              className={`h-4 w-4 text-gray-400 transition-transform ${
-                userMenuOpen ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-
-          {/* Dropdown Menu */}
-          {userMenuOpen && (
-            <div className="absolute bottom-full left-3 right-3 mb-2 bg-gray-300/10 border border-gray-300/15 rounded-lg shadow-xl overflow-hidden">
-              <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-300/15 hover:cursor-pointer transition-colors text-left border-b border-gray-300/15">
-                <div className="w-7 h-7 rounded bg-yellow-600/10 flex items-center justify-center">
-                  <Sparkles className="h-3 w-3 text-yellow-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-white">
-                    Mettre à niveau
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Débloquer toutes les fonctionnalités
-                  </div>
-                </div>
-              </button>
-
-              <button className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-300/15 hover:cursor-pointer transition-colors text-left">
-                <User className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-300">Mon compte</span>
-              </button>
-
-              <button className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-300/15 hover:cursor-pointer border-t border-gray-300/15 transition-colors text-left">
-                <Settings className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-300">Paramètres</span>
-              </button>
-
-              <div className="border-t border-gray-300/15">
-                <button className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-600/15 text-gray-400 hover:text-red-600/60 hover:cursor-pointer transition-colors text-left">
-                  <LogOut className="h-4 w-4 " />
-                  <span className="text-sm">Déconnexion</span>
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col bg-black/95 ml-64">
+          {children}
+        </main>
       </div>
 
-      <main className="flex-1 flex flex-col overflow-visible bg-black/90">
-          {children}
-      </main>
-    </div>
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          if (!isDeleting) {
+            setDeleteModalOpen(false);
+            setAnalysisToDelete(null);
+          }
+        }}
+        onConfirm={confirmDelete}
+        itemName={analysisToDelete?.name}
+        isDeleting={isDeleting}
+      />
+    </>
   );
-};
+}

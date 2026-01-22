@@ -1,146 +1,186 @@
-// import { NextRequest, NextResponse } from 'next/server'
-// import { readFile } from 'fs/promises'
-// import { join } from 'path'
-// import { prisma } from '@/lib/db/client'
-// import { AuthService } from '@/lib/auth/auth'
-// import { DocumentExtractor } from '@/lib/pdf/extractText'
-// import { OllamaService } from '@/lib/llm/ollama'
-// import { PromptBuilder } from '@/lib/llm/promptBuilder'
-// import { ResponseParser } from '@/lib/llm/responseParser'
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/db/client'
+import { AuthService } from '@/lib/auth/auth-service'
 
-// export async function POST(request: NextRequest) {
-//   const startTime = Date.now()
-//   let contractId: string | undefined
-
-//   try {
-//     // Vérifier l'authentification
-//     const user = await AuthService.getCurrentUser()
-//     if (!user) {
-//       return NextResponse.json(
-//         { success: false, error: 'Non authentifié' },
-//         { status: 401 }
-//       )
-//     }
-
-//     // Récupérer le contractId
-//     const body = await request.json()
-//     contractId = body.contractId
-
-//     if (!contractId) {
-//       return NextResponse.json(
-//         { success: false, error: 'contractId requis' },
-//         { status: 400 }
-//       )
-//     }
-
-//     // Récupérer le contrat
-//     const contract = await prisma.contract.findUnique({
-//       where: { id: contractId, userId: user.id },
-//       include: { analysis: true }
-//     })
-
-//     if (!contract) {
-//       return NextResponse.json(
-//         { success: false, error: 'Contrat non trouvé' },
-//         { status: 404 }
-//       )
-//     }
-
-//     // Vérifier si déjà analysé
-//     if (contract.analysis) {
-//       return NextResponse.json({
-//         success: true,
-//         analysis: contract.analysis,
-//         cached: true,
-//         processingTime: 0
-//       })
-//     }
-
-//     // Mettre à jour le statut
-//     await prisma.contract.update({
-//       where: { id: contractId },
-//       data: { status: 'PROCESSING' }
-//     })
-
-//     // Vérifier Ollama
-//     const ollama = new OllamaService()
-//     const isAvailable = await ollama.isAvailable()
-
-//     if (!isAvailable) {
-//       throw new Error('Ollama n\'est pas disponible. Assurez-vous que le service est lancé avec "ollama serve"')
-//     }
-
-//     // Lire et extraire le texte
-//     const filePath = join(process.cwd(), 'public', contract.fileUrl)
-//     const fileBuffer = await readFile(filePath)
-//     const text = await DocumentExtractor.extractText(fileBuffer, contract.mimeType)
-
-//     // Vérifier à nouveau la validité du texte
-//     const textValidation = DocumentExtractor.isTextValidForAnalysis(text)
-//     if (!textValidation.valid) {
-//       throw new Error(`Texte non valide pour l'analyse: ${textValidation.reason}`)
-//     }
-
-//     // Générer le prompt
-//     const prompt = PromptBuilder.getContractAnalysisPrompt(text)
+export async function GET(request: NextRequest) {
+  try {
+    console.log('=== GET /api/analysis appelé ===')
     
-//     // Appeler Ollama
-//     const llmResponse = await ollama.generate(prompt, {
-//       maxTokens: 8192,
-//       temperature: 0.1
-//     })
-
-//     // Parser la réponse
-//     const analysisData = ResponseParser.parseAnalysisResponse(llmResponse.response)
+    // Vérifier l'authentification
+    const user = await AuthService.getCurrentUser()
+    console.log('Utilisateur trouvé:', user?.email)
     
-//     // Calculer le score de risque global
-//     const overallRiskScore = ResponseParser.calculateOverallRiskScore(analysisData)
-//     analysisData.summary.score_risque = overallRiskScore
+    if (!user) {
+      console.log('Aucun utilisateur connecté')
+      return NextResponse.json(
+        { success: false, error: 'Non authentifié' },
+        { status: 401 }
+      )
+    }
 
-//     // Sauvegarder l'analyse
-//     const analysis = await prisma.analysis.create({
-//       data: {
-//         contractId,
-//         risks: analysisData.risques,
-//         obligations: analysisData.obligations,
-//         powers: analysisData.pouvoirs,
-//         summary: analysisData.summary,
-//         modelUsed: process.env.OLLAMA_MODEL || 'llama3.2',
-//         processingTime: Math.round((Date.now() - startTime) / 1000),
-//         tokenCount: DocumentExtractor.estimateTokenCount(text + llmResponse.response)
-//       }
-//     })
+    // Récupérer les paramètres de requête
+    const searchParams = request.nextUrl.searchParams
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const page = parseInt(searchParams.get('page') || '1')
+    const status = searchParams.get('status')
+    const search = searchParams.get('search')
+    
+    const skip = (page - 1) * limit
 
-//     // Mettre à jour le statut du contrat
-//     await prisma.contract.update({
-//       where: { id: contractId },
-//       data: { status: 'COMPLETED' }
-//     })
+    console.log('Paramètres de requête:', {
+      userId: user.id,
+      limit,
+      page,
+      status,
+      search,
+      skip
+    })
 
-//     return NextResponse.json({
-//       success: true,
-//       analysis,
-//       processingTime: analysis.processingTime,
-//       modelUsed: analysis.modelUsed
-//     })
+    // Construire la clause WHERE
+    const whereClause: any = {
+      userId: user.id
+    }
 
-//   } catch (error) {
-//     console.error('Analyze API error:', error)
+    if (status && status !== 'ALL') {
+      whereClause.status = status
+    }
 
-//     // Mettre à jour le statut en cas d'erreur
-//     if (contractId) {
-//       await prisma.contract.update({
-//         where: { id: contractId },
-//         data: { status: 'FAILED' }
-//       })
-//     }
+    // Dans la section de construction de la clause WHERE :
+    if (search) {
+    whereClause.OR = [
+        { fileName: { contains: search } },
+        { analysis: { summary: { contains: search } } }
+    ];
+    }
 
-//     return NextResponse.json(
-//       { 
-//         success: false,
-//         error: error instanceof Error ? error.message : 'Erreur lors de l\'analyse' 
-//       },
-//       { status: 500 }
-//     )
-//   }
-// }
+    console.log('WHERE clause:', JSON.stringify(whereClause, null, 2))
+
+    // Récupérer les contrats avec leur analyse associée
+    let contracts, totalCount
+    try {
+      [contracts, totalCount] = await Promise.all([
+        prisma.contract.findMany({
+          where: whereClause,
+          include: {
+            analysis: {
+              select: {
+                summary: true,
+                risks: true,
+                obligations: true,
+                powers: true,
+                modelUsed: true,
+                processingTime: true,
+                tokenCount: true,
+                cost: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          },
+          skip,
+          take: limit
+        }),
+        prisma.contract.count({ where: whereClause })
+      ])
+      
+      console.log('Contrats récupérés:', contracts.length)
+      console.log('Total count:', totalCount)
+      
+    } catch (dbError) {
+      console.error('Erreur de base de données:', dbError)
+      throw dbError
+    }
+
+    // Calculer les statistiques
+    const stats = {
+      total: totalCount,
+      completed: await prisma.contract.count({
+        where: { userId: user.id, status: 'COMPLETED' }
+      }),
+      processing: await prisma.contract.count({
+        where: { userId: user.id, status: 'PROCESSING' }
+      }),
+      failed: await prisma.contract.count({
+        where: { userId: user.id, status: 'FAILED' }
+      })
+    }
+
+    console.log('Stats calculées:', stats)
+
+    // Formater la réponse - sélectionner uniquement les champs dont vous avez besoin
+    const formattedContracts = contracts.map(contract => {
+      let summaryText = 'En cours d\'analyse...'
+      let riskScore = null
+      
+      if (contract.analysis) {
+        try {
+          const analysisSummary = JSON.parse(contract.analysis.summary || '{}')
+          summaryText = analysisSummary.overview || analysisSummary.summary || 'Analyse complétée'
+          
+          // Calculer un score de risque basé sur les risques détectés
+          if (contract.analysis.risks) {
+            try {
+              const risks = JSON.parse(contract.analysis.risks)
+              // Simple logique pour calculer un score de risque
+              const riskCount = risks.length || 0
+              riskScore = Math.min(100, riskCount * 10) // Exemple: 10% par risque
+            } catch (e) {
+              console.log('Erreur parsing risks:', e)
+            }
+          }
+        } catch (e) {
+          // Si le parsing échoue, utiliser le texte brut
+          summaryText = contract.analysis.summary || 'Analyse complétée'
+        }
+      }
+
+      return {
+        id: contract.id,
+        fileName: contract.fileName,
+        fileSize: contract.fileSize,
+        status: contract.status,
+        summary: summaryText,
+        riskScore: riskScore,
+        createdAt: contract.createdAt.toISOString(),
+        updatedAt: contract.updatedAt.toISOString(),
+        totalPages: 0, // Valeur par défaut
+        fileType: contract.mimeType?.split('/')[1]?.toUpperCase() || 'PDF',
+        analysisTime: contract.analysis?.processingTime ? `${Math.round(contract.analysis.processingTime / 1000)}s` : null,
+        hasAnalysis: !!contract.analysis,
+        errorMessage: contract.errorMessage || null,
+        fileUrl: contract.fileUrl || null
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        contracts: formattedContracts,
+        pagination: {
+          total: totalCount,
+          page,
+          limit,
+          totalPages: Math.ceil(totalCount / limit)
+        },
+        stats
+      }
+    })
+
+  } catch (error) {
+    console.error('=== ERREUR CRITIQUE dans /api/analysis ===')
+    console.error('Message:', error instanceof Error ? error.message : error)
+    console.error('Stack:', error instanceof Error ? error.stack : 'Pas de stack trace')
+    console.error('=== Fin erreur ===')
+    
+    return NextResponse.json(
+      { 
+        success: false,
+        error: process.env.NODE_ENV === 'development' 
+          ? (error instanceof Error ? error.message : 'Erreur serveur inconnue')
+          : 'Erreur lors de la récupération des analyses'
+      },
+      { status: 500 }
+    )
+  }
+}

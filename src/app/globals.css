@@ -19,7 +19,7 @@
   }
 
   body {
-    @apply bg-[#111111] text-white antialiased;
+    @apply bg-black/95 text-white antialiased;
   }
 
   /* Custom scrollbar */

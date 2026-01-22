@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import "@/app/globals.css";
+import { SessionProvider } from "next-auth/react";
+
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { AuthProvider } from '@/components/providers/AuthProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -32,8 +35,10 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className="bg-[#111111] text-white min-h-screen flex flex-col">
-        {children}
+      <body className="bg-black text-white min-h-screen flex flex-col">
+         <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

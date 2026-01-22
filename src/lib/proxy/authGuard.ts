@@ -1,47 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { jwtVerify } from 'jose'
+import { getToken } from 'next-auth/jwt'
+import { authConfig } from '../auth/config'
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
-
-const PROTECTED_PREFIXES = [
-  '/upload',
-  '/analyze',
-  '/results',
-  '/history',
-]
-
-export async function authGuard(
-  request: NextRequest
-): Promise<NextResponse | null> {
-  const { pathname } = request.nextUrl
-
-  const isProtected = PROTECTED_PREFIXES.some(prefix =>
-    pathname.startsWith(prefix)
-  )
-
-  if (!isProtected) {
-    return null
+export async function authGuard(request: NextRequest) {
+  const path = request.nextUrl.pathname
+  
+  // Routes publiques (pas besoin d'authentification)
+  const publicRoutes = [
+    '/',
+    '/auth/error',
+    '/auth/verify-request',
+    '/forgot-password',
+    '/reset-password',
+    '/api/auth/.*',
+    '/public/.*',
+    '/_next/.*',
+    '/favicon.ico',
+  ]
+  
+  // Vérifier si la route est publique
+  const isPublicRoute = publicRoutes.some(route => {
+    const regex = new RegExp(`^${route.replace('*', '.*')}$`)
+    return regex.test(path)
+  })
+  
+  if (isPublicRoute) {
+    return null // Laisser passer
   }
-
-  const token = request.cookies.get('auth_token')?.value
-
+  
+  // Vérifier l'authentification
+  const token = await getToken({ 
+    req: request,
+    secret: authConfig.secret,
+    cookieName: authConfig.cookieName
+  })
+  
+  // Si non authentifié et route protégée, rediriger vers login
   if (!token) {
-    return NextResponse.redirect(new URL('/', request.url))
+    const loginUrl = new URL('/', request.url)
+    loginUrl.searchParams.set('callbackUrl', encodeURI(path))
+    return NextResponse.redirect(loginUrl)
   }
-
-  try {
-    const { payload } = await jwtVerify(token, secret)
-
-    const headers = new Headers(request.headers)
-    headers.set('x-user-id', String(payload.userId))
-    headers.set('x-user-email', String(payload.email))
-
-    return NextResponse.next({
-      request: { headers },
-    })
-  } catch {
-    const response = NextResponse.redirect(new URL('/', request.url))
-    response.cookies.delete('auth_token')
-    return response
+  
+  // Vérifier les accès Premium
+  if (path.startsWith('/premium') && token.plan !== 'PREMIUM') {
+    return NextResponse.redirect(new URL('/upgrade', request.url))
   }
+  
+  // Vérifier les crédits pour l'upload
+  if (path === '/upload' && token.credits <= 0) {
+    return NextResponse.redirect(new URL('/upgrade', request.url))
+  }
+  
+  return null // Laisser passer
 }

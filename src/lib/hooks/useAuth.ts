@@ -1,96 +1,84 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
+import { useSession, signIn, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-interface User {
-  id: string
-  email: string
-  name: string | null
-  plan: string
-  credits: number
-  apiKey: string | null
-  createdAt: string
-  updatedAt: string
+export interface AuthUser {
+  id: string;
+  email: string;
+  name?: string | null;
+  image?: string | null;
+  plan: string;
+  credits: number;
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
+  const router = useRouter();
+  const { data: session, status, update } = useSession();
+  const [loading, setLoading] = useState(false);
+  
+  const isLoading = status === "loading" || loading;
+  const isAuthenticated = status === "authenticated";
+  const user = session?.user as AuthUser | null;
+  
+  const login = async (provider?: string, credentials?: { email: string; password: string }) => {
     try {
-      // Vous pourriez avoir une route /api/auth/me
-      // Pour l'instant, vérifions simplement si le token existe
-      const response = await fetch('/api/auth/me', {
-        credentials: 'include'
-      })
+      setLoading(true);
       
-      if (response.ok) {
-        const data = await response.json()
-        setUser(data.user)
+      if (provider === "credentials" && credentials) {
+        const result = await signIn("credentials", {
+          email: credentials.email,
+          password: credentials.password,
+          redirect: false,
+        });
+        
+        if (result?.error) {
+          throw new Error(result.error);
+        }
+        
+        if (result?.ok) {
+          router.refresh(); // Revalider les données
+        }
+      } else if (provider) {
+        await signIn(provider);
       }
     } catch (error) {
-      console.error('Auth check failed:', error)
+      console.error("Login error:", error);
+      throw error;
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
-  const login = async (email: string, password: string) => {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-      credentials: 'include'
-    })
-    
-    if (response.ok) {
-      const data = await response.json()
-      setUser(data.user)
-      return { success: true, user: data.user }
-    } else {
-      const error = await response.json()
-      return { success: false, error: error.error }
-    }
-  }
-
-  const register = async (name: string, email: string, password: string) => {
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
-      credentials: 'include'
-    })
-    
-    if (response.ok) {
-      const data = await response.json()
-      setUser(data.user)
-      return { success: true, user: data.user }
-    } else {
-      const error = await response.json()
-      return { success: false, error: error.error }
-    }
-  }
-
+  };
+  
   const logout = async () => {
-    await fetch('/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include'
-    })
-    setUser(null)
-    window.location.reload()
-  }
-
+    try {
+      setLoading(true);
+      await signOut({ redirect: false });
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const refreshSession = async () => {
+    await update();
+  };
+  
   return {
     user,
-    loading,
+    session,
+    isLoading,
+    isAuthenticated,
     login,
-    register,
     logout,
-    isAuthenticated: !!user
-  }
+    refreshSession,
+    hasPremium: user?.plan === "PREMIUM",
+    hasCredits: (user?.credits || 0) > 0,
+    remainingCredits: user?.credits || 0
+  };
 }

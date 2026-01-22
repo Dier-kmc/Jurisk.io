@@ -28,17 +28,12 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className}>
-      <head>
-        <link rel="icon" href="/favicon.ico" />
-      </head>
-      <body className="bg-[#111111] text-white min-h-screen flex flex-col">
+      <div className="bg-[#111111] text-white min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow">
           {children}
         </main>
         <Footer />
-      </body>
-    </html>
+      </div>
   );
 }

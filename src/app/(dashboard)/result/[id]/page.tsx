@@ -1,12 +1,12 @@
 // app/result/[id]/page.tsx
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { 
-  Download, 
-  Printer, 
-  FileText, 
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
+import {
+  Download,
+  Printer,
+  FileText,
   Calendar,
   AlertTriangle,
   ArrowLeft,
@@ -25,27 +25,38 @@ import {
   ExternalLink,
   Brain,
   Cpu,
-  Sparkles
-} from 'lucide-react';
-import RiskBlock from '@/components/results/RiskBlock';
-import ObligationsBlock from '@/components/results/ObligationsBlock';
-import PowersBlock from '@/components/results/PowersBlock';
-import Button from '@/components/ui/custom/CustomButton';
-import { RiskItem } from '@/lib/utils/riskCalculator';
-import { formatDate, formatFileSize } from '@/lib/utils/formatData';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Separator } from '@/components/ui/separator';
+  Sparkles,
+} from "lucide-react";
+import RiskBlock from "@/components/results/RiskBlock";
+import ObligationsBlock from "@/components/results/ObligationsBlock";
+import PowersBlock from "@/components/results/PowersBlock";
+import Button from "@/components/ui/custom/CustomButton";
+import { RiskItem } from "@/lib/utils/riskCalculator";
+import { formatDate, formatFileSize } from "@/lib/utils/formatData";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
 
 // Types pour les données réelles
 interface ContractData {
   id: string;
   fileName: string;
   fileSize: number;
-  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  status: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
   createdAt: string;
   errorMessage?: string;
 }
@@ -66,14 +77,14 @@ interface AnalysisData {
 interface ParsedRisk {
   type: string;
   description: string;
-  gravite: 'faible' | 'moyenne' | 'elevee';
+  gravite: "faible" | "moyenne" | "elevee";
   clause: string;
   recommandation: string;
-  impact: 'financier' | 'legal' | 'operationnel' | 'reputation';
+  impact: "financier" | "legal" | "operationnel" | "reputation";
 }
 
 interface ParsedObligation {
-  partie: 'prestataire' | 'client' | 'les_deux';
+  partie: "prestataire" | "client" | "les_deux";
   description: string;
   delai: string;
   penalites: string;
@@ -81,8 +92,8 @@ interface ParsedObligation {
 }
 
 interface ParsedPower {
-  type: 'resiliation' | 'modification' | 'controle' | 'sanction' | 'audit';
-  detenteur: 'prestataire' | 'client' | 'les_deux';
+  type: "resiliation" | "modification" | "controle" | "sanction" | "audit";
+  detenteur: "prestataire" | "client" | "les_deux";
   description: string;
   limitations: string;
   abus_potentiel: boolean;
@@ -111,9 +122,9 @@ export default function ResultPage() {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const [showAIInsights, setShowAIInsights] = useState(true);
-  
+
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const progressRef = useRef(0);
   const isMountedRef = useRef(true);
@@ -122,55 +133,58 @@ export default function ResultPage() {
     try {
       const response = await fetch(`/api/analysis/${params.id}`);
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur de chargement');
+        throw new Error(data.error || "Erreur de chargement");
       }
-      
+
       if (data.success) {
         const contractData = data.contract;
         const analysisData = data.analysis;
-        
+
         if (isMountedRef.current) {
           setContract(contractData);
           setAnalysis(analysisData);
-          
-          if (contractData.status === 'PROCESSING') {
+
+          if (contractData.status === "PROCESSING") {
             const newProgress = Math.min(progressRef.current + 10, 90);
             setProgress(newProgress);
             progressRef.current = newProgress;
-          } else if (contractData.status === 'COMPLETED') {
+          } else if (contractData.status === "COMPLETED") {
             setProgress(100);
             progressRef.current = 100;
           }
-          
-          if (contractData.status === 'COMPLETED' && analysisData) {
+
+          if (contractData.status === "COMPLETED" && analysisData) {
             try {
               const parsed = {
-                risks: JSON.parse(analysisData.risks || '[]'),
-                obligations: JSON.parse(analysisData.obligations || '[]'),
-                powers: JSON.parse(analysisData.powers || '[]'),
-                summary: JSON.parse(analysisData.summary || '{}')
+                risks: JSON.parse(analysisData.risks || "[]"),
+                obligations: JSON.parse(analysisData.obligations || "[]"),
+                powers: JSON.parse(analysisData.powers || "[]"),
+                summary: JSON.parse(analysisData.summary || "{}"),
               };
               setParsedData(parsed);
             } catch (parseError) {
-              console.error('Erreur de parsing JSON:', parseError);
+              console.error("Erreur de parsing JSON:", parseError);
             }
           }
-          
-          if (contractData.status === 'COMPLETED' || contractData.status === 'FAILED') {
+
+          if (
+            contractData.status === "COMPLETED" ||
+            contractData.status === "FAILED"
+          ) {
             if (pollingIntervalRef.current) {
               clearInterval(pollingIntervalRef.current);
               pollingIntervalRef.current = null;
             }
           }
         }
-        
+
         return contractData.status;
       }
     } catch (err) {
       if (isMountedRef.current) {
-        setError(err instanceof Error ? err.message : 'Erreur inconnue');
+        setError(err instanceof Error ? err.message : "Erreur inconnue");
         if (pollingIntervalRef.current) {
           clearInterval(pollingIntervalRef.current);
           pollingIntervalRef.current = null;
@@ -186,7 +200,7 @@ export default function ResultPage() {
   useEffect(() => {
     isMountedRef.current = true;
     fetchAnalysisData();
-    
+
     return () => {
       isMountedRef.current = false;
       if (pollingIntervalRef.current) {
@@ -197,17 +211,17 @@ export default function ResultPage() {
   }, [fetchAnalysisData]);
 
   useEffect(() => {
-    if (contract?.status === 'PROCESSING') {
+    if (contract?.status === "PROCESSING") {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
       }
-      
+
       const interval = setInterval(() => {
         fetchAnalysisData();
       }, 3000);
-      
+
       pollingIntervalRef.current = interval;
-      
+
       const progressInterval = setInterval(() => {
         if (progressRef.current < 90) {
           const newProgress = Math.min(progressRef.current + 2, 90);
@@ -215,7 +229,7 @@ export default function ResultPage() {
           progressRef.current = newProgress;
         }
       }, 2000);
-      
+
       return () => {
         clearInterval(progressInterval);
       };
@@ -224,37 +238,46 @@ export default function ResultPage() {
 
   const convertRiskToRiskItem = (risk: ParsedRisk): RiskItem => {
     const severityMap = {
-      'elevee': { probability: 0.9, impact: 9, color: 'bg-red-500' },
-      'moyenne': { probability: 0.6, impact: 6, color: 'bg-yellow-500' },
-      'faible': { probability: 0.3, impact: 3, color: 'bg-green-500' }
+      elevee: { probability: 0.9, impact: 9, color: "bg-red-500" },
+      moyenne: { probability: 0.6, impact: 6, color: "bg-yellow-500" },
+      faible: { probability: 0.3, impact: 3, color: "bg-green-500" },
     };
-    
-    const severityData = severityMap[risk.gravite] || { probability: 0.5, impact: 5, color: 'bg-gray-500' };
-    
+
+    const severityData = severityMap[risk.gravite] || {
+      probability: 0.5,
+      impact: 5,
+      color: "bg-gray-500",
+    };
+
     return {
       id: `${risk.type}-${Date.now()}-${Math.random()}`,
       title: risk.type,
       description: risk.description,
-      severity: risk.gravite === 'elevee' ? 'high' : risk.gravite === 'moyenne' ? 'medium' : 'low',
+      severity:
+        risk.gravite === "elevee"
+          ? "high"
+          : risk.gravite === "moyenne"
+            ? "medium"
+            : "low",
       clause: risk.clause,
       probability: severityData.probability,
       impact: severityData.impact,
       color: severityData.color,
       recommandation: risk.recommandation,
-      impactType: risk.impact
+      impactType: risk.impact,
     };
   };
 
   const getRiskStats = () => {
     if (!parsedData) return null;
-    
+
     const stats = {
       total: parsedData.risks.length,
-      high: parsedData.risks.filter(r => r.gravite === 'elevee').length,
-      medium: parsedData.risks.filter(r => r.gravite === 'moyenne').length,
-      low: parsedData.risks.filter(r => r.gravite === 'faible').length
+      high: parsedData.risks.filter((r) => r.gravite === "elevee").length,
+      medium: parsedData.risks.filter((r) => r.gravite === "moyenne").length,
+      low: parsedData.risks.filter((r) => r.gravite === "faible").length,
     };
-    
+
     return stats;
   };
 
@@ -264,7 +287,7 @@ export default function ResultPage() {
 
   const exportAnalysis = () => {
     if (!parsedData || !analysis) return;
-    
+
     const exportData = {
       contract: contract?.fileName,
       analysisDate: new Date().toISOString(),
@@ -275,22 +298,24 @@ export default function ResultPage() {
       metadata: {
         modelUsed: analysis.modelUsed,
         processingTime: analysis.processingTime,
-        tokenCount: analysis.tokenCount
-      }
+        tokenCount: analysis.tokenCount,
+      },
     };
-    
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `analyse-contrat-${contract?.fileName}-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `analyse-contrat-${contract?.fileName}-${new Date().toISOString().split("T")[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+      <div className="min-h-screen flex items-center justify-center bg-black/95">
         <div className="text-center max-w-md">
           <div className="relative mb-8">
             <div className="w-24 h-24 mx-auto">
@@ -301,7 +326,9 @@ export default function ResultPage() {
           <h2 className="text-2xl font-bold mb-3 bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
             L'IA analyse votre contrat
           </h2>
-          <p className="text-gray-400 mb-6">Détection des risques et clauses importantes...</p>
+          <p className="text-gray-400 mb-6">
+            Détection des risques et clauses importantes...
+          </p>
           <div className="w-64 mx-auto">
             <Progress value={progress} className="h-2 bg-gray-800" />
           </div>
@@ -313,20 +340,22 @@ export default function ResultPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+      <div className="min-h-screen flex items-center justify-center bg-black/95">
         <div className="text-center max-w-md p-8 glass-card rounded-2xl">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold mb-3 text-white">Erreur d'analyse</h2>
+          <h2 className="text-2xl font-bold mb-3 text-white">
+            Erreur d'analyse
+          </h2>
           <p className="text-gray-400 mb-6">{error}</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button 
-              variant="outline" 
-              onClick={() => router.push('/upload')}
+            <Button
+              variant="outline"
+              onClick={() => router.push("/upload")}
               className="border-gray-700 text-gray-300 hover:bg-gray-800"
             >
               Nouvelle analyse
             </Button>
-            <Button 
+            <Button
               variant="primary"
               onClick={() => window.location.reload()}
               className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
@@ -341,16 +370,18 @@ export default function ResultPage() {
 
   if (!contract) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+      <div className="min-h-screen flex items-center justify-center bg-black/95">
         <div className="text-center max-w-md p-8 glass-card rounded-2xl">
           <FileWarning className="w-16 h-16 text-yellow-500 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold mb-3 text-white">Analyse non trouvée</h2>
+          <h2 className="text-2xl font-bold mb-3 text-white">
+            Analyse non trouvée
+          </h2>
           <p className="text-gray-400 mb-6">
             L'analyse demandée n'existe pas ou a expiré.
           </p>
-          <Button 
-            variant="primary" 
-            onClick={() => router.push('/upload')}
+          <Button
+            variant="primary"
+            onClick={() => router.push("/upload")}
             className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
           >
             <ArrowLeft className="mr-2" />
@@ -361,9 +392,9 @@ export default function ResultPage() {
     );
   }
 
-  if (contract.status === 'PROCESSING') {
+  if (contract.status === "PROCESSING") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+      <div className="min-h-screen flex items-center justify-center bg-black/95">
         <div className="text-center max-w-2xl p-8 glass-card rounded-2xl">
           <div className="relative mb-8">
             <div className="w-32 h-32 mx-auto relative">
@@ -375,74 +406,123 @@ export default function ResultPage() {
             Analyse en cours
           </h2>
           <p className="text-gray-400 mb-8 text-lg">
-            Notre IA examine chaque clause de votre contrat pour détecter les risques potentiels.
+            Notre IA examine chaque clause de votre contrat pour détecter les
+            risques potentiels.
           </p>
-          
+
           <div className="space-y-6 mb-8">
+            {/* Étape 1 - Extraction du texte (complet) */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Sparkles className="w-5 h-5 text-yellow-500 mr-2 animate-pulse" />
+                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center mr-2">
+                    <CheckCircle className="w-4 h-4 text-black" />
+                  </div>
                   <span className="text-gray-300">Extraction du texte</span>
                 </div>
-                <span className="text-yellow-500 font-medium">✓</span>
+                <span className="text-green-500 font-medium">100%</span>
               </div>
-              <Progress value={100} className="h-2 bg-gray-800" />
+              <div className="relative pt-1">
+                <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-800">
+                  <div
+                    style={{ width: "100%" }}
+                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-green-500 to-emerald-500"
+                  ></div>
+                </div>
+              </div>
             </div>
-            
+
+            {/* Étape 2 - Analyse des clauses (en cours) */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Brain className="w-5 h-5 text-yellow-500 mr-2 animate-pulse" />
+                  <div className="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center mr-2 animate-pulse">
+                    <Brain className="w-4 h-4 text-black" />
+                  </div>
                   <span className="text-gray-300">Analyse des clauses</span>
                 </div>
                 <span className="text-yellow-500 font-medium">{progress}%</span>
               </div>
-              <Progress value={progress} className="h-2 bg-gray-800" />
+              <div className="relative pt-1">
+                <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-800">
+                  <div
+                    style={{ width: `${progress}%` }}
+                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-300 ease-in-out"
+                  ></div>
+                </div>
+                {/* Barre de progression animée */}
+                <div
+                  style={{ width: `${progress}%` }}
+                  className="absolute top-0 h-2 rounded bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-300 ease-in-out"
+                >
+                  <div className="absolute right-0 top-0 w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                </div>
+              </div>
             </div>
-            
+
+            {/* Étape 3 - Génération du rapport (attente) */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Shield className="w-5 h-5 text-gray-500 mr-2" />
+                  <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center mr-2">
+                    <Shield className="w-4 h-4 text-gray-400" />
+                  </div>
                   <span className="text-gray-500">Génération du rapport</span>
                 </div>
-                <span className="text-gray-500 font-medium">0%</span>
+                <span className="text-gray-500 font-medium">
+                  {progress >= 90 ? "Prêt" : "En attente"}
+                </span>
               </div>
-              <Progress value={0} className="h-2 bg-gray-800" />
+              <div className="relative pt-1">
+                <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-800">
+                  <div
+                    style={{ width: `${progress >= 90 ? 100 : 0}%` }}
+                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 ease-in-out"
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
-          
+
           <div className="text-sm text-gray-500 space-y-2">
-            <p>Statut: <span className="text-yellow-500">Traitement en cours</span></p>
+            <p>
+              Statut:{" "}
+              <span className="text-yellow-500">Traitement en cours</span>
+            </p>
             <p>Temps estimé: 30-60 secondes</p>
-            <p>Modèle: {analysis?.modelUsed || 'meta-llama/llama-3.3-70b-instruct'}</p>
+            <p>
+              Modèle:{" "}
+              {analysis?.modelUsed || "meta-llama/llama-3.3-70b-instruct"}
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (contract.status === 'FAILED') {
+  if (contract.status === "FAILED") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+      <div className="min-h-screen flex items-center justify-center bg-black/95">
         <div className="text-center max-w-md p-8 glass-card rounded-2xl">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold mb-3 text-white">Échec de l'analyse</h2>
+          <h2 className="text-2xl font-bold mb-3 text-white">
+            Échec de l'analyse
+          </h2>
           <p className="text-gray-400 mb-6">
-            {contract.errorMessage || 'Une erreur est survenue lors de l\'analyse.'}
+            {contract.errorMessage ||
+              "Une erreur est survenue lors de l'analyse."}
           </p>
           <div className="space-y-4">
-            <Button 
+            <Button
               variant="primary"
               onClick={() => window.location.reload()}
               className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
             >
               Réessayer l'analyse
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => router.push('/upload')}
+            <Button
+              variant="outline"
+              onClick={() => router.push("/upload")}
               className="w-full border-gray-700 text-gray-300 hover:bg-gray-800"
             >
               Nouveau contrat
@@ -453,12 +533,14 @@ export default function ResultPage() {
     );
   }
 
-  if (contract.status === 'PENDING') {
+  if (contract.status === "PENDING") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+      <div className="min-h-screen flex items-center justify-center bg-black/95">
         <div className="text-center max-w-md p-8 glass-card rounded-2xl">
           <Loader2 className="w-16 h-16 text-blue-500 animate-spin mx-auto mb-6" />
-          <h2 className="text-2xl font-bold mb-3 text-white">Analyse en attente</h2>
+          <h2 className="text-2xl font-bold mb-3 text-white">
+            Analyse en attente
+          </h2>
           <p className="text-gray-400 mb-6">
             Votre contrat est en file d'attente pour l'analyse.
           </p>
@@ -481,9 +563,9 @@ export default function ResultPage() {
   const riskStats = getRiskStats();
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto bg-black/95">
       {/* Header */}
-      <div className="sticky top-0 z-40 backdrop-blur-lg bg-black/60 border-b border-gray-800">
+      <div className="sticky top-0 z-40 backdrop-blur-lg bg-black/60 border-b border-gray-300/10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -494,7 +576,7 @@ export default function ResultPage() {
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
-              
+
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-lg">
                   <FileText className="w-5 h-5 text-yellow-500" />
@@ -523,7 +605,7 @@ export default function ResultPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <TooltipProvider>
                 <Tooltip>
@@ -535,15 +617,17 @@ export default function ResultPage() {
                       onClick={() => setShowAIInsights(!showAIInsights)}
                     >
                       <Brain className="w-4 h-4 mr-2" />
-                      {showAIInsights ? 'Cacher IA' : 'Afficher IA'}
+                      {showAIInsights ? "Cacher IA" : "Afficher IA"}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {showAIInsights ? 'Masquer les insights IA' : 'Afficher les insights IA'}
+                    {showAIInsights
+                      ? "Masquer les insights IA"
+                      : "Afficher les insights IA"}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              
+
               <div className="hidden md:flex space-x-2">
                 <Button
                   variant="outline"
@@ -554,7 +638,7 @@ export default function ResultPage() {
                   <Download className="w-4 h-4 mr-2" />
                   Exporter
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   size="sm"
@@ -571,18 +655,20 @@ export default function ResultPage() {
       </div>
 
       {/* Contenu principal */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="bg-black/95 mx-auto px-4 py-8">
         {/* Score et stats rapides */}
         {parsedData && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             {/* Score de risque */}
-            <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+            <Card className="bg-gradient-to-br from-gray-300/15 to-black border-gray-300/20">
               <CardHeader>
                 <CardTitle className="flex items-center text-white">
                   <Shield className="w-5 h-5 mr-2 text-yellow-500" />
                   Score de risque
                 </CardTitle>
-                <CardDescription>Plus le score est bas, mieux c'est</CardDescription>
+                <CardDescription>
+                  Plus le score est bas, mieux c'est
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center">
@@ -594,7 +680,7 @@ export default function ResultPage() {
                           cy="50"
                           r="45"
                           fill="none"
-                          stroke="#1f2937"
+                          stroke="#31353b"
                           strokeWidth="8"
                         />
                         <circle
@@ -609,8 +695,14 @@ export default function ResultPage() {
                           transform="rotate(-90 50 50)"
                         />
                         <defs>
-                          <linearGradient id="gradient-risk" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#f59e0b" />
+                          <linearGradient
+                            id="gradient-risk"
+                            x1="0%"
+                            y1="0%"
+                            x2="100%"
+                            y2="100%"
+                          >
+                            <stop offset="0%" stopColor="#c06d20" />
                             <stop offset="100%" stopColor="#ea580c" />
                           </linearGradient>
                         </defs>
@@ -621,14 +713,20 @@ export default function ResultPage() {
                         </span>
                         <span className="text-sm text-gray-400">/100</span>
                         <div className="mt-2">
-                          <Badge className={
-                            parsedData.summary.score_risque < 30 ? 'bg-green-500' :
-                            parsedData.summary.score_risque < 70 ? 'bg-yellow-500' :
-                            'bg-red-500'
-                          }>
-                            {parsedData.summary.score_risque < 30 ? 'Faible risque' :
-                             parsedData.summary.score_risque < 70 ? 'Risque modéré' :
-                             'Risque élevé'}
+                          <Badge
+                            className={
+                              parsedData.summary.score_risque < 30
+                                ? "bg-green-600"
+                                : parsedData.summary.score_risque < 70
+                                  ? "bg-yellow-600"
+                                  : "bg-red-600"
+                            }
+                          >
+                            {parsedData.summary.score_risque < 30
+                              ? "Faible risque"
+                              : parsedData.summary.score_risque < 70
+                                ? "Risque modéré"
+                                : "Risque élevé"}
                           </Badge>
                         </div>
                       </div>
@@ -640,66 +738,74 @@ export default function ResultPage() {
 
             {/* Stats des risques */}
             {riskStats && (
-              <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+              <Card className="bg-gradient-to-br from-gray-300/15 to-black border-gray-300/20">
                 <CardHeader>
                   <CardTitle className="flex items-center text-white">
                     <AlertTriangle className="w-5 h-5 mr-2 text-red-500" />
                     Répartition des risques
                   </CardTitle>
-                  <CardDescription>{riskStats.total} risques détectés</CardDescription>
+                  <CardDescription>
+                    {riskStats.total} risques détectés
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-red-400">Élevés</span>
+                        <span className="text-red-600">Élevés</span>
                         <span className="text-white">{riskStats.high}</span>
                       </div>
-                      <Progress 
-                        value={(riskStats.high / riskStats.total) * 100} 
-                        className="h-2 bg-gray-800"
+                      <Progress
+                        value={(riskStats.high / riskStats.total) * 100}
+                        className="h-2 bg-gray-600/30"
                         // indicatorClassName="bg-red-500"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-yellow-400">Moyens</span>
+                        <span className="text-yellow-600">Moyens</span>
                         <span className="text-white">{riskStats.medium}</span>
                       </div>
-                      <Progress 
-                        value={(riskStats.medium / riskStats.total) * 100} 
-                        className="h-2 bg-gray-800"
+                      <Progress
+                        value={(riskStats.medium / riskStats.total) * 100}
+                        className="h-2 bg-gray-600/30"
                         // indicatorClassName="bg-yellow-500"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-green-400">Faibles</span>
+                        <span className="text-green-600">Faibles</span>
                         <span className="text-white">{riskStats.low}</span>
                       </div>
-                      <Progress 
-                        value={(riskStats.low / riskStats.total) * 100} 
-                        className="h-2 bg-gray-800"
+                      <Progress
+                        value={(riskStats.low / riskStats.total) * 100}
+                        className="h-2 bg-gray-600/30"
                         // indicatorClassName="bg-green-500"
                       />
                     </div>
                   </div>
-                  
-                  <Separator className="my-4 bg-gray-800" />
-                  
+
+                  <Separator className="my-4 bg-gray-300/15" />
+
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-white">{parsedData.obligations.length}</div>
+                      <div className="text-2xl font-bold text-white">
+                        {parsedData.obligations.length}
+                      </div>
                       <div className="text-xs text-gray-400">Obligations</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-white">{parsedData.powers.length}</div>
+                      <div className="text-2xl font-bold text-white">
+                        {parsedData.powers.length}
+                      </div>
                       <div className="text-xs text-gray-400">Pouvoirs</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-white">{parsedData.summary.score_clarte}</div>
+                      <div className="text-2xl font-bold text-white">
+                        {parsedData.summary.score_clarte}
+                      </div>
                       <div className="text-xs text-gray-400">Clarté</div>
                     </div>
                   </div>
@@ -709,37 +815,45 @@ export default function ResultPage() {
 
             {/* Insights IA */}
             {showAIInsights && (
-              <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+              <Card className="bg-gradient-to-br from-gray-300/15 to-black border-gray-300/20">
                 <CardHeader>
                   <CardTitle className="flex items-center text-white">
-                    <Brain className="w-5 h-5 mr-2 text-purple-500" />
+                    <Brain className="w-5 h-5 mr-2 text-purple-600" />
                     Insights IA
                   </CardTitle>
-                  <CardDescription>Recommandations intelligentes</CardDescription>
+                  <CardDescription>
+                    Recommandations intelligentes
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {parsedData.summary.conseils.slice(0, 3).map((conseil, index) => (
-                      <div key={index} className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 mt-1">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                            <Sparkles className="w-3 h-3 text-white" />
+                    {parsedData.summary.conseils
+                      .slice(0, 3)
+                      .map((conseil, index) => (
+                        <div key={index} className="flex items-start space-x-3">
+                          <div className="flex-shrink-0 mt-1">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                              <Sparkles className="w-3 h-3 text-white" />
+                            </div>
                           </div>
+                          <p className="text-sm text-gray-300">{conseil}</p>
                         </div>
-                        <p className="text-sm text-gray-300">{conseil}</p>
-                      </div>
-                    ))}
-                    
+                      ))}
+
                     <Separator className="bg-gray-800" />
-                    
+
                     <div className="text-sm space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-400">Durée:</span>
-                        <span className="text-white">{parsedData.summary.duree_contrat}</span>
+                        <span className="text-white">
+                          {parsedData.summary.duree_contrat}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Renouvellement:</span>
-                        <span className="text-white">{parsedData.summary.renouvellement}</span>
+                        <span className="text-white">
+                          {parsedData.summary.renouvellement}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -751,20 +865,32 @@ export default function ResultPage() {
 
         {/* Onglets */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-          <TabsList className="glass-card border border-gray-800 p-1">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-600 data-[state=active]:to-orange-600">
+          <TabsList className="glass-card border border-gray-300/10 p-1">
+            <TabsTrigger
+              value="overview"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-600 data-[state=active]:to-orange-600"
+            >
               <BarChart3 className="w-4 h-4 mr-2" />
               Vue d'ensemble
             </TabsTrigger>
-            <TabsTrigger value="risks" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-pink-600">
+            <TabsTrigger
+              value="risks"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-red-800"
+            >
               <AlertTriangle className="w-4 h-4 mr-2" />
               Risques ({parsedData?.risks.length || 0})
             </TabsTrigger>
-            <TabsTrigger value="obligations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-600">
+            <TabsTrigger
+              value="obligations"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-600"
+            >
               <CheckSquare className="w-4 h-4 mr-2" />
               Obligations ({parsedData?.obligations.length || 0})
             </TabsTrigger>
-            <TabsTrigger value="powers" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600">
+            <TabsTrigger
+              value="powers"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-600 data-[state=active]:to-green-800"
+            >
               <Zap className="w-4 h-4 mr-2" />
               Pouvoirs ({parsedData?.powers.length || 0})
             </TabsTrigger>
@@ -775,7 +901,7 @@ export default function ResultPage() {
             {parsedData && (
               <>
                 {/* Points critiques */}
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+                <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-300/10">
                   <CardHeader>
                     <CardTitle className="flex items-center text-white">
                       <Target className="w-5 h-5 mr-2 text-red-500" />
@@ -784,22 +910,29 @@ export default function ResultPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {parsedData.summary.points_cles.slice(0, 6).map((point, index) => (
-                        <div key={index} className="flex items-start space-x-3 p-3 bg-gray-900/50 rounded-lg">
-                          <div className="flex-shrink-0 mt-1">
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center">
-                              <span className="text-xs font-bold text-white">{index + 1}</span>
+                      {parsedData.summary.points_cles
+                        .slice(0, 6)
+                        .map((point, index) => (
+                          <div
+                            key={index}
+                            className="flex items-start space-x-3 p-3 bg-gray-900/50 rounded-lg"
+                          >
+                            <div className="flex-shrink-0 mt-1">
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center">
+                                <span className="text-xs font-bold text-white">
+                                  {index + 1}
+                                </span>
+                              </div>
                             </div>
+                            <p className="text-sm text-gray-300">{point}</p>
                           </div>
-                          <p className="text-sm text-gray-300">{point}</p>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Top risques */}
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+                <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-300/10">
                   <CardHeader>
                     <CardTitle className="flex items-center text-white">
                       <AlertTriangle className="w-5 h-5 mr-2 text-yellow-500" />
@@ -809,34 +942,57 @@ export default function ResultPage() {
                   <CardContent>
                     <div className="space-y-4">
                       {parsedData.risks.slice(0, 5).map((risk, index) => (
-                        <div key={index} className="p-4 bg-gray-900/50 rounded-lg border-l-4" style={{
-                          borderLeftColor: risk.gravite === 'elevee' ? '#ef4444' : 
-                                          risk.gravite === 'moyenne' ? '#f59e0b' : '#10b981'
-                        }}>
+                        <div
+                          key={index}
+                          className="p-4 bg-gray-900/50 rounded-lg border-l-4"
+                          style={{
+                            borderLeftColor:
+                              risk.gravite === "elevee"
+                                ? "#ef4444"
+                                : risk.gravite === "moyenne"
+                                  ? "#f59e0b"
+                                  : "#10b981",
+                          }}
+                        >
                           <div className="flex justify-between items-start mb-2">
                             <div className="flex items-center space-x-2">
-                              <Badge className={
-                                risk.gravite === 'elevee' ? 'bg-red-500' :
-                                risk.gravite === 'moyenne' ? 'bg-yellow-500' :
-                                'bg-green-500'
-                              }>
+                              <Badge
+                                className={
+                                  risk.gravite === "elevee"
+                                    ? "bg-red-500"
+                                    : risk.gravite === "moyenne"
+                                      ? "bg-yellow-500"
+                                      : "bg-green-500"
+                                }
+                              >
                                 {risk.gravite.toUpperCase()}
                               </Badge>
-                              <span className="text-sm font-medium text-white">{risk.type}</span>
+                              <span className="text-sm font-medium text-white">
+                                {risk.type}
+                              </span>
                             </div>
-                            <Badge variant="outline" className="text-xs border-gray-700">
+                            <Badge
+                              variant="outline"
+                              className="text-xs border-gray-700"
+                            >
                               {risk.impact}
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-300 mb-3">{risk.description}</p>
+                          <p className="text-sm text-gray-300 mb-3">
+                            {risk.description}
+                          </p>
                           <div className="text-xs text-gray-400">
                             <div className="flex items-center justify-between">
-                              <span className="text-gray-500">Clause: {risk.clause}</span>
+                              <span className="text-gray-500">
+                                Clause: {risk.clause}
+                              </span>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 className="h-6 text-xs text-yellow-500 hover:text-yellow-400"
-                                onClick={() => copyToClipboard(risk.recommandation)}
+                                onClick={() =>
+                                  copyToClipboard(risk.recommandation)
+                                }
                               >
                                 <Copy className="w-3 h-3 mr-1" />
                                 Copier
@@ -850,7 +1006,7 @@ export default function ResultPage() {
                 </Card>
 
                 {/* Matrice des parties */}
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+                <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-300/10">
                   <CardHeader>
                     <CardTitle className="flex items-center text-white">
                       <TrendingUp className="w-5 h-5 mr-2 text-blue-500" />
@@ -859,13 +1015,19 @@ export default function ResultPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-3 gap-4 text-center">
-                      {['prestataire', 'client', 'les_deux'].map((partie) => {
-                        const count = parsedData.obligations.filter(o => o.partie === partie).length;
-                        const percentage = (count / parsedData.obligations.length) * 100;
+                      {["prestataire", "client", "les_deux"].map((partie) => {
+                        const count = parsedData.obligations.filter(
+                          (o) => o.partie === partie,
+                        ).length;
+                        const percentage =
+                          (count / parsedData.obligations.length) * 100;
                         return (
                           <div key={partie} className="space-y-2">
                             <div className="relative w-24 h-24 mx-auto">
-                              <svg className="w-full h-full" viewBox="0 0 100 100">
+                              <svg
+                                className="w-full h-full"
+                                viewBox="0 0 100 100"
+                              >
                                 <circle
                                   cx="50"
                                   cy="50"
@@ -880,9 +1042,11 @@ export default function ResultPage() {
                                   r="45"
                                   fill="none"
                                   stroke={
-                                    partie === 'prestataire' ? '#3b82f6' :
-                                    partie === 'client' ? '#10b981' :
-                                    '#8b5cf6'
+                                    partie === "prestataire"
+                                      ? "#3b82f6"
+                                      : partie === "client"
+                                        ? "#10b981"
+                                        : "#8b5cf6"
                                   }
                                   strokeWidth="8"
                                   strokeLinecap="round"
@@ -892,9 +1056,11 @@ export default function ResultPage() {
                               </svg>
                               <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-center">
-                                  <div className="text-2xl font-bold text-white">{count}</div>
+                                  <div className="text-2xl font-bold text-white">
+                                    {count}
+                                  </div>
                                   <div className="text-xs text-gray-400 capitalize">
-                                    {partie.replace('_', ' ')}
+                                    {partie.replace("_", " ")}
                                   </div>
                                 </div>
                               </div>
@@ -912,7 +1078,7 @@ export default function ResultPage() {
           {/* Risques */}
           <TabsContent value="risks">
             {parsedData && (
-              <RiskBlock 
+              <RiskBlock
                 risks={parsedData.risks.map(convertRiskToRiskItem)}
                 collapsible={false}
                 // showFilters={true}
@@ -923,15 +1089,15 @@ export default function ResultPage() {
           {/* Obligations */}
           <TabsContent value="obligations">
             {parsedData && (
-              <ObligationsBlock 
+              <ObligationsBlock
                 obligations={parsedData.obligations.map((obl, index) => ({
                   id: `obl-${index}`,
                   text: obl.description,
-                  clause: '',
+                  clause: "",
                   deadline: obl.delai,
                   responsible: obl.partie,
                   penalites: obl.penalites,
-                  couts: obl.couts
+                  couts: obl.couts,
                 }))}
                 collapsible={false}
               />
@@ -941,12 +1107,12 @@ export default function ResultPage() {
           {/* Pouvoirs */}
           <TabsContent value="powers">
             {parsedData && (
-              <PowersBlock 
+              <PowersBlock
                 powers={parsedData.powers.map((power, index) => ({
                   id: `power-${index}`,
                   text: power.description,
-                  clause: '',
-                  type: 'general' as const
+                  clause: "",
+                  type: "general" as const,
                 }))}
                 collapsible={true}
                 defaultExpanded={true}
@@ -957,7 +1123,7 @@ export default function ResultPage() {
 
         {/* Plan d'action */}
         {parsedData && parsedData.risks.length > 0 && (
-          <Card className="mb-8 bg-gradient-to-br from-gray-900 to-black border-gray-800">
+          <Card className="mb-8 bg-gradient-to-br from-gray-900 to-black border-gray-300/10">
             <CardHeader>
               <CardTitle className="flex items-center text-white">
                 <CheckCircle className="w-5 h-5 mr-2 text-green-500" />
@@ -970,27 +1136,40 @@ export default function ResultPage() {
             <CardContent>
               <div className="space-y-4">
                 {parsedData.risks
-                  .filter(r => r.gravite === 'elevee')
+                  .filter((r) => r.gravite === "elevee")
                   .slice(0, 3)
                   .map((risk, index) => (
-                    <div key={index} className="flex items-start space-x-4 p-4 bg-gray-900/50 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-start space-x-4 p-4 bg-gray-900/50 rounded-lg"
+                    >
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center">
-                          <span className="text-white font-bold">{index + 1}</span>
+                          <span className="text-white font-bold">
+                            {index + 1}
+                          </span>
                         </div>
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h4 className="font-semibold text-white">{risk.type}</h4>
-                            <p className="text-sm text-gray-400">{risk.clause}</p>
+                            <h4 className="font-semibold text-white">
+                              {risk.type}
+                            </h4>
+                            <p className="text-sm text-gray-400">
+                              {risk.clause}
+                            </p>
                           </div>
                           <Badge className="bg-red-500">URGENT</Badge>
                         </div>
-                        <p className="text-sm text-gray-300 mb-3">{risk.description}</p>
+                        <p className="text-sm text-gray-300 mb-3">
+                          {risk.description}
+                        </p>
                         <div className="bg-black/30 rounded-lg p-3">
                           <p className="text-sm text-yellow-400">
-                            <span className="font-semibold">Recommandation: </span>
+                            <span className="font-semibold">
+                              Recommandation:{" "}
+                            </span>
                             {risk.recommandation}
                           </p>
                         </div>
@@ -998,12 +1177,18 @@ export default function ResultPage() {
                     </div>
                   ))}
               </div>
-              
-              {parsedData.risks.filter(r => r.gravite === 'elevee').length === 0 && (
+
+              {parsedData.risks.filter((r) => r.gravite === "elevee").length ===
+                0 && (
                 <div className="text-center py-8">
                   <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                  <h4 className="text-lg font-semibold text-white mb-2">Aucun risque urgent détecté</h4>
-                  <p className="text-gray-400">Votre contrat semble présenter un niveau de risque acceptable.</p>
+                  <h4 className="text-lg font-semibold text-white mb-2">
+                    Aucun risque urgent détecté
+                  </h4>
+                  <p className="text-gray-400">
+                    Votre contrat semble présenter un niveau de risque
+                    acceptable.
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -1012,7 +1197,7 @@ export default function ResultPage() {
 
         {/* Informations techniques */}
         {analysis && (
-          <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+          <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-300/10">
             <CardHeader>
               <CardTitle className="flex items-center text-white">
                 <Cpu className="w-5 h-5 mr-2 text-blue-500" />
@@ -1023,21 +1208,35 @@ export default function ResultPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="text-center p-4 bg-gray-900/30 rounded-lg">
                   <div className="text-sm text-gray-400 mb-2">Modèle IA</div>
-                  <div className="font-medium text-white truncate" title={analysis.modelUsed}>
-                    {analysis.modelUsed.split('/').pop()}
+                  <div
+                    className="font-medium text-white truncate"
+                    title={analysis.modelUsed}
+                  >
+                    {analysis.modelUsed.split("/").pop()}
                   </div>
                 </div>
                 <div className="text-center p-4 bg-gray-900/30 rounded-lg">
-                  <div className="text-sm text-gray-400 mb-2">Temps de traitement</div>
-                  <div className="font-medium text-white">{analysis.processingTime}s</div>
+                  <div className="text-sm text-gray-400 mb-2">
+                    Temps de traitement
+                  </div>
+                  <div className="font-medium text-white">
+                    {analysis.processingTime}s
+                  </div>
                 </div>
                 <div className="text-center p-4 bg-gray-900/30 rounded-lg">
-                  <div className="text-sm text-gray-400 mb-2">Tokens utilisés</div>
-                  <div className="font-medium text-white">{analysis.tokenCount?.toLocaleString() || 'N/A'}</div>
+                  <div className="text-sm text-gray-400 mb-2">
+                    Tokens utilisés
+                  </div>
+                  <div className="font-medium text-white">
+                    {analysis.tokenCount?.toLocaleString() || "N/A"}
+                  </div>
                 </div>
                 <div className="text-center p-4 bg-gray-900/30 rounded-lg">
                   <div className="text-sm text-gray-400 mb-2">ID d'analyse</div>
-                  <div className="font-medium text-white text-sm truncate" title={analysis.id}>
+                  <div
+                    className="font-medium text-white text-sm truncate"
+                    title={analysis.id}
+                  >
                     {analysis.id.substring(0, 8)}...
                     <Button
                       variant="ghost"
@@ -1055,18 +1254,18 @@ export default function ResultPage() {
         )}
 
         {/* Actions finales */}
-        <div className="mt-8 pt-8 border-t border-gray-800">
+        <div className="mt-8 pt-8 border-t border-gray-300/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center space-x-4">
               <Button
                 variant="outline"
                 className="border-gray-700 text-gray-300 hover:text-white"
-                onClick={() => router.push('/upload')}
+                onClick={() => router.push("/upload")}
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Nouvelle analyse
               </Button>
-              
+
               <div className="hidden md:flex space-x-2">
                 <Button
                   variant="outline"
@@ -1077,7 +1276,7 @@ export default function ResultPage() {
                   <Download className="w-4 h-4 mr-2" />
                   Exporter JSON
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   size="sm"
@@ -1089,28 +1288,23 @@ export default function ResultPage() {
                 </Button>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-400">
-                Analyse générée le {formatDate(new Date(analysis?.createdAt || contract.createdAt))}
+                Analyse générée le{" "}
+                {formatDate(
+                  new Date(analysis?.createdAt || contract.createdAt),
+                )}
               </div>
-              
-              <Button
-                variant="primary"
-                className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
-                onClick={() => router.push('/history')}
-              >
-                Voir l'historique
-                <ExternalLink className="w-4 h-4 ml-2" />
-              </Button>
             </div>
           </div>
-          
+
           {/* Note de bas de page */}
           <div className="mt-8 text-center">
             <p className="text-xs text-gray-500">
-              ⚠️ Cette analyse a été générée par une intelligence artificielle et ne constitue pas un avis juridique professionnel.
-              Consultez un avocat pour toute décision importante.
+              ⚠️ Cette analyse a été générée par une intelligence artificielle
+              et ne constitue pas un avis juridique professionnel. Consultez un
+              avocat pour toute décision importante.
             </p>
           </div>
         </div>

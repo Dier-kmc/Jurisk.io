@@ -15,7 +15,7 @@ export function Header() {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showRegisterModal, setShowRegisterModal] = useState(false)
   
-  const { user, logout, isAuthenticated, loading } = useAuth()
+  const { user, logout, isAuthenticated, isLoading } = useAuth()
 
   const navLinks = [
     { href: '/', label: 'Accueil' },
@@ -68,7 +68,7 @@ export function Header() {
 
             {/* Actions Desktop */}
             <div className="hidden md:flex items-center space-x-4">
-              {loading ? (
+              {isLoading ? (
                 <div className="w-8 h-8 rounded-full bg-gray-800 animate-pulse" />
               ) : isAuthenticated ? (
                 <div className="flex items-center space-x-4">

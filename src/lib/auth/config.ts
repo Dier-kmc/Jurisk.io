@@ -7,7 +7,7 @@ import GitHubProvider from "next-auth/providers/github";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any, // Cast pour éviter l'erreur TypeScript
+  adapter: PrismaAdapter(prisma) as any,
   
   providers: [
     CredentialsProvider({
@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error("Email et mot de passe requis");
         }
 
         const user = await prisma.user.findUnique({
@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.password) {
-          return null;
+          throw new Error("Utilisateur non trouvé");
         }
 
         const isValid = await bcrypt.compare(
@@ -35,15 +35,15 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isValid) {
-          return null;
+          throw new Error("Mot de passe incorrect");
         }
 
         return {
           id: user.id,
           email: user.email,
           name: user.name,
-          plan: user.plan,
-          credits: user.credits
+          plan: user.plan || "FREE",
+          credits: user.credits || 10
         };
       }
     }),
@@ -60,40 +60,69 @@ export const authOptions: NextAuthOptions = {
   ],
   
   callbacks: {
-    async jwt({ token, user, account }) {
-      // Persist user data to token
+    async jwt({ token, user }) {
+      // Premier appel JWT - user est disponible
       if (user) {
         token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.image = user.image;
         token.plan = (user as any).plan || "FREE";
-        token.credits = (user as any).credits || 0;
+        token.credits = (user as any).credits || 10;
       }
+      
+      // Appels suivants - token existe déjà
       return token;
     },
     
     async session({ session, token }) {
-      // Send properties to the client
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.image as string;
         session.user.plan = token.plan as string;
         session.user.credits = token.credits as number;
       }
       return session;
-    },
-    
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
     }
   },
   
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60, // 30 jours
+  },
+  
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 jours
   },
   
   secret: process.env.NEXTAUTH_SECRET,
+  
+  // Important pour le debug
   debug: process.env.NODE_ENV === "development",
+  
+  // Cookies configuration
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token' 
+        : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    }
+  }
+};
+
+// Configuration pour le middleware et autres utilitaires
+export const authConfig = {
+  secret: process.env.NEXTAUTH_SECRET!,
+  cookieName: process.env.NODE_ENV === 'production' 
+    ? '__Secure-next-auth.session-token' 
+    : 'next-auth.session-token',
+  baseUrl: process.env.NEXTAUTH_URL || 'http://localhost:3000'
 };
