@@ -4,9 +4,9 @@ import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@/lib/db/client'
-import { AuthService } from '@/lib/auth/auth'
 import { DocumentExtractor } from '@/lib/pdf/extractText'
 import { analyzeContract } from '@/lib/services/analysisService'
+import { AuthService } from '@/lib/auth/auth-service'
 
 export async function POST(request: NextRequest) {
   try {
