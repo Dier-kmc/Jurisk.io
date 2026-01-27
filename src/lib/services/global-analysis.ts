@@ -1,4 +1,4 @@
-import { ContractAnalysis } from '@/types/contract'
+import { AnalysisStats, ContractAnalysis } from '@/types/contract'
 
 export interface AnalysisFilters {
   limit?: number
@@ -17,12 +17,7 @@ export interface AnalysisResponse {
       limit: number
       totalPages: number
     }
-    stats: {
-      total: number
-      completed: number
-      processing: number
-      failed: number
-    }
+    stats: AnalysisStats
   }
   error?: string
 }

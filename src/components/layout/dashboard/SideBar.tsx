@@ -175,7 +175,7 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
 
         <Link 
           href="/upload" 
-          className="w-full bg-yellow-600 hover:bg-yellow-700 hover:cursor-pointer text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm mb-3"
+          className="w-full bg-yellow-600/30 border border-yellow-600/60 hover:bg-yellow-600/60 hover:cursor-pointer text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm mb-3"
         >
           <Plus className="h-4 w-4" />
           Nouvelle analyse
@@ -276,9 +276,9 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
                 }`}
               >
                 <div className="flex items-start gap-2">
-                  <div className="flex-shrink-0 mt-0.5">
+                  {/* <div className="flex-shrink-0 mt-0.5">
                     {getStatusIcon(analysis.status)}
-                  </div>
+                  </div> */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <h4 className="text-xs font-medium text-white truncate group-hover:text-yellow-600 transition-colors">

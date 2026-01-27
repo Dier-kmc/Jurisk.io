@@ -1,9 +1,10 @@
 // src/lib/services/analysisService.ts - Version OpenRouter Llama 3.3 70B avec chunking
 import { prisma } from '@/lib/db/client'
 import { DocumentExtractor } from '@/lib/pdf/extractText'
-import { ContractAnalysis, PromptBuilder } from '@/lib/llm/promptBuilder'
 import { ResponseParser } from '@/lib/llm/responseParser'
 import fetch from 'node-fetch'
+import { ContractAnalysis, Summary, Risk, PartyAnalysis } from '@/types/contract'
+import { PromptBuilder } from '../llm/promptBuilder'
 
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY
 const MODEL = process.env.OLLAMA_MODEL || 'meta-llama/llama-3.3-70b-instruct:free'
@@ -56,7 +57,6 @@ async function callOpenRouter(prompt: string, maxTokens = MAX_TOKENS): Promise<s
   }
 }
 
-// Parser JSON défensif
 // Parser JSON défensif amélioré
 function safeParseJSON(raw: string): ContractAnalysis | null {
   try {
@@ -99,41 +99,114 @@ function chunkText(text: string, size = CHUNK_SIZE): string[] {
   return chunks
 }
 
-// Merge des résultats partiels
+// Merge des résultats partiels - CORRIGÉ pour utiliser les noms anglais
 function mergeAnalyses(partials: (ContractAnalysis | null)[]): ContractAnalysis {
   const merged: ContractAnalysis = {
-    risques: [],
+    id: '',
+    contractId: '',
+    userId: '',
+    createdAt: new Date().toISOString(),
+    modelUsed: MODEL,
+    processingTime: 0,
+    tokenCount: 0,
+    risks: [],
     obligations: [],
-    pouvoirs: [],
+    powers: [],
+    critical_clauses: [],
+    probable_scenarios: [],
     summary: {
-      score_risque: 0,
-      score_clarte: 0,
-      points_cles: [],
-      conseils: [],
-      duree_contrat: '',
-      renouvellement: ''
+      global_risk_score: 0,
+      balance_score: 0,
+      clarity_score: 0,
+      key_points: [],
+      strategic_advice: [],
+      risk_timeline: {
+        immediate: [],
+        short_term: [],
+        long_term: []
+      }
+    },
+    identified_parties: {
+      party_a: { name: 'Party A', role: '', legal_status: '' },
+      party_b: { name: 'Party B', role: '', legal_status: '' }
+    },
+    party_analysis: {
+      party_a: {
+        party_name: 'Party A',
+        risk_score: 0,
+        opportunity_score: 0,
+        negotiation_power: 'medium',
+        major_risks: [],
+        advantages: [],
+        specific_recommendations: []
+      },
+      party_b: {
+        party_name: 'Party B',
+        risk_score: 0,
+        opportunity_score: 0,
+        negotiation_power: 'medium',
+        major_risks: [],
+        advantages: [],
+        specific_recommendations: []
+      }
     }
   }
 
-  for (const p of partials) {
-    if (!p) continue
-    merged.risques.push(...(p.risques || []))
-    merged.obligations.push(...(p.obligations || []))
-    merged.pouvoirs.push(...(p.pouvoirs || []))
-    merged.summary.points_cles.push(...(p.summary?.points_cles || []))
-    merged.summary.conseils.push(...(p.summary?.conseils || []))
-    if (!merged.summary.duree_contrat) merged.summary.duree_contrat = p.summary?.duree_contrat || ''
-    if (!merged.summary.renouvellement) merged.summary.renouvellement = p.summary?.renouvellement || ''
+  for (const partial of partials) {
+    if (!partial) continue
+    
+    // Fusionner les arrays
+    if (partial.risks) merged.risks.push(...partial.risks)
+    if (partial.obligations) merged.obligations.push(...partial.obligations)
+    if (partial.powers) merged.powers.push(...partial.powers)
+    if (partial.critical_clauses) merged.critical_clauses.push(...partial.critical_clauses)
+    if (partial.probable_scenarios) merged.probable_scenarios.push(...partial.probable_scenarios)
+    
+    // Fusionner le summary
+    if (partial.summary) {
+      if (partial.summary.key_points) merged.summary.key_points.push(...partial.summary.key_points)
+      if (partial.summary.strategic_advice) merged.summary.strategic_advice.push(...partial.summary.strategic_advice)
+      if (partial.summary.global_risk_score > 0) merged.summary.global_risk_score = partial.summary.global_risk_score
+    }
+    
+    // Fusionner les parties identifiées (garder la dernière non-vide)
+    if (partial.identified_parties) {
+      if (partial.identified_parties.party_a?.name && partial.identified_parties.party_a.name !== 'Party A') {
+        merged.identified_parties.party_a = partial.identified_parties.party_a
+      }
+      if (partial.identified_parties.party_b?.name && partial.identified_parties.party_b.name !== 'Party B') {
+        merged.identified_parties.party_b = partial.identified_parties.party_b
+      }
+    }
+    
+    // Fusionner l'analyse par partie
+    if (partial.party_analysis) {
+      if (partial.party_analysis.party_a) {
+        if (partial.party_analysis.party_a.party_name !== 'Party A') {
+          merged.party_analysis.party_a = partial.party_analysis.party_a
+        }
+      }
+      if (partial.party_analysis.party_b) {
+        if (partial.party_analysis.party_b.party_name !== 'Party B') {
+          merged.party_analysis.party_b = partial.party_analysis.party_b
+        }
+      }
+    }
   }
 
   // Limiter max 15 éléments par catégorie
-  merged.risques = merged.risques.slice(0, 15)
+  merged.risks = merged.risks.slice(0, 15)
   merged.obligations = merged.obligations.slice(0, 15)
-  merged.pouvoirs = merged.pouvoirs.slice(0, 15)
+  merged.powers = merged.powers.slice(0, 15)
+  merged.critical_clauses = merged.critical_clauses.slice(0, 15)
+  merged.probable_scenarios = merged.probable_scenarios.slice(0, 10)
+
+  // Limiter les listes du summary
+  merged.summary.key_points = merged.summary.key_points.slice(0, 10)
+  merged.summary.strategic_advice = merged.summary.strategic_advice.slice(0, 10)
 
   return merged
 }
-
 
 export async function analyzeContract(contractId: string, fileBuffer: Buffer, mimeType: string) {
   const startTime = Date.now()
@@ -163,17 +236,53 @@ export async function analyzeContract(contractId: string, fileBuffer: Buffer, mi
 
     // Merge partiels
     const analysisData = mergeAnalyses(partials)
-    analysisData.summary.score_risque = ResponseParser.calculateOverallRiskScore(analysisData)
+    
+    // Calculer le score de risque global si ResponseParser existe
+    try {
+      if (ResponseParser && typeof ResponseParser.calculateOverallRiskScore === 'function') {
+        analysisData.summary.global_risk_score = ResponseParser.calculateOverallRiskScore(analysisData)
+      } else {
+        // Fallback: calculer un score basique
+        const highRisks = analysisData.risks.filter(r => r.severity === 'high').length
+        const mediumRisks = analysisData.risks.filter(r => r.severity === 'medium').length
+        const totalRisks = analysisData.risks.length
+        
+        if (totalRisks > 0) {
+          // Pondération: high=80, medium=50, low=20
+          const lowRisks = analysisData.risks.filter(r => r.severity === 'low').length
+          const weightedScore = (highRisks * 80 + mediumRisks * 50 + lowRisks * 20) / totalRisks
+          analysisData.summary.global_risk_score = Math.round(weightedScore)
+        } else {
+          analysisData.summary.global_risk_score = 50 // Valeur par défaut
+        }
+      }
+    } catch (error) {
+      console.error('Erreur calcul score risque:', error)
+      analysisData.summary.global_risk_score = 50
+    }
 
     const processingTime = Math.round((Date.now() - startTime) / 1000)
 
-    // Stringify pour la DB
-    const risksString = JSON.stringify(analysisData.risques)
+    // Stringify pour la DB - utiliser les noms ANGLAIS pour correspondre au schéma
+    const risksString = JSON.stringify(analysisData.risks)
     const obligationsString = JSON.stringify(analysisData.obligations)
-    const powersString = JSON.stringify(analysisData.pouvoirs)
-    const summaryString = JSON.stringify(analysisData.summary)
+    const powersString = JSON.stringify(analysisData.powers)
+    const summaryString = JSON.stringify({
+      global_risk_score: analysisData.summary.global_risk_score,
+      balance_score: 0, // À calculer si nécessaire
+      clarity_score: 0, // À calculer si nécessaire
+      key_points: analysisData.summary.key_points,
+      strategic_advice: analysisData.summary.strategic_advice,
+      risk_timeline: analysisData.summary.risk_timeline
+    })
+    
+    // Ajouter les champs manquants pour la compatibilité
+    const identifiedPartiesString = JSON.stringify(analysisData.identified_parties)
+    const criticalClausesString = JSON.stringify(analysisData.critical_clauses)
+    const partyAnalysisString = JSON.stringify(analysisData.party_analysis)
+    const probableScenariosString = JSON.stringify(analysisData.probable_scenarios)
 
-    // Sauvegarder
+    // Sauvegarder avec TOUS les champs
     const analysis = await prisma.analysis.create({
       data: {
         contractId,
@@ -182,6 +291,10 @@ export async function analyzeContract(contractId: string, fileBuffer: Buffer, mi
         obligations: obligationsString,
         powers: powersString,
         summary: summaryString,
+        identified_parties: identifiedPartiesString,
+        critical_clauses: criticalClausesString,
+        party_analysis: partyAnalysisString,
+        probable_scenarios: probableScenariosString,
         modelUsed: MODEL,
         processingTime,
         tokenCount: DocumentExtractor.estimateTokenCount(text),
@@ -202,7 +315,10 @@ export async function analyzeContract(contractId: string, fileBuffer: Buffer, mi
     try {
       await prisma.contract.update({
         where: { id: contractId },
-        data: { status: 'FAILED' }
+        data: { 
+          status: 'FAILED',
+          errorMessage: error instanceof Error ? error.message : 'Erreur inconnue'
+        }
       })
     } catch (dbError) {
       console.error('Erreur mise à jour statut:', dbError)
@@ -210,5 +326,3 @@ export async function analyzeContract(contractId: string, fileBuffer: Buffer, mi
     return null
   }
 }
-
-
