@@ -66,7 +66,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       
       if (response.success) {
         setAnalyses(response.data.contracts);
-        setStats(response.data.stats);
+        const responseStats = response.data.stats;
+        const completeStats: AnalysisStats = {
+          total: responseStats.total || 0,
+          completed: responseStats.completed || 0,
+          processing: responseStats.processing || 0,
+          failed: responseStats.failed || 0,
+          pending: responseStats.pending || 0 // Ajouter une valeur par défaut
+        };
+        setStats(completeStats);
+
       }
     } catch (error) {
       console.error('Failed to fetch analyses:', error);
@@ -96,7 +105,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const handleOpenDeleteModal = useCallback((analysis: ContractAnalysis) => {
     setAnalysisToDelete({ 
       id: analysis.id, 
-      name: analysis.fileName 
+      name: analysis.fileName || analysis.contract?.fileName || 'Sans nom' // Fournir une valeur par défaut
     });
     setDeleteModalOpen(true);
   }, []);

@@ -89,16 +89,21 @@ model Analysis {
   userId         String
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  risks          String   // JSON stringifié
-  obligations    String   // JSON stringifié
-  powers         String   // JSON stringifié
-  summary        String   // JSON stringifié
+  // Tous les champs avec noms anglais (supprimez les anciens)
+  summary              String @default("{}")
+  identified_parties   String @default("{}")
+  risks                String @default("[]")
+  obligations          String @default("[]")
+  powers               String @default("[]")
+  critical_clauses     String @default("[]")
+  party_analysis       String @default("{}")
+  probable_scenarios   String @default("[]")
   
   modelUsed      String
   processingTime Int
   tokenCount     Int
   cost           Float?
-  errorMessage   String?  // <-- Optionnel pour Analysis aussi
+  errorMessage   String?
 
   createdAt      DateTime @default(now())
 }
