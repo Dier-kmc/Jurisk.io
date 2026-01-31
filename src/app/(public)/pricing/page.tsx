@@ -13,265 +13,167 @@ import {
 } from "lucide-react";
 import PricingCard from "@/components/pricing/PricingCard";
 import FeatureList from "@/components/pricing/FeatureList";
-import Button, { CustomButton } from "@/components/ui/custom/CustomButton";
+import { CustomButton } from "@/components/ui/custom/CustomButton";
 import { PLANS } from "@/lib/constants/plans";
-import Link from "next/dist/client/link";
+import Link from "next/link";
+import { useReveal } from "@/lib/hooks/useReveal";
 
 export default function PricingPage() {
-  const [selectedPlan, setSelectedPlan] = useState<string>("premium");
+  useReveal();
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
-    "monthly"
+    "monthly",
   );
 
-  const features = [
-    {
-      icon: <Zap className="w-5 h-5" />,
-      title: "Analyses ultra-rapides",
-      description: "Traitement en moins de 30 secondes",
-    },
-    {
-      icon: <Shield className="w-5 h-5" />,
-      title: "Confidentialité totale",
-      description: "Chiffrement de bout en bout",
-    },
-    {
-      icon: <Users className="w-5 h-5" />,
-      title: "Support prioritaire",
-      description: "Réponse en moins de 2 heures",
-    },
-    {
-      icon: <Globe className="w-5 h-5" />,
-      title: "Disponibilité mondiale",
-      description: "Service 24h/24, 7j/7",
-    },
-  ];
-
-  const faqs = [
-    {
-      question: "Puis-je changer de plan à tout moment ?",
-      answer:
-        "Oui, vous pouvez passer du plan Free à Premium à tout moment. La migration est instantanée.",
-    },
-    {
-      question: "Y a-t-il des frais cachés ?",
-      answer:
-        "Non, tous nos tarifs sont transparents. Seul le prix affiché vous sera facturé.",
-    },
-    {
-      question: "Que se passe-t-il à la fin de ma période d'essai gratuit ?",
-      answer:
-        "Votre compte repasse automatiquement sur le plan Free avec ses limitations.",
-    },
-    {
-      question: "Puis-je annuler mon abonnement ?",
-      answer:
-        "Oui, vous pouvez annuler à tout moment. L'annulation prend effet à la fin de la période de facturation.",
-    },
-    {
-      question: "Mes données sont-elles conservées après annulation ?",
-      answer:
-        "Oui, vos analyses restent accessibles pendant 30 jours après annulation.",
-    },
-    {
-      question: "Quels modes de paiement acceptez-vous ?",
-      answer: "Carte bancaire (Visa, Mastercard, American Express) et PayPal.",
-    },
-  ];
-
   return (
-    <div className="section-padding bg-black/90">
-      <div className="container max-w-6xl">
-        {/* En-tête */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-yellow-600/20 border border-yellow-500/30 mb-6">
-            <Star className="w-4 h-4 text-yellow-600 mr-2" />
-            <span className="text-yellow-600 text-sm font-medium">
-              La solution la plus avancée du marché
-            </span>
-          </div>
+    <div className="bg-[#050505] min-h-screen pt-32 pb-24 overflow-hidden relative">
+      {/* Background Depth */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.03)_0%,transparent_50%)] pointer-events-none" />
 
-          <h1 className="text-5xl font-bold mb-6">
-            Choisissez votre <span className="text-yellow-600 italic font-normal">plan</span>
+      <div className="container max-w-7xl relative z-10 px-6">
+        {/* Editorial Header */}
+        <div className="max-w-4xl mb-32 animate-slide-up">
+          <span className="text-yellow-500/80 text-xs font-black tracking-[0.3em] uppercase mb-6 block">
+            Tarification
+          </span>
+          <h1 className="text-[clamp(2.5rem,8vw,6rem)] font-bold tracking-tighter leading-[0.9] text-white mb-12">
+            L&apos;expertise <br />
+            <span className="serif-display text-white/30">
+              sans la latence.
+            </span>
           </h1>
 
-          <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-            Analysez vos contrats en toute confiance. Passez à Premium pour des
-            analyses illimitées et des fonctionnalités avancées.
-          </p>
-
-          {/* Période de facturation */}
-          <div className="inline-flex bg-gray-900/20 border border-gray-300/20 rounded-lg p-1 mb-12">
-            <button
-              className={`px-6 py-3 rounded-md transition-colors ${
-                billingPeriod === "monthly"
-                  ? "bg-yellow-600 text-gray-900 font-medium"
-                  : "text-gray-400 hover:text-white hover:cursor-pointer"
-              }`}
-              onClick={() => setBillingPeriod("monthly")}
-            >
-              Facturation mensuelle
-            </button>
-            <button
-              className={`px-6 py-3 rounded-md transition-colors ${
-                billingPeriod === "yearly"
-                  ? "bg-yellow-600 text-gray-900 font-medium"
-                  : "text-gray-400 hover:text-white hover:cursor-pointer"
-              }`}
-              onClick={() => setBillingPeriod("yearly")}
-            >
-              <span className="flex items-center">
-                Facturation annuelle
-                <span className="ml-2 px-2 py-1 bg-yellow-800/20 text-yellow-600 text-xs rounded-full">
-                  -20%
-                </span>
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* Plans */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto mb-20">
-          {PLANS.map((plan) => (
-            <PricingCard
-              key={plan.id}
-              plan={plan}
-              selected={selectedPlan === plan.id}
-              onSelect={() => setSelectedPlan(plan.id)}
-            />
-          ))}
-        </div>
-
-        {/* Comparaison complète */}
-        <div className="mb-20">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Comparaison complète</h2>
-            <p className="text-gray-400">
-              Tout ce que vous obtenez avec chaque plan
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-12">
+            <p className="max-w-md text-xl text-white/30 leading-relaxed">
+              Choisissez le calibre d&apos;analyse qui correspond à votre
+              ambition. Des outils conçus pour les cabinets exigeants.
             </p>
-          </div>
 
-          <FeatureList showComparison={true} />
-        </div>
-
-        {/* Fonctionnalités Premium */}
-        <div className="bg-gray-700/10 border border-gray-300/30 rounded-3xl p-12 mb-20">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
-              Pourquoi choisir <span className="text-yellow-600 italic font-normal">Premium </span>?
-            </h2>
-            <p className="text-gray-400">
-              Des avantages exclusifs pour les professionnels exigeants
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {features.map((feature, index) => (
-              <div key={index} className="text-center p-6">
-                <div className="w-16 h-16 bg-yellow-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <div className="text-yellow-600">{feature.icon}</div>
-                </div>
-                <h4 className="font-semibold text-lg mb-2">{feature.title}</h4>
-                <p className="text-gray-400">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <CustomButton
-              size="lg"
-              variant="outline"
-              className="group border-yellow-600/60"
-              onClick={() => setSelectedPlan("premium")}
-            >
-              <span className="flex items-center">
-                S'abonner à Premium
-                <span className="ml-2 bg-white/20 px-3 py-1 rounded-full text-sm">
-                  {billingPeriod === "yearly" ? "4,99€/mois*" : "4,99€/mois"}
-                </span>
-              </span>
-            </CustomButton>
-            {billingPeriod === "yearly" && (
-              <p className="text-gray-400 text-sm mt-4">
-                *Facturé 59,88€/an, soit 4,99€ par mois
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* FAQ */}
-        <div className="mb-20">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Questions fréquentes</h2>
-            <p className="text-gray-400">
-              Tout ce que vous devez savoir avant de vous abonner
-            </p>
-          </div>
-
-          <div className="max-w-3xl mx-auto">
-            <div className="space-y-6">
-              {faqs.map((faq, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-800/20 rounded-xl p-6 hover:bg-gray-800/50 transition-colors"
-                >
-                  <h4 className="font-semibold text-lg mb-3 flex items-center">
-                    <HelpCircle className="w-5 h-5 text-yellow-600 mr-3" />
-                    {faq.question}
-                  </h4>
-                  <p className="text-gray-400 pl-8">{faq.answer}</p>
-                </div>
-              ))}
+            {/* Interactive Switcher - Styled as high-end toggle */}
+            <div className="flex items-center gap-4 bg-white/[0.02] border border-white/10 p-2 rounded-full backdrop-blur-xl">
+              <button
+                onClick={() => setBillingPeriod("monthly")}
+                className={`px-6 py-2 rounded-full text-xs font-black tracking-widest uppercase transition-all ${billingPeriod === "monthly" ? "bg-white text-black" : "text-white/40 hover:text-white"}`}
+              >
+                Mensuel
+              </button>
+              <button
+                onClick={() => setBillingPeriod("yearly")}
+                className={`px-6 py-2 rounded-full text-xs font-black tracking-widest uppercase transition-all relative ${billingPeriod === "yearly" ? "bg-white text-black" : "text-white/40 hover:text-white"}`}
+              >
+                Annuel
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+              </button>
             </div>
           </div>
         </div>
 
-        {/* CTA Final */}
-        <div className="text-center">
-          <div className="max-w-3xl mx-auto">
-            <h3 className="text-3xl font-bold mb-6">
-              Commencez à analyser vos contrats dès aujourd'hui
+        {/* Imbalanced Plans Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start reveal">
+          {/* Plan: Free - Ghostly/Minimalist */}
+          <div className="lg:col-span-2 p-12 glass-card rounded-[3rem] border-white/5 opacity-60 hover:opacity-100 transition-opacity duration-700">
+            <span className="text-[10px] font-black tracking-widest uppercase text-white/40 mb-12 block">
+              Le Départ
+            </span>
+            <h3 className="text-3xl font-bold text-white mb-4 italic">
+              Essentiel
             </h3>
+            <div className="text-5xl font-black mb-12">
+              0€{" "}
+              <span className="text-sm font-medium text-white/20">/mois</span>
+            </div>
 
-            <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-              Rejoignez des milliers de professionnels qui font confiance à
-              ContractScope pour leurs analyses contractuelles.
-            </p>
+            <ul className="space-y-6 mb-20 text-sm text-white/40 font-medium">
+              <li className="flex items-center gap-4">
+                <div className="w-1 h-3 bg-white/10" /> 3 analyses par mois
+              </li>
+              <li className="flex items-center gap-4">
+                <div className="w-1 h-3 bg-white/10" /> Rapports PDF simples
+              </li>
+              <li className="flex items-center gap-4">
+                <div className="w-1 h-3 bg-white/10" /> Support standard
+              </li>
+            </ul>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <CustomButton
-                size="lg"
-                variant="outline"
-                onClick={() => setSelectedPlan("premium")}
-                className="group"
-              >
-                <span className="flex items-center">
-                  Essayer Premium gratuitement
-                </span>
-              </CustomButton>
+            <Link href="/upload" className="block">
+              <button className="w-full py-5 rounded-full border border-white/10 text-white font-bold hover:bg-white/5 transition-all">
+                Commencer
+              </button>
+            </Link>
+          </div>
 
-              <Link
-                href="/upload"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-yellow-500 text-yellow-600 hover:bg-yellow-600 hover:text-gray-900 transition"
-              >
-                Tester la version gratuite
+          {/* Plan: Premium - The "Vignette" of Power */}
+          <div className="lg:col-span-3 p-16 glass-card rounded-[4rem] border-yellow-500/20 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-12 opacity-5">
+              <Zap className="w-64 h-64 -rotate-12 group-hover:text-yellow-500 transition-colors duration-[2s]" />
+            </div>
+
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-16">
+                <div>
+                  <span className="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-4 block">
+                    Le Standard Senior
+                  </span>
+                  <h3 className="text-5xl font-bold text-white mb-2">
+                    Premium
+                  </h3>
+                </div>
+                <div className="text-6xl font-black text-white">
+                  {billingPeriod === "yearly" ? "3.99" : "4.99"}€
+                </div>
+              </div>
+
+              <p className="text-xl text-white/40 mb-16 leading-relaxed max-w-sm">
+                L&apos;arsenal complet pour transformer votre gestion
+                contractuelle en avantage compétitif.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-24">
+                {[
+                  "Analyses illimitées 24/7",
+                  "Scrutin des risques critiques",
+                  "Support prioritaire (1h)",
+                  "Export Word éditable",
+                  "Historique illimité",
+                  "Intégration API",
+                ].map((f, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <Check className="w-4 h-4 text-yellow-500" />
+                    <span className="text-sm font-semibold text-white/70">
+                      {f}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <Link href="/upload" className="block">
+                <CustomButton
+                  size="lg"
+                  className="w-full h-20 rounded-full bg-yellow-600 hover:bg-yellow-500 text-gray-950 font-black text-xl shadow-[0_20px_40px_-10px_rgba(202,138,4,0.3)] hover:scale-[1.02] transition-transform"
+                >
+                  Acquérir la Puissance
+                </CustomButton>
               </Link>
             </div>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-gray-400">
-              <div className="flex items-center">
-                <Check className="w-4 h-4 text-green-500 mr-2" />
-                <span>Pas de carte bancaire requise</span>
-              </div>
-              <div className="flex items-center">
-                <Clock className="w-4 h-4 text-yellow-600 mr-2" />
-                <span>Annulation à tout moment</span>
-              </div>
-              <div className="flex items-center">
-                <Shield className="w-4 h-4 text-blue-500 mr-2" />
-                <span>Garantie satisfait ou remboursé 30 jours</span>
-              </div>
-            </div>
           </div>
+        </div>
+
+        {/* Technical Mastery Footer - Micro-stats */}
+        <div className="mt-40 pt-16 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-12 reveal">
+          {[
+            { label: "Modèle", val: "Legal-Instruct-v4" },
+            { label: "GDPR", val: "Strict Compliant" },
+            { label: "Uptime", val: "99.99%" },
+            { label: "Certif", val: "ISO 27001 Ready" },
+          ].map((stat, i) => (
+            <div key={i} className="flex flex-col items-center md:items-start">
+              <span className="text-[10px] font-black tracking-widest uppercase text-white/10 mb-2">
+                {stat.label}
+              </span>
+              <span className="text-sm font-bold text-white/40">
+                {stat.val}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

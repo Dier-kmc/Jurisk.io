@@ -99,6 +99,8 @@ model Analysis {
   party_analysis       String @default("{}")
   probable_scenarios   String @default("[]")
   
+  detectedLanguage String? @default("en") // Langue détectée du contrat (ISO 639-1)
+  
   modelUsed      String
   processingTime Int
   tokenCount     Int

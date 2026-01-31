@@ -21,10 +21,12 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { AnalysisStats, ContractAnalysis } from "@/types/contract";
-import { AnalysisApiService, AnalysisFilters } from "@/lib/services/global-analysis";
+import {
+  AnalysisApiService,
+  AnalysisFilters,
+} from "@/lib/services/global-analysis";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
-
 
 interface SidebarProps {
   analyses: ContractAnalysis[];
@@ -78,86 +80,116 @@ export default function Sidebar({
   const pathname = usePathname();
   const menuRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  const handleSearch = useCallback((term: string) => {
-    onSetSearchQuery(term);
-    onHandleFilterChange({ search: term });
-  }, [onSetSearchQuery, onHandleFilterChange]);
+  const handleSearch = useCallback(
+    (term: string) => {
+      onSetSearchQuery(term);
+      onHandleFilterChange({ search: term });
+    },
+    [onSetSearchQuery, onHandleFilterChange],
+  );
 
-  const handleStatusFilter = useCallback((status: string) => {
-    onSetSelectedStatus(status);
-    onHandleFilterChange({ 
-      status: status === 'ALL' ? undefined : status,
-      page: 1 
-    });
-    onSetFilterMenuOpen(false);
-  }, [onSetSelectedStatus, onHandleFilterChange, onSetFilterMenuOpen]);
+  const handleStatusFilter = useCallback(
+    (status: string) => {
+      onSetSelectedStatus(status);
+      onHandleFilterChange({
+        status: status === "ALL" ? undefined : status,
+        page: 1,
+      });
+      onSetFilterMenuOpen(false);
+    },
+    [onSetSelectedStatus, onHandleFilterChange, onSetFilterMenuOpen],
+  );
 
-  const handleAnalysisClick = useCallback((analysis: ContractAnalysis) => {
-    onSetSelectedChat(analysis.id);
-    router.push(`/result/${analysis.id}`);
-  }, [onSetSelectedChat, router]);
+  const handleAnalysisClick = useCallback(
+    (analysis: ContractAnalysis) => {
+      onSetSelectedChat(analysis.id);
+      router.push(`/result/${analysis.id}`);
+    },
+    [onSetSelectedChat, router],
+  );
 
-const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: React.MouseEvent) => {
-  event.stopPropagation(); // Empêche le clic sur l'item
-  
-  onSetOpenMenuId(null);
-  
-  // Si la prop onOpenDeleteModal est fournie, l'utiliser
-  if (onOpenDeleteModal) {
-    onOpenDeleteModal(analysis);
-  } else {
-    // Fallback à l'ancienne méthode si la prop n'est pas fournie
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette analyse ? Cette action est irréversible.")) {
-      return;
-    }
-    
-    // Appeler l'ancienne logique de suppression
-    const deleteOldMethod = async () => {
-      try {
-        const response = await fetch(`/api/analysis/${analysis.id}`, {
-          method: 'DELETE',
-        });
+  const handleDeleteAnalysis = useCallback(
+    (analysis: ContractAnalysis, event: React.MouseEvent) => {
+      event.stopPropagation(); // Empêche le clic sur l'item
 
-        if (response.ok) {
-          toast.success("Analyse supprimée avec succès");
-          onFetchAnalyses();
-          
-          // Si on supprime l'analyse actuellement sélectionnée, rediriger
-          if (selectedChat === analysis.id || pathname.includes(analysis.id)) {
-            router.push('/upload');
-            onSetSelectedChat(null);
-          }
-        } else {
-          const error = await response.json();
-          toast.error(error.error || "Erreur lors de la suppression");
+      onSetOpenMenuId(null);
+
+      // Si la prop onOpenDeleteModal est fournie, l'utiliser
+      if (onOpenDeleteModal) {
+        onOpenDeleteModal(analysis);
+      } else {
+        // Fallback à l'ancienne méthode si la prop n'est pas fournie
+        if (
+          !confirm(
+            "Êtes-vous sûr de vouloir supprimer cette analyse ? Cette action est irréversible.",
+          )
+        ) {
+          return;
         }
-      } catch (error) {
-        console.error('Delete error:', error);
-        toast.error("Erreur lors de la suppression");
-      }
-    };
-    
-    deleteOldMethod();
-  }
-}, [onOpenDeleteModal, onSetOpenMenuId, selectedChat, pathname, router, onFetchAnalyses, onSetSelectedChat]);
 
-  const handleCopyLink = useCallback((analysisId: string, event: React.MouseEvent) => {
-    event.stopPropagation();
-    const link = `${window.location.origin}/result/${analysisId}`;
-    navigator.clipboard.writeText(link);
-    toast.success("Lien copié dans le presse-papier");
-    onSetOpenMenuId(null);
-  }, [onSetOpenMenuId]);
+        // Appeler l'ancienne logique de suppression
+        const deleteOldMethod = async () => {
+          try {
+            const response = await fetch(`/api/analysis/${analysis.id}`, {
+              method: "DELETE",
+            });
+
+            if (response.ok) {
+              toast.success("Analyse supprimée avec succès");
+              onFetchAnalyses();
+
+              // Si on supprime l'analyse actuellement sélectionnée, rediriger
+              if (
+                selectedChat === analysis.id ||
+                pathname.includes(analysis.id)
+              ) {
+                router.push("/upload");
+                onSetSelectedChat(null);
+              }
+            } else {
+              const error = await response.json();
+              toast.error(error.error || "Erreur lors de la suppression");
+            }
+          } catch (error) {
+            console.error("Delete error:", error);
+            toast.error("Erreur lors de la suppression");
+          }
+        };
+
+        deleteOldMethod();
+      }
+    },
+    [
+      onOpenDeleteModal,
+      onSetOpenMenuId,
+      selectedChat,
+      pathname,
+      router,
+      onFetchAnalyses,
+      onSetSelectedChat,
+    ],
+  );
+
+  const handleCopyLink = useCallback(
+    (analysisId: string, event: React.MouseEvent) => {
+      event.stopPropagation();
+      const link = `${window.location.origin}/result/${analysisId}`;
+      navigator.clipboard.writeText(link);
+      toast.success("Lien copié dans le presse-papier");
+      onSetOpenMenuId(null);
+    },
+    [onSetOpenMenuId],
+  );
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'COMPLETED':
+      case "COMPLETED":
         return <CheckCircle className="h-3 w-3 text-green-500" />;
-      case 'PROCESSING':
+      case "PROCESSING":
         return <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />;
-      case 'FAILED':
+      case "FAILED":
         return <XCircle className="h-3 w-3 text-red-500" />;
-      case 'PENDING':
+      case "PENDING":
         return <Clock className="h-3 w-3 text-gray-500" />;
       default:
         return <AlertCircle className="h-3 w-3 text-gray-500" />;
@@ -165,17 +197,21 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
   };
 
   return (
-    <div className="fixed w-64 h-screen border-r border-gray-300/20 flex flex-col bg-black z-20">
+    <div className="fixed w-64 h-screen border-r border-white/5 flex flex-col bg-black/40 backdrop-blur-2xl z-20">
       {/* Header */}
-      <div className="p-3 mt-3 pb-6 border-b border-gray-300/20">
-        <div className="flex items-center gap-2 mb-3 px-2">
-          <FileText className="h-5 w-5 text-yellow-600" />
-          <span className="font-semibold text-sm">ContractScope</span>
+      <div className="p-6 border-b border-white/5">
+        <div className="flex items-center gap-3 mb-8 px-2 group">
+          <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+            <span className="font-bold text-gray-900 text-sm">J</span>
+          </div>
+          <span className="font-bold text-sm tracking-tight text-white/90">
+            Jurisk.io
+          </span>
         </div>
 
-        <Link 
-          href="/upload" 
-          className="w-full bg-yellow-600/30 border border-yellow-600/60 hover:bg-yellow-600/60 hover:cursor-pointer text-white font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm mb-3"
+        <Link
+          href="/upload"
+          className="w-full bg-yellow-600 hover:bg-yellow-500 text-gray-950 font-black py-3 px-4 rounded-full transition-all flex items-center justify-center gap-2 text-xs mb-8 shadow-[0_10px_20px_-5px_rgba(202,138,4,0.2)] hover:scale-[1.02]"
         >
           <Plus className="h-4 w-4" />
           Nouvelle analyse
@@ -189,16 +225,16 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
               placeholder="Rechercher..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full bg-gray-300/10 border border-gray-300/20 text-white text-sm rounded-lg pl-9 pr-3 py-1.5 focus:outline-none focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600"
+              className="w-full bg-white/5 border border-white/10 text-white text-xs rounded-xl pl-9 pr-3 py-2 focus:outline-none focus:border-yellow-600/50 transition-colors"
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-white/20" />
           </div>
           <button
             onClick={() => onSetFilterMenuOpen(!filterMenuOpen)}
-            className={`px-2.5 py-1.5 rounded-lg border transition-colors ${
-              filterMenuOpen || selectedStatus !== 'ALL'
-                ? 'bg-yellow-600 border-yellow-600 text-white'
-                : 'bg-gray-300/10 border-gray-300/20 text-gray-400 hover:bg-gray-300/15'
+            className={`px-3 py-2 rounded-xl border transition-all ${
+              filterMenuOpen || selectedStatus !== "ALL"
+                ? "bg-yellow-600 border-yellow-600 text-white shadow-lg"
+                : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
             }`}
           >
             <Filter className="h-3.5 w-3.5" />
@@ -208,16 +244,20 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
         {/* Status Filter Menu */}
         {filterMenuOpen && (
           <div className="absolute left-3 right-3 mt-2 bg-gray-300/10 border border-gray-300/20 rounded-lg shadow-xl z-30 backdrop-blur-sm">
-            {['ALL', 'PROCESSING', 'COMPLETED', 'FAILED'].map((status) => (
+            {["ALL", "PROCESSING", "COMPLETED", "FAILED"].map((status) => (
               <button
                 key={status}
                 onClick={() => handleStatusFilter(status)}
                 className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-300/15 transition-colors ${
-                  selectedStatus === status ? 'bg-yellow-600/20 text-yellow-600' : 'text-gray-300'
+                  selectedStatus === status
+                    ? "bg-yellow-600/20 text-yellow-600"
+                    : "text-gray-300"
                 }`}
               >
                 {getStatusIcon(status)}
-                {status === 'ALL' ? 'Tous' : status.charAt(0) + status.slice(1).toLowerCase()}
+                {status === "ALL"
+                  ? "Tous"
+                  : status.charAt(0) + status.slice(1).toLowerCase()}
               </button>
             ))}
           </div>
@@ -226,15 +266,15 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
 
       {/* Stats Overview */}
       {stats && (
-        <div className="px-3 py-2 border-b border-gray-300/20">
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="text-center p-2 rounded bg-gray-300/5">
-              <div className="font-semibold text-white">{stats.total}</div>
-              <div className="text-gray-400">Total</div>
+        <div className="px-6 py-4 border-b border-white/5">
+          <div className="grid grid-cols-2 gap-4 text-[10px] font-black tracking-widest uppercase">
+            <div className="flex flex-col">
+              <span className="text-white/20 mb-1">Total</span>
+              <span className="text-white">{stats.total}</span>
             </div>
-            <div className="text-center p-2 rounded bg-gray-300/5">
-              <div className="font-semibold text-green-500">{stats.completed}</div>
-              <div className="text-gray-400">Terminés</div>
+            <div className="flex flex-col">
+              <span className="text-white/20 mb-1">Terminés</span>
+              <span className="text-green-500/80">{stats.completed}</span>
             </div>
           </div>
         </div>
@@ -250,16 +290,16 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
           <div className="text-center py-8 px-4">
             <FileText className="h-8 w-8 text-gray-500 mx-auto mb-2" />
             <p className="text-gray-400 text-sm">
-              {searchQuery || selectedStatus !== 'ALL' 
-                ? 'Aucune analyse trouvée' 
-                : 'Commencez par analyser un document'}
+              {searchQuery || selectedStatus !== "ALL"
+                ? "Aucune analyse trouvée"
+                : "Commencez par analyser un document"}
             </p>
           </div>
         ) : (
           analyses.map((analysis) => (
             <div
               key={analysis.id}
-              className="relative group"
+              className="relative group px-2"
               onMouseEnter={() => onSetHoveredItem(analysis.id)}
               onMouseLeave={() => {
                 if (openMenuId !== analysis.id) {
@@ -269,23 +309,25 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
             >
               <button
                 onClick={() => handleAnalysisClick(analysis)}
-                className={`w-full text-left px-3 py-2 rounded-lg mb-2 transition-all border ${
+                className={`w-full text-left px-4 py-3 rounded-xl mb-1 transition-all border ${
                   selectedChat === analysis.id || pathname.includes(analysis.id)
-                    ? "bg-yellow-600/10 border-gray-600/30"
-                    : "border-transparent hover:border-gray-300/20 hover:bg-gray-300/10 hover:cursor-pointer"
+                    ? "bg-white/5 border-white/10"
+                    : "border-transparent hover:bg-white/[0.02]"
                 }`}
               >
-                <div className="flex items-start gap-2">
-                  {/* <div className="flex-shrink-0 mt-0.5">
-                    {getStatusIcon(analysis.status)}
-                  </div> */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="text-xs font-medium text-white truncate group-hover:text-yellow-600 transition-colors">
-                        {analysis.fileName}
-                      </h4>
-                    </div>
-                  </div>
+                <div className="flex items-center gap-3">
+                  <div className={`w-1.5 h-1.5 rounded-full transition-all ${
+                    selectedChat === analysis.id || pathname.includes(analysis.id)
+                      ? "bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]"
+                      : "bg-white/10"
+                  }`} />
+                  <span className={`text-[11px] font-bold truncate transition-colors ${
+                    selectedChat === analysis.id || pathname.includes(analysis.id)
+                      ? "text-white"
+                      : "text-white/40 group-hover:text-white/60"
+                  }`}>
+                    {analysis.fileName}
+                  </span>
                 </div>
               </button>
 
@@ -295,7 +337,9 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onSetOpenMenuId(openMenuId === analysis.id ? null : analysis.id);
+                      onSetOpenMenuId(
+                        openMenuId === analysis.id ? null : analysis.id,
+                      );
                     }}
                     className="p-1.5 rounded hover:bg-gray-700/50 transition-colors"
                   >
@@ -324,9 +368,9 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
                       <Copy className="h-3.5 w-3.5 mr-2" />
                       Copier le lien
                     </button>
-                    
+
                     <div className="border-t border-gray-800 my-1"></div>
-                    
+
                     <button
                       onClick={(e) => handleDeleteAnalysis(analysis, e)}
                       className="flex items-center w-full px-3 py-2 text-sm text-red-400 hover:bg-red-400/20 hover:text-red rounded-md transition-colors cursor-pointer"
@@ -343,25 +387,25 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
       </div>
 
       {/* Footer - User Menu */}
-      <div className="p-3 border-t border-gray-300/20 relative">
+      <div className="p-4 border-t border-white/5 relative">
         <button
           onClick={() => onSetUserMenuOpen(!userMenuOpen)}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-300/15 hover:cursor-pointer transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-white/5 transition-all group"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center font-semibold text-black text-sm flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-black text-white text-[10px] flex-shrink-0 border border-white/10 group-hover:border-yellow-500/30 transition-colors">
             {user?.name ? user.name.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || "U"}
           </div>
           <div className="flex-1 text-left overflow-hidden">
-            <div className="text-sm font-medium text-white truncate">
+            <div className="text-[11px] font-bold text-white/80 truncate group-hover:text-white transition-colors">
               {user?.name || user?.email || "Utilisateur"}
             </div>
-            <div className="text-xs text-gray-500 truncate">
-              {user?.credits || 0} crédits restants
+            <div className="text-[9px] font-black tracking-widest uppercase text-white/20 mt-0.5">
+              {user?.credits || 0} CRÉDITS
             </div>
           </div>
           <MoreHorizontal
-            className={`h-4 w-4 text-gray-400 transition-transform ${
-              userMenuOpen ? "rotate-180" : ""
+            className={`h-4 w-4 text-white/20 transition-all ${
+              userMenuOpen ? "rotate-90 text-white" : "group-hover:text-white/40"
             }`}
           />
         </button>
@@ -378,7 +422,7 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
               </div>
             </div>
 
-            <Link 
+            <Link
               href="/upgrade"
               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-800 hover:cursor-pointer transition-colors text-left border-b border-gray-300/15"
             >
@@ -395,7 +439,7 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
               </div>
             </Link>
 
-            <Link 
+            <Link
               href="/account"
               className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-800 hover:cursor-pointer transition-colors text-left"
             >
@@ -403,7 +447,7 @@ const handleDeleteAnalysis = useCallback((analysis: ContractAnalysis, event: Rea
               <span className="text-sm text-gray-300">Mon compte</span>
             </Link>
 
-            <Link 
+            <Link
               href="/settings"
               className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-800 hover:cursor-pointer border-t border-gray-300/15 transition-colors text-left"
             >

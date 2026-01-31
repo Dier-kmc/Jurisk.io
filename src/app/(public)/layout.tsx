@@ -7,17 +7,17 @@ import Footer from '@/components/layout/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'ContractScope - Analyse IA de contrats',
+  title: 'Jurisk.io - Analyse IA de contrats',
   description: 'Analysez vos contrats avec l\'IA. Identifiez risques, obligations et pouvoirs cachés.',
   keywords: ['contrat', 'analyse', 'IA', 'juridique', 'risques', 'obligations'],
-  authors: [{ name: 'ContractScope' }],
+  authors: [{ name: 'Jurisk.io' }],
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
-    url: 'https://contractscope.com',
-    title: 'ContractScope - Analyse IA de contrats',
+    url: 'https://Jurisk.io.com',
+    title: 'Jurisk.io - Analyse IA de contrats',
     description: 'Analysez vos contrats avec l\'IA. Identifiez risques, obligations et pouvoirs cachés.',
-    siteName: 'ContractScope',
+    siteName: 'Jurisk.io',
   },
 };
 

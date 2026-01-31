@@ -81,7 +81,7 @@ export default function NotFoundPage() {
           
           <p className="text-gray-500 text-sm mt-8">
             Si vous pensez qu'il s'agit d'une erreur, veuillez{' '}
-            <a href="mailto:support@contractscope.com" className="text-yellow-600 hover:underline">
+            <a href="mailto:support@Jurisk.io.com" className="text-yellow-600 hover:underline">
               contacter notre support
             </a>
           </p>

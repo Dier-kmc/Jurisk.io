@@ -14,7 +14,7 @@ export class OpenRouterService implements LLMService {
     async generate(prompt: string): Promise<string> {
         console.log('OpenRouterService generate called with this prompt:',)
         const response = await this.client.post('/chat/completions', {
-            model: process.env.OLLAMA_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
+            model: process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
             messages: [
                 { role: 'system', content: 'You are a helpful legal assistant for contract analysis.' },
                 { role: 'user', content: prompt }

@@ -91,7 +91,7 @@ export const FEATURES: Feature[] = [
   {
     id: 'feat11',
     title: 'API d\'intégration',
-    description: 'Intégrez ContractScope directement dans vos outils existants.',
+    description: 'Intégrez Jurisk.io directement dans vos outils existants.',
     icon: '🔌',
     category: 'productivity',
     plans: ['premium'],

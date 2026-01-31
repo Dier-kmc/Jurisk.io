@@ -41,7 +41,7 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
               </div>
               <div>
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                  Rejoignez ContractScope
+                  Rejoignez Jurisk.io
                 </h2>
                 <p className="text-gray-400 text-sm mt-1">
                   Analysez vos contrats avec l'IA en quelques secondes

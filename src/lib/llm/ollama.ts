@@ -100,7 +100,7 @@ export class OllamaService {
   ): Promise<OllamaResponse> {
     try {
       const response = await this.client.post<OllamaResponse>('/api/chat', {
-        model: options.model || process.env.OLLAMA_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
+        model: options.model || process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
         messages,
         stream: true,
         options: {
