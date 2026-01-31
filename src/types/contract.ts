@@ -11,6 +11,9 @@ export interface Risk {
   impact_magnitude?: number;
   priority?: "low" | "medium" | "high";
   deadline?: string;
+  calculatedScore?: number; // Score calculé par la formule RiskCalculator
+  financialImpactEstimate?: string; // Estimation de l'impact financier
+  legalJustification?: string; // Justification légale détaillée
 }
 
 export interface Clause {
@@ -60,6 +63,8 @@ export interface Summary {
     short_term: string[];
     long_term: string[];
   };
+  riskCalculationMethod?: string; // Méthode de calcul utilisée
+  confidenceScore?: number; // Score de confiance de l'analyse (0-100)
 }
 
 export interface Scenario {
@@ -89,13 +94,13 @@ export interface Power {
 
 export interface Obligation {
   id?: string;
-    type?: string;
-    description: string;
-    party: "provider" | "client" | "both";
-    deadline: string;
-    penalties: string;
-    costs: string;
-    associated_clause?: string;
+  type?: string;
+  description: string;
+  party: "provider" | "client" | "both";
+  deadline: string;
+  penalties: string;
+  costs: string;
+  associated_clause?: string;
 }
 
 export interface ContractAnalysis {
@@ -135,6 +140,9 @@ export interface ContractAnalysis {
   party_analysis: PartyAnalysis;
 
   probable_scenarios: Array<Scenario>;
+
+  // Langue détectée du contrat
+  detectedLanguage?: string; // Code ISO 639-1 (fr, en, es, etc.)
 
   // Métadonnées techniques
   modelUsed: string;

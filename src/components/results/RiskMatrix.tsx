@@ -47,7 +47,7 @@ export default function RiskMatrix({ risks, detailed = true }: RiskMatrixProps) 
   return (
     <div className="space-y-6">
       {/* En-tête avec statistiques */}
-      <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+      <Card className="bg-gradient-to-br from-white/10 to-black/20 border-white/15">
         <CardHeader>
           <CardTitle className="flex items-center text-white">
             <Activity className="w-5 h-5 mr-2 text-red-500" />
@@ -57,19 +57,19 @@ export default function RiskMatrix({ risks, detailed = true }: RiskMatrixProps) 
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="text-center p-4 bg-gray-900/50 rounded-lg">
+            <div className="text-center p-4 bg-white/5 rounded-lg">
               <div className="text-3xl font-bold text-white">{totalRisks}</div>
               <div className="text-sm text-gray-400">Risques totaux</div>
             </div>
-            <div className="text-center p-4 bg-gray-900/50 rounded-lg">
+            <div className="text-center p-4 bg-white/5 rounded-lg">
               <div className="text-3xl font-bold text-red-500">{highRisks.length}</div>
               <div className="text-sm text-gray-400">Risques élevés</div>
             </div>
-            <div className="text-center p-4 bg-gray-900/50 rounded-lg">
+            <div className="text-center p-4 bg-white/5 rounded-lg">
               <div className="text-3xl font-bold text-white">{Math.round(avgProbability)}%</div>
               <div className="text-sm text-gray-400">Probabilité moyenne</div>
             </div>
-            <div className="text-center p-4 bg-gray-900/50 rounded-lg">
+            <div className="text-center p-4 bg-white/5 rounded-lg">
               <div className="text-3xl font-bold text-white">{highPriorityCount}</div>
               <div className="text-sm text-gray-400">Priorité haute</div>
             </div>

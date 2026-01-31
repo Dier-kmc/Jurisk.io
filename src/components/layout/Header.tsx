@@ -1,64 +1,67 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Menu, X, User, LogOut } from 'lucide-react'
-import { CustomButton } from '@/components/ui/custom/CustomButton'
-import { LoginModal } from '@/components/auth/LoginModal'
-import { RegisterModal } from '@/components/auth/RegisterModal'
-import { useAuth } from '@/lib/hooks/useAuth'
-import { usePathname } from 'next/navigation'
+import { useState } from "react";
+import Link from "next/link";
+import { Menu, X, User, LogOut } from "lucide-react";
+import { CustomButton } from "@/components/ui/custom/CustomButton";
+import { LoginModal } from "@/components/auth/LoginModal";
+import { RegisterModal } from "@/components/auth/RegisterModal";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { usePathname } from "next/navigation";
 
 export function Header() {
   const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [showRegisterModal, setShowRegisterModal] = useState(false)
-  
-  const { user, logout, isAuthenticated, isLoading } = useAuth()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+  const { user, logout, isAuthenticated, isLoading } = useAuth();
 
   const navLinks = [
-    { href: '/', label: 'Accueil' },
-    { href: '/pricing', label: 'Tarifs' },
+    { href: "/", label: "Accueil" },
+    { href: "/pricing", label: "Tarifs" },
   ];
 
   const handleLoginClick = () => {
-    setShowLoginModal(true)
-    setShowRegisterModal(false)
-  }
+    setShowLoginModal(true);
+    setShowRegisterModal(false);
+  };
 
   const handleRegisterClick = () => {
-    setShowRegisterModal(true)
-    setShowLoginModal(false)
-  }
+    setShowRegisterModal(true);
+    setShowLoginModal(false);
+  };
 
   const handleLogout = async () => {
-    await logout()
-  }
+    await logout();
+  };
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-gray-800">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 pointer-events-none animate-slide-up">
+        <div className="container max-w-7xl pointer-events-auto">
+          <div className="mx-4 glass-card px-6 py-4 rounded-2xl flex items-center justify-between border-white/10 shadow-2xl">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
-                <span className="font-bold text-gray-900">CS</span>
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <span className="font-bold text-gray-900 text-lg">J</span>
               </div>
-              <span className="text-white font-bold text-xl">ContractScope</span>
+              <span className="text-white font-bold text-xl tracking-tight hidden sm:block">
+                Jurisk
+                <span className="gradient-text italic font-serif">.io</span>
+              </span>
             </Link>
 
             {/* Navigation Desktop */}
-            <nav className="hidden md:flex ml-10 space-x-6">
+            <nav className="hidden md:flex items-center bg-white/[0.03] border border-white/5 rounded-full px-6 py-2 ml-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`transition-colors ${
+                  className={`px-4 text-sm font-medium transition-all duration-300 ${
                     pathname === link.href
-                      ? 'text-yellow-600 font-medium'
-                      : 'text-gray-300 hover:text-yellow-600'
+                      ? "text-yellow-500"
+                      : "text-gray-400 hover:text-white"
                   }`}
                 >
                   {link.label}
@@ -67,23 +70,27 @@ export function Header() {
             </nav>
 
             {/* Actions Desktop */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-3">
               {isLoading ? (
                 <div className="w-8 h-8 rounded-full bg-gray-800 animate-pulse" />
               ) : isAuthenticated ? (
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4" />
+                  <div className="flex items-center space-x-2 bg-white/[0.03] border border-white/5 pr-4 pl-2 py-1 rounded-full">
+                    <div className="w-8 h-8 bg-gradient-to-br from-yellow-500/20 to-amber-500/10 rounded-full flex items-center justify-center border border-yellow-500/20">
+                      <User className="w-4 h-4 text-yellow-500" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{user?.name || user?.email}</p>
-                      <p className="text-xs text-gray-400">{user?.credits} crédits</p>
+                      <p className="text-xs font-semibold text-white/90 leading-tight">
+                        {user?.name || user?.email?.split("@")[0]}
+                      </p>
+                      <p className="text-[10px] text-yellow-500/80 font-bold uppercase tracking-wider">
+                        {user?.credits} crédits
+                      </p>
                     </div>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:cursor-pointer hover:bg-gray-300/15 hover:rounded-md transition-colors"
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
                     title="Déconnexion"
                   >
                     <LogOut className="w-5 h-5" />
@@ -91,19 +98,18 @@ export function Header() {
                 </div>
               ) : (
                 <>
-                  <CustomButton
-                    variant="outline"
-                    size="sm"
+                  <button
                     onClick={handleLoginClick}
-                    className='border-gray-300/30 px-4'
+                    className="px-5 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
                   >
                     Connexion
-                  </CustomButton>
+                  </button>
                   <CustomButton
                     size="sm"
                     onClick={handleRegisterClick}
+                    className="rounded-xl px-6 h-10 bg-yellow-600 hover:bg-yellow-500 text-gray-950 font-bold shadow-[0_0_15px_rgba(202,138,4,0.3)]"
                   >
-                    S'inscrire gratuitement
+                    Démarrer l'essai
                   </CustomButton>
                 </>
               )}
@@ -111,7 +117,7 @@ export function Header() {
 
             {/* Menu Mobile Button */}
             <button
-              className="md:hidden p-2"
+              className="md:hidden p-2 text-gray-400 hover:text-white transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? (
@@ -122,83 +128,60 @@ export function Header() {
             </button>
           </div>
 
-          {/* Menu Mobile */}
+          {/* Menu Mobile Expansion */}
           {isMenuOpen && (
-            <div className="md:hidden mt-4 pb-4 border-t border-gray-800 pt-4">
+            <div className="md:hidden mx-4 mt-2 glass-card rounded-2xl p-6 border-white/10 animate-fade-in">
               <div className="flex flex-col space-y-4">
-                <Link
-                  href="/"
-                  className="text-gray-300 hover:text-yellow-500 transition-colors py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Accueil
-                </Link>
-                <Link
-                  href="/features"
-                  className="text-gray-300 hover:text-yellow-500 transition-colors py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Fonctionnalités
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="text-gray-300 hover:text-yellow-500 transition-colors py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Tarifs
-                </Link>
-                
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-lg font-medium text-gray-300 hover:text-yellow-500 transition-colors py-2 border-b border-white/5"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+
                 {isAuthenticated ? (
-                  <>
-                    <Link
-                      href="/dashboard"
-                      className="text-gray-300 hover:text-yellow-500 transition-colors py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Tableau de bord
-                    </Link>
-                    <Link
-                      href="/upload"
-                      className="text-gray-300 hover:text-yellow-500 transition-colors py-2"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Analyser
-                    </Link>
-                    <div className="pt-4 border-t border-gray-800">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
-                            <User className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium">{user?.name || user?.email}</p>
-                            <p className="text-xs text-gray-400">{user?.credits} crédits</p>
-                          </div>
-                        </div>
+                  <div className="pt-4 space-y-4">
+                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-xl">
+                      <div className="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-yellow-500" />
                       </div>
-                      <CustomButton
-                        variant="danger"
-                        fullWidth
-                        onClick={handleLogout}
-                      >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Déconnexion
-                      </CustomButton>
+                      <div>
+                        <p className="font-bold text-white">
+                          {user?.name || user?.email}
+                        </p>
+                        <p className="text-sm text-yellow-500">
+                          {user?.credits} crédits disponibles
+                        </p>
+                      </div>
                     </div>
-                  </>
+                    <CustomButton
+                      variant="danger"
+                      fullWidth
+                      onClick={handleLogout}
+                      className="rounded-xl"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Déconnexion
+                    </CustomButton>
+                  </div>
                 ) : (
-                  <div className="pt-4 border-t border-gray-800 space-y-3">
+                  <div className="pt-4 flex flex-col gap-3">
                     <CustomButton
                       variant="outline"
                       fullWidth
                       onClick={handleLoginClick}
-                      className='border border-gray-300/15'
+                      className="rounded-xl border-white/10"
                     >
                       Connexion
                     </CustomButton>
                     <CustomButton
                       fullWidth
                       onClick={handleRegisterClick}
+                      className="rounded-xl bg-yellow-600 text-gray-950 font-bold"
                     >
                       S'inscrire gratuitement
                     </CustomButton>
@@ -222,7 +205,7 @@ export function Header() {
         onSwitchToLogin={handleLoginClick}
       />
     </>
-  )
+  );
 }
 
 export default Header;

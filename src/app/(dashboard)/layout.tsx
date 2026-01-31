@@ -3,13 +3,20 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { AnalysisStats, ContractAnalysis } from "@/types/contract";
-import { AnalysisApiService, AnalysisFilters } from "@/lib/services/global-analysis";
+import {
+  AnalysisApiService,
+  AnalysisFilters,
+} from "@/lib/services/global-analysis";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import DeleteConfirmationModal from "@/components/layout/dashboard/DeleteConfirmation";
 import Sidebar from "@/components/layout/dashboard/SideBar";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
@@ -21,7 +28,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     name: string;
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const { user, logout, isAuthenticated, isLoading } = useAuth();
   const [analyses, setAnalyses] = useState<ContractAnalysis[]>([]);
   const [stats, setStats] = useState<AnalysisStats | null>(null);
@@ -32,7 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     limit: 10,
     page: 1,
   });
-  
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -55,15 +62,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenuId]);
 
   const fetchAnalyses = useCallback(async () => {
     try {
       setLoading(true);
       const response = await AnalysisApiService.getAnalyses(filters);
-      
+
       if (response.success) {
         setAnalyses(response.data.contracts);
         const responseStats = response.data.stats;
@@ -72,13 +79,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           completed: responseStats.completed || 0,
           processing: responseStats.processing || 0,
           failed: responseStats.failed || 0,
-          pending: responseStats.pending || 0 // Ajouter une valeur par défaut
+          pending: responseStats.pending || 0, // Ajouter une valeur par défaut
         };
         setStats(completeStats);
-
       }
     } catch (error) {
-      console.error('Failed to fetch analyses:', error);
+      console.error("Failed to fetch analyses:", error);
       toast.error("Erreur lors du chargement des analyses");
     } finally {
       setLoading(false);
@@ -93,19 +99,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const hasProcessing = analyses.some(a => a.status === "PROCESSING");
+      const hasProcessing = analyses.some((a) => a.status === "PROCESSING");
       if (hasProcessing) {
         fetchAnalyses();
       }
     }, 20000);
-    
+
     return () => clearInterval(interval);
   }, [analyses, fetchAnalyses]);
 
   const handleOpenDeleteModal = useCallback((analysis: ContractAnalysis) => {
-    setAnalysisToDelete({ 
-      id: analysis.id, 
-      name: analysis.fileName || analysis.contract?.fileName || 'Sans nom' // Fournir une valeur par défaut
+    setAnalysisToDelete({
+      id: analysis.id,
+      name: analysis.fileName || analysis.contract?.fileName || "Sans nom", // Fournir une valeur par défaut
     });
     setDeleteModalOpen(true);
   }, []);
@@ -146,16 +152,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     } finally {
       setIsDeleting(false);
     }
-  }, [analysisToDelete, selectedChat, pathname, router, fetchAnalyses, setSelectedChat]);
+  }, [
+    analysisToDelete,
+    selectedChat,
+    pathname,
+    router,
+    fetchAnalyses,
+    setSelectedChat,
+  ]);
 
-
-  const handleFilterChange = useCallback((newFilters: Partial<AnalysisFilters>) => {
-    setFilters(prev => ({ 
-      ...prev, 
-      ...newFilters,
-      page: newFilters.page || 1 
-    }));
-  }, []);
+  const handleFilterChange = useCallback(
+    (newFilters: Partial<AnalysisFilters>) => {
+      setFilters((prev) => ({
+        ...prev,
+        ...newFilters,
+        page: newFilters.page || 1,
+      }));
+    },
+    [],
+  );
 
   if (isLoading) {
     return (
@@ -166,13 +181,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   if (!isAuthenticated && !isLoading) {
-    router.push('/login');
+    router.push("/login");
     return null;
   }
 
   return (
     <>
-      <div className="flex h-screen bg-black/90 text-white">
+      <div className="flex h-screen bg-[#050505] text-white relative">
+        {/* Global Noise & Depth */}
+        <div className="noise-overlay pointer-events-none" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_0%,rgba(250,204,21,0.03)_0%,transparent_50%)] pointer-events-none" />
+
         <Sidebar
           analyses={analyses}
           stats={stats}
@@ -197,8 +216,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           onOpenDeleteModal={handleOpenDeleteModal}
         />
 
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col bg-black/95 ml-64">
+        {/* Main Content Area */}
+        <main className="flex-1 flex flex-col relative z-10 ml-64 bg-[#050505]/40 backdrop-blur-sm">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.01] to-transparent pointer-events-none" />
           {children}
         </main>
       </div>
