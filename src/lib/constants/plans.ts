@@ -1,104 +1,70 @@
-export interface PlanFeature {
-  id: string;
-  text: string;
-  included: boolean;
-  highlight?: boolean;
-}
-
-export interface PricingPlan {
+export interface CreditPack {
   id: string;
   name: string;
-  description: string;
+  credits: number; // Changed from tokens to credits for clarity
   price: number;
-  period: string;
-  currency?: string;
+  currency: string;
   popular?: boolean;
-  features: PlanFeature[];
-  ctaText: string;
-  ctaVariant: 'primary' | 'outline' | 'secondary';
+  features: string[];
+  description: string;
   badge?: string;
-  limit?: {
-    uploads: number;
-    fileSize: string;
-    history: string;
-  };
+  stripePriceId?: string; // Future use
 }
 
-export const PLANS: PricingPlan[] = [
+export const CREDIT_PACKS: CreditPack[] = [
   {
-    id: 'free',
-    name: 'Free',
-    description: 'Parfait pour découvrir l\'outil et analyser quelques contrats par mois.',
-    price: 0,
-    period: 'mois',
-    currency: 'EUR',
+    id: "pack_10",
+    name: "Pack Essentiel",
+    credits: 10,
+    price: 9.9,
+    currency: "EUR",
+    description: "Pour démarrer et analyser vos premiers contrats.",
     features: [
-      { id: 'f1', text: '3 analyses par mois', included: true },
-      { id: 'f2', text: 'Formats PDF, DOC, TXT', included: true },
-      { id: 'f3', text: 'Historique 30 jours', included: true },
-      { id: 'f4', text: 'Score de risque basique', included: true },
-      { id: 'f5', text: 'Export PDF simple', included: true },
-      { id: 'f6', text: 'Analyses illimitées', included: false },
-      { id: 'f7', text: 'Jusqu\'à 50MB par fichier', included: false },
-      { id: 'f8', text: 'Support prioritaire', included: false },
+      "10 crédits (+3 offerts/mois)",
+      "Valable à vie (sans expiration)",
+      "Analyse complète (Risques, Obligations)",
+      "Export PDF inclus",
     ],
-    ctaText: 'Commencer gratuitement',
-    ctaVariant: 'outline',
-    limit: {
-      uploads: 3,
-      fileSize: '20MB',
-      history: '30 jours',
-    },
   },
   {
-    id: 'premium',
-    name: 'Premium',
-    description: 'Pour les professionnels qui analysent régulièrement des contrats.',
-    price: 4.99,
-    period: 'mois',
-    currency: 'EUR',
+    id: "pack_25",
+    name: "Pack Pro",
+    credits: 25,
+    price: 19.9,
+    currency: "EUR",
     popular: true,
-    badge: 'Populaire',
+    badge: "Populaire",
+    description: "Le choix idéal pour les entrepreneurs réguliers.",
     features: [
-      { id: 'p1', text: 'Analyses illimitées', included: true, highlight: true },
-      { id: 'p2', text: 'Jusqu\'à 50MB par fichier', included: true, highlight: true },
-      { id: 'p3', text: 'Historique illimité', included: true, highlight: true },
-      { id: 'p4', text: 'Analyses prioritaires', included: true },
-      { id: 'p5', text: 'Export Word/Excel avancé', included: true },
-      { id: 'p6', text: 'Support prioritaire', included: true },
-      { id: 'p7', text: 'Recommandations détaillées', included: true },
-      { id: 'p8', text: 'API d\'intégration', included: true },
+      "25 crédits (+3 offerts/mois)",
+      "Valable à vie (sans expiration)",
+      "Support prioritaire",
+      "Analyse comparative (bientôt)",
     ],
-    ctaText: 'S\'abonner maintenant',
-    ctaVariant: 'primary',
-    limit: {
-      uploads: Infinity,
-      fileSize: '50MB',
-      history: 'Illimité',
-    },
   },
-];
-
-export const PLAN_FEATURES_ALL = [
-  { id: 'all1', text: 'Analyse par IA avancée', category: 'core' },
-  { id: 'all2', text: 'Détection des risques', category: 'core' },
-  { id: 'all3', text: 'Extraction des obligations', category: 'core' },
-  { id: 'all4', text: 'Identification des pouvoirs', category: 'core' },
-  { id: 'all5', text: 'Score de vigilance', category: 'core' },
-  { id: 'all6', text: 'Rapport structuré', category: 'core' },
-  { id: 'all7', text: 'Support multi-formats', category: 'core' },
-  { id: 'all8', text: 'Confidentialité garantie', category: 'security' },
-  { id: 'all9', text: 'Chiffrement des données', category: 'security' },
-  { id: 'all10', text: 'Suppression automatique', category: 'security' },
-];
-
-export const BILLING_PERIODS = [
-  { id: 'monthly', name: 'Mensuel', value: 'month', discount: 0 },
-  { id: 'yearly', name: 'Annuel', value: 'year', discount: 20, badge: '-20%' },
+  {
+    id: "pack_50",
+    name: "Pack Business",
+    credits: 50,
+    price: 29.9,
+    currency: "EUR",
+    description: "Pour les cabinets et les volumes importants.",
+    features: [
+      "50 crédits (+3 offerts/mois)",
+      "Valable à vie (sans expiration)",
+      "Tarif dégressif",
+      "Accès API (sur demande)",
+    ],
+  },
 ];
 
 export const CURRENCY_SYMBOLS: Record<string, string> = {
-  EUR: '€',
-  USD: '$',
-  GBP: '£',
+  EUR: "€",
+  USD: "$",
+  GBP: "£",
 };
+
+// Legacy exports to avoid breaking imports immediately, but set to empty or safe defaults
+// We will clean up usage in components next.
+export const PLANS: any[] = [];
+export const BILLING_PERIODS: any[] = [];

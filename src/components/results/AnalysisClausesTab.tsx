@@ -8,12 +8,14 @@ interface AnalysisClausesTabProps {
   criticalClauses: any[];
   showDetailedView: boolean;
   onCopy: (text: string) => void;
+  analysisId: string;
 }
 
-export default function AnalysisClausesTab({ 
-  criticalClauses, 
-  showDetailedView, 
-  onCopy 
+export default function AnalysisClausesTab({
+  criticalClauses,
+  showDetailedView,
+  onCopy,
+  analysisId,
 }: AnalysisClausesTabProps) {
   return (
     <div className="grid grid-cols-1 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
@@ -65,7 +67,7 @@ export default function AnalysisClausesTab({
             {showDetailedView && (
               <div className="lg:w-80 flex-shrink-0">
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                  <ClauseEditor clause={clause} />
+                  <ClauseEditor clause={clause} analysisId={analysisId} />
                 </div>
               </div>
             )}

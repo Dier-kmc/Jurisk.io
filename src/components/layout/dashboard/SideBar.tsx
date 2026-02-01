@@ -115,59 +115,12 @@ export default function Sidebar({
       onSetOpenMenuId(null);
 
       // Si la prop onOpenDeleteModal est fournie, l'utiliser
+      // Utiliser le modal de confirmation
       if (onOpenDeleteModal) {
         onOpenDeleteModal(analysis);
-      } else {
-        // Fallback à l'ancienne méthode si la prop n'est pas fournie
-        if (
-          !confirm(
-            "Êtes-vous sûr de vouloir supprimer cette analyse ? Cette action est irréversible.",
-          )
-        ) {
-          return;
-        }
-
-        // Appeler l'ancienne logique de suppression
-        const deleteOldMethod = async () => {
-          try {
-            const response = await fetch(`/api/analysis/${analysis.id}`, {
-              method: "DELETE",
-            });
-
-            if (response.ok) {
-              toast.success("Analyse supprimée avec succès");
-              onFetchAnalyses();
-
-              // Si on supprime l'analyse actuellement sélectionnée, rediriger
-              if (
-                selectedChat === analysis.id ||
-                pathname.includes(analysis.id)
-              ) {
-                router.push("/upload");
-                onSetSelectedChat(null);
-              }
-            } else {
-              const error = await response.json();
-              toast.error(error.error || "Erreur lors de la suppression");
-            }
-          } catch (error) {
-            console.error("Delete error:", error);
-            toast.error("Erreur lors de la suppression");
-          }
-        };
-
-        deleteOldMethod();
       }
     },
-    [
-      onOpenDeleteModal,
-      onSetOpenMenuId,
-      selectedChat,
-      pathname,
-      router,
-      onFetchAnalyses,
-      onSetSelectedChat,
-    ],
+    [onOpenDeleteModal, onSetOpenMenuId],
   );
 
   const handleCopyLink = useCallback(
@@ -316,16 +269,22 @@ export default function Sidebar({
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-1.5 h-1.5 rounded-full transition-all ${
-                    selectedChat === analysis.id || pathname.includes(analysis.id)
-                      ? "bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]"
-                      : "bg-white/10"
-                  }`} />
-                  <span className={`text-[11px] font-bold truncate transition-colors ${
-                    selectedChat === analysis.id || pathname.includes(analysis.id)
-                      ? "text-white"
-                      : "text-white/40 group-hover:text-white/60"
-                  }`}>
+                  <div
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      selectedChat === analysis.id ||
+                      pathname.includes(analysis.id)
+                        ? "bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]"
+                        : "bg-white/10"
+                    }`}
+                  />
+                  <span
+                    className={`text-[11px] font-bold truncate transition-colors ${
+                      selectedChat === analysis.id ||
+                      pathname.includes(analysis.id)
+                        ? "text-white"
+                        : "text-white/40 group-hover:text-white/60"
+                    }`}
+                  >
                     {analysis.fileName}
                   </span>
                 </div>
@@ -393,7 +352,9 @@ export default function Sidebar({
           className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-white/5 transition-all group"
         >
           <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-black text-white text-[10px] flex-shrink-0 border border-white/10 group-hover:border-yellow-500/30 transition-colors">
-            {user?.name ? user.name.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || "U"}
+            {user?.name
+              ? user.name.charAt(0).toUpperCase()
+              : user?.email?.charAt(0).toUpperCase() || "U"}
           </div>
           <div className="flex-1 text-left overflow-hidden">
             <div className="text-[11px] font-bold text-white/80 truncate group-hover:text-white transition-colors">
@@ -405,7 +366,9 @@ export default function Sidebar({
           </div>
           <MoreHorizontal
             className={`h-4 w-4 text-white/20 transition-all ${
-              userMenuOpen ? "rotate-90 text-white" : "group-hover:text-white/40"
+              userMenuOpen
+                ? "rotate-90 text-white"
+                : "group-hover:text-white/40"
             }`}
           />
         </button>
@@ -423,7 +386,7 @@ export default function Sidebar({
             </div>
 
             <Link
-              href="/upgrade"
+              href="/pricing"
               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-800 hover:cursor-pointer transition-colors text-left border-b border-gray-300/15"
             >
               <div className="w-7 h-7 rounded bg-yellow-600/10 flex items-center justify-center">
@@ -431,10 +394,10 @@ export default function Sidebar({
               </div>
               <div className="flex-1">
                 <div className="text-sm font-medium text-white">
-                  Mettre à niveau
+                  Acheter des crédits
                 </div>
                 <div className="text-xs text-gray-500">
-                  Débloquer toutes les fonctionnalités
+                  Recharger votre compte
                 </div>
               </div>
             </Link>

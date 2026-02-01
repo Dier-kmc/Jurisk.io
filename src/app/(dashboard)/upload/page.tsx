@@ -198,40 +198,23 @@ export default function UploadPage() {
                     <CreditCard className="w-4 h-4 text-yellow-500" />
                   </div>
                   <h3 className="serif-display text-2xl text-white">
-                    État des Disponibilités
+                    Solde de Crédits
                   </h3>
                 </div>
 
                 <div className="space-y-6">
                   <div className="flex justify-between items-end mb-2">
                     <span className="text-[10px] font-black tracking-widest text-white/20 uppercase">
-                      Capacité Actuelle
+                      Disponible
                     </span>
-                    <span className="text-xl font-bold text-yellow-500 tracking-tighter">
-                      {loadingCredits ? "..." : userCredits?.credits || 0} /{" "}
-                      {userCredits?.plan === "PREMIUM" ? "100" : "10"}
+                    <span className="text-4xl font-bold text-yellow-500 tracking-tighter">
+                      {loadingCredits ? "..." : userCredits?.credits || 0}
                     </span>
-                  </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-yellow-600 to-amber-500 transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(202,138,4,0.3)]"
-                      style={{ width: calculateProgress() }}
-                    />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Badge
-                      variant="outline"
-                      className="rounded-full border-white/5 bg-white/5 text-[9px] font-black uppercase tracking-widest text-white/40 px-3 py-1"
-                    >
-                      Plan{" "}
-                      {userCredits?.plan === "PREMIUM"
-                        ? "Souverain"
-                        : "Exploration"}
-                    </Badge>
                     <span className="text-[10px] text-white/20 font-medium">
-                      {userCredits?.plan === "PREMIUM"
-                        ? "Renouvellement automatique actif"
-                        : "Recharge ponctuelle disponible"}
+                      Utilisez vos crédits pour lancer des analyses
+                      approfondies. 1 analyse = 1 crédit.
                     </span>
                   </div>
                 </div>
@@ -240,9 +223,7 @@ export default function UploadPage() {
               <div className="flex-shrink-0">
                 <Link href="/pricing" className="block">
                   <button className="h-14 px-8 rounded-full border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white hover:bg-white/10 transition-all hover:scale-[1.02]">
-                    {userCredits?.plan === "PREMIUM"
-                      ? "Gestion Souveraine"
-                      : "Acquérir des Crédits"}
+                    Acheter des crédits
                   </button>
                 </Link>
               </div>
@@ -255,7 +236,7 @@ export default function UploadPage() {
           <FileUpload
             onUploadComplete={handleUploadComplete}
             maxFiles={1}
-            maxSizeMB={10}
+            maxSizeMB={50} // Increased limit for everyone since no premium
             allowedTypes={[
               "application/pdf",
               "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -290,7 +271,7 @@ export default function UploadPage() {
                   <Zap
                     className={`w-4 h-4 ${files.length > 0 ? "text-black" : "text-white/10"}`}
                   />
-                  Engager l'Analyse
+                  Engager l'Analyse (-1 Crédit)
                 </>
               )}
             </button>
@@ -298,13 +279,13 @@ export default function UploadPage() {
             {userCredits && userCredits.credits <= 0 && (
               <div className="mt-2 text-center">
                 <p className="text-red-500/60 text-[10px] font-black tracking-widest uppercase mb-2">
-                  Capacité épuisée
+                  Solde insuffisant
                 </p>
                 <Link
                   href="/pricing"
                   className="text-yellow-500 hover:text-yellow-400 text-[10px] font-black tracking-widest uppercase underline underline-offset-4"
                 >
-                  Recharger le Protocole →
+                  Recharger mon compte →
                 </Link>
               </div>
             )}
@@ -364,21 +345,24 @@ export default function UploadPage() {
           ))}
         </div>
 
-        {/* Limites */}
+        {/* Limites d'Exploration (Simplifiées) */}
         <div className="p-12 rounded-[3.5rem] bg-white/[0.02] border border-white/5 relative overflow-hidden text-center">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-yellow-500/5 blur-[100px] -z-10" />
 
           <span className="text-[10px] font-black tracking-[0.4em] uppercase text-white/10 block mb-6">
-            Paramètres de l'Instance
+            Paramètres Unifiés
           </span>
           <h3 className="serif-display text-4xl text-white mb-16">
-            {userCredits?.plan === "PREMIUM"
-              ? "Privilèges Souverains"
-              : "Limites d'Exploration"}
+            Puissance Maximale Débloquée
           </h3>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16 px-6">
-            {limits.map((limit, index) => (
+            {[
+              { label: "Analyse", value: "IA Gen 4" },
+              { label: "Taille max", value: "50 MB" },
+              { label: "Formats", value: "PDF, Office" },
+              { label: "Vitesse", value: "~15s/page" },
+            ].map((limit, index) => (
               <div key={index} className="flex flex-col gap-4">
                 <span className="text-[10px] font-black tracking-widest text-white/20 uppercase">
                   {limit.label}
@@ -392,15 +376,12 @@ export default function UploadPage() {
 
           <div className="pt-12 border-t border-white/5">
             <p className="text-white/30 text-sm mb-10 max-w-sm mx-auto italic">
-              {userCredits?.plan === "PREMIUM"
-                ? "Accès illimité à la forge analytique déverrouillé."
-                : "Poussez les frontières de l'analyse contractuelle en libérant la puissance totale."}
+              Vous bénéficiez de toutes les fonctionnalités avancées, sans
+              restriction de niveau.
             </p>
             <Link href="/pricing" className="block">
               <button className="h-14 px-10 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/90 transition-all hover:scale-[1.02]">
-                {userCredits?.plan === "PREMIUM"
-                  ? "Optimiser mes Accès"
-                  : "S'élever vers Premium"}
+                Ajouter des Crédits
               </button>
             </Link>
           </div>
