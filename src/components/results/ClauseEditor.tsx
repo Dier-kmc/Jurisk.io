@@ -1,60 +1,91 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CustomButton } from '@/components/ui/custom/CustomButton';
-import { Textarea } from '@/components/ui/textarea';
-import { 
-  Edit2, 
-  Save, 
-  Copy, 
-  RotateCcw, 
-  CheckCircle, 
-  AlertCircle, 
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CustomButton } from "@/components/ui/custom/CustomButton";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Edit2,
+  Save,
+  Copy,
+  RotateCcw,
+  CheckCircle,
+  AlertCircle,
   FileText,
   Sparkles,
-  Zap
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { Clause } from '@/types/contract';
+  Zap,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Clause } from "@/types/contract";
+
+import { updateAnalysisClause } from "@/app/actions/analysis";
 
 interface ClauseEditorProps {
   clause: Clause;
+  analysisId: string;
 }
 
-export default function ClauseEditor({ clause }: ClauseEditorProps) {
+export default function ClauseEditor({
+  clause,
+  analysisId,
+}: ClauseEditorProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedText, setEditedText] = useState(clause.proposed_solution );
+  const [editedText, setEditedText] = useState(clause.proposed_solution);
+  const [isSaving, setIsSaving] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([
     "Rédiger une clause plus équilibrée",
     "Ajouter des conditions suspensives",
     "Prévoir des mécanismes de révision",
-    "Inclure des pénalités proportionnées"
+    "Inclure des pénalités proportionnées",
   ]);
-  const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(
+    null,
+  );
 
-  const handleSave = () => {
-    // Ici, vous pourriez envoyer la modification à votre API
-    toast.success('Modification sauvegardée');
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      const result = await updateAnalysisClause(
+        analysisId,
+        clause.clause_number,
+        editedText,
+      );
+
+      if (result.success) {
+        toast.success("Modification sauvegardée");
+        setIsEditing(false);
+      } else {
+        toast.error("Erreur lors de la sauvegarde");
+      }
+    } catch (error) {
+      toast.error("Erreur inattendue");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReset = () => {
     setEditedText(clause.proposed_solution);
     setSelectedSuggestion(null);
-    toast.info('Modifications annulées');
+    toast.info("Modifications annulées");
   };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(editedText);
-    toast.success('Texte copié dans le presse-papier');
+    toast.success("Texte copié dans le presse-papier");
   };
 
   const handleApplySuggestion = (suggestion: string) => {
     setSelectedSuggestion(suggestion);
-    setEditedText(prev => prev + '\n\n' + suggestion);
-    toast.success('Suggestion appliquée');
+    setEditedText((prev) => prev + "\n\n" + suggestion);
+    toast.success("Suggestion appliquée");
   };
 
   const generateAlternative = () => {
@@ -62,12 +93,13 @@ export default function ClauseEditor({ clause }: ClauseEditorProps) {
     const alternatives = [
       `Pour la clause ${clause.clause_number}, envisagez: "Les parties conviennent de... avec un préavis de 30 jours."`,
       `Alternative: "${clause.title} sera révisée annuellement par les parties."`,
-      `Proposition: "En cas de litige, les parties s'engagent à privilégier la médiation avant toute action judiciaire."`
+      `Proposition: "En cas de litige, les parties s'engagent à privilégier la médiation avant toute action judiciaire."`,
     ];
-    
-    const randomAlternative = alternatives[Math.floor(Math.random() * alternatives.length)];
+
+    const randomAlternative =
+      alternatives[Math.floor(Math.random() * alternatives.length)];
     setEditedText(randomAlternative);
-    toast.success('Alternative générée');
+    toast.success("Alternative générée");
   };
 
   return (
@@ -78,17 +110,19 @@ export default function ClauseEditor({ clause }: ClauseEditorProps) {
             <Edit2 className="w-4 h-4 mr-2 text-blue-500" />
             Éditeur de clause
           </div>
-          <Badge className={
-            clause.priority === 'high' ? 'bg-red-500' :
-            clause.priority === 'medium' ? 'bg-yellow-500' :
-            'bg-green-500'
-          }>
+          <Badge
+            className={
+              clause.priority === "high"
+                ? "bg-red-500"
+                : clause.priority === "medium"
+                  ? "bg-yellow-500"
+                  : "bg-green-500"
+            }
+          >
             {clause.priority}
           </Badge>
         </CardTitle>
-        <CardDescription>
-          Modifiez la clause selon vos besoins
-        </CardDescription>
+        <CardDescription>Modifiez la clause selon vos besoins</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -96,25 +130,30 @@ export default function ClauseEditor({ clause }: ClauseEditorProps) {
           <div className="p-3 bg-gray-900/50 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <FileText className="w-4 h-4 text-gray-400" />
-              <span className="text-sm font-medium text-white">{clause.clause_number}</span>
+              <span className="text-sm font-medium text-white">
+                {clause.clause_number}
+              </span>
             </div>
             <h4 className="font-semibold text-white mb-1">{clause.title}</h4>
-            <p className="text-xs text-gray-400">{clause.problem.substring(0, 80)}...</p>
+            <p className="text-xs text-gray-400">
+              {clause.problem.substring(0, 80)}...
+            </p>
           </div>
 
           {/* Éditeur de texte */}
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
               <label className="text-sm font-medium text-gray-300">
                 Solution proposée
               </label>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {isEditing ? (
                   <>
                     <CustomButton
                       variant="ghost"
                       size="sm"
                       onClick={handleReset}
+                      disabled={isSaving}
                       className="h-7 text-xs text-gray-400 hover:text-white"
                     >
                       <RotateCcw className="w-3 h-3 mr-1" />
@@ -124,9 +163,14 @@ export default function ClauseEditor({ clause }: ClauseEditorProps) {
                       variant="ghost"
                       size="sm"
                       onClick={handleSave}
+                      disabled={isSaving}
                       className="h-7 text-xs text-green-400 hover:text-green-300"
                     >
-                      <Save className="w-3 h-3 mr-1" />
+                      {isSaving ? (
+                        <div className="w-3 h-3 mr-1 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : (
+                        <Save className="w-3 h-3 mr-1" />
+                      )}
                       Sauvegarder
                     </CustomButton>
                   </>
@@ -148,7 +192,7 @@ export default function ClauseEditor({ clause }: ClauseEditorProps) {
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
               className={`min-h-[150px] bg-gray-900/50 border-gray-700 text-gray-300 ${
-                isEditing ? 'border-blue-500/50' : ''
+                isEditing ? "border-blue-500/50" : ""
               }`}
               readOnly={!isEditing}
               placeholder="Modifiez la solution proposée..."
@@ -164,7 +208,7 @@ export default function ClauseEditor({ clause }: ClauseEditorProps) {
                 <Copy className="w-3 h-3 mr-1" />
                 Copier
               </CustomButton>
-              
+
               {!isEditing && (
                 <CustomButton
                   variant="ghost"
@@ -181,16 +225,18 @@ export default function ClauseEditor({ clause }: ClauseEditorProps) {
 
           {/* Suggestions IA */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-purple-500" />
-                <span className="text-sm font-medium text-white">Suggestions IA</span>
+                <span className="text-sm font-medium text-white">
+                  Suggestions IA
+                </span>
               </div>
               <CustomButton
                 variant="ghost"
                 size="sm"
                 onClick={generateAlternative}
-                className="h-7 text-xs text-yellow-400 hover:text-yellow-300"
+                className="h-7 text-xs text-yellow-400 hover:text-yellow-300 w-full sm:w-auto justify-center"
               >
                 <Zap className="w-3 h-3 mr-1" />
                 Générer une alternative
@@ -204,20 +250,24 @@ export default function ClauseEditor({ clause }: ClauseEditorProps) {
                   onClick={() => handleApplySuggestion(suggestion)}
                   className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
                     selectedSuggestion === suggestion
-                      ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30'
-                      : 'bg-gray-900/50 hover:bg-gray-800/50'
+                      ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30"
+                      : "bg-gray-900/50 hover:bg-gray-800/50"
                   }`}
                 >
                   <div className="flex items-start gap-2">
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
-                      selectedSuggestion === suggestion
-                        ? 'bg-gradient-to-r from-purple-500 to-pink-500'
-                        : 'bg-gray-800'
-                    }`}>
+                    <div
+                      className={`w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
+                        selectedSuggestion === suggestion
+                          ? "bg-gradient-to-r from-purple-500 to-pink-500"
+                          : "bg-gray-800"
+                      }`}
+                    >
                       {selectedSuggestion === suggestion ? (
                         <CheckCircle className="w-3 h-3 text-white" />
                       ) : (
-                        <span className="text-xs text-gray-400">{index + 1}</span>
+                        <span className="text-xs text-gray-400">
+                          {index + 1}
+                        </span>
                       )}
                     </div>
                     <span className="text-sm text-gray-300">{suggestion}</span>
@@ -231,16 +281,21 @@ export default function ClauseEditor({ clause }: ClauseEditorProps) {
           <div className="p-3 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-lg border border-blue-500/20">
             <div className="flex items-center gap-2 mb-2">
               <AlertCircle className="w-4 h-4 text-blue-400" />
-              <span className="text-sm font-medium text-white">Validation recommandée</span>
+              <span className="text-sm font-medium text-white">
+                Validation recommandée
+              </span>
             </div>
             <p className="text-xs text-gray-300">
-              Toute modification de clause doit être validée par un conseil juridique avant signature.
+              Toute modification de clause doit être validée par un conseil
+              juridique avant signature.
             </p>
           </div>
 
           {/* Historique des modifications */}
           <div className="pt-4 border-t border-gray-800">
-            <h4 className="text-sm font-medium text-white mb-2">Historique des modifications</h4>
+            <h4 className="text-sm font-medium text-white mb-2">
+              Historique des modifications
+            </h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-gray-400">Version originale</span>

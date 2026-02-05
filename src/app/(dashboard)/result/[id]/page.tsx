@@ -227,6 +227,7 @@ export default function ResultPage() {
               criticalClauses={analysis.critical_clauses}
               showDetailedView={showDetailedView}
               onCopy={copyToClipboard}
+              analysisId={analysis.id}
             />
           </TabsContent>
           <TabsContent value="strategy">

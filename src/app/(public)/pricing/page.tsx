@@ -1,28 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Check,
-  HelpCircle,
-  Star,
-  Zap,
-  Shield,
-  Clock,
-  Users,
-  Globe,
-} from "lucide-react";
-import PricingCard from "@/components/pricing/PricingCard";
-import FeatureList from "@/components/pricing/FeatureList";
+import { Check, Zap, Shield, CreditCard, Gift } from "lucide-react";
 import { CustomButton } from "@/components/ui/custom/CustomButton";
-import { PLANS } from "@/lib/constants/plans";
+import { CREDIT_PACKS } from "@/lib/constants/plans";
 import Link from "next/link";
 import { useReveal } from "@/lib/hooks/useReveal";
 
 export default function PricingPage() {
   useReveal();
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
-    "monthly",
-  );
 
   return (
     <div className="bg-[#050505] min-h-screen pt-32 pb-24 overflow-hidden relative">
@@ -31,145 +16,140 @@ export default function PricingPage() {
 
       <div className="container max-w-7xl relative z-10 px-6">
         {/* Editorial Header */}
-        <div className="max-w-4xl mb-32 animate-slide-up">
+        <div className="max-w-4xl mb-24 animate-slide-up mx-auto text-center">
           <span className="text-yellow-500/80 text-xs font-black tracking-[0.3em] uppercase mb-6 block">
-            Tarification
+            Crédits à la carte
           </span>
-          <h1 className="text-[clamp(2.5rem,8vw,6rem)] font-bold tracking-tighter leading-[0.9] text-white mb-12">
-            L&apos;expertise <br />
-            <span className="serif-display text-white/30">
-              sans la latence.
+          <h1 className="text-[clamp(2.5rem,6vw,5rem)] font-bold tracking-tighter leading-[0.95] text-white mb-8">
+            Analysez{" "}
+            <span className="serif-display text-white/30 italic">
+              votre rythme.
             </span>
           </h1>
 
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-12">
-            <p className="max-w-md text-xl text-white/30 leading-relaxed">
-              Choisissez le calibre d&apos;analyse qui correspond à votre
-              ambition. Des outils conçus pour les cabinets exigeants.
-            </p>
-
-            {/* Interactive Switcher - Styled as high-end toggle */}
-            <div className="flex items-center gap-4 bg-white/[0.02] border border-white/10 p-2 rounded-full backdrop-blur-xl">
-              <button
-                onClick={() => setBillingPeriod("monthly")}
-                className={`px-6 py-2 rounded-full text-xs font-black tracking-widest uppercase transition-all ${billingPeriod === "monthly" ? "bg-white text-black" : "text-white/40 hover:text-white"}`}
-              >
-                Mensuel
-              </button>
-              <button
-                onClick={() => setBillingPeriod("yearly")}
-                className={`px-6 py-2 rounded-full text-xs font-black tracking-widest uppercase transition-all relative ${billingPeriod === "yearly" ? "bg-white text-black" : "text-white/40 hover:text-white"}`}
-              >
-                Annuel
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-              </button>
-            </div>
-          </div>
+          <p className="max-w-xl mx-auto text-xl text-white/40 leading-relaxed">
+            Pas d'abonnement, pas d'engagement. Achetez des crédits quand vous
+            en avez besoin. Profitez de{" "}
+            <strong className="text-white">3 crédits offerts</strong> chaque
+            mois.
+          </p>
         </div>
 
-        {/* Imbalanced Plans Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start reveal">
-          {/* Plan: Free - Ghostly/Minimalist */}
-          <div className="lg:col-span-2 p-12 glass-card rounded-[3rem] border-white/5 opacity-60 hover:opacity-100 transition-opacity duration-700">
-            <span className="text-[10px] font-black tracking-widest uppercase text-white/40 mb-12 block">
-              Le Départ
-            </span>
-            <h3 className="text-3xl font-bold text-white mb-4 italic">
-              Essentiel
-            </h3>
-            <div className="text-5xl font-black mb-12">
-              0€{" "}
-              <span className="text-sm font-medium text-white/20">/mois</span>
-            </div>
+        {/* Credit Packs Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end reveal max-w-6xl mx-auto">
+          {CREDIT_PACKS.map((pack, index) => (
+            <div
+              key={pack.id}
+              className={`p-10 glass-card rounded-[2.5rem] relative group transition-all duration-500 hover:-translate-y-2
+                ${
+                  pack.popular
+                    ? "bg-gradient-to-b from-white/[0.08] to-black/80 border-yellow-500/20 shadow-2xl shadow-yellow-900/10 z-10 scale-105"
+                    : "bg-white/[0.02] border-white/5 hover:bg-white/[0.04]"
+                }`}
+            >
+              {pack.popular && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-yellow-500 text-black text-[10px] font-black tracking-widest uppercase">
+                  {pack.badge || "Populaire"}
+                </div>
+              )}
 
-            <ul className="space-y-6 mb-20 text-sm text-white/40 font-medium">
-              <li className="flex items-center gap-4">
-                <div className="w-1 h-3 bg-white/10" /> 3 analyses par mois
-              </li>
-              <li className="flex items-center gap-4">
-                <div className="w-1 h-3 bg-white/10" /> Rapports PDF simples
-              </li>
-              <li className="flex items-center gap-4">
-                <div className="w-1 h-3 bg-white/10" /> Support standard
-              </li>
-            </ul>
-
-            <Link href="/upload" className="block">
-              <button className="w-full py-5 rounded-full border border-white/10 text-white font-bold hover:bg-white/5 transition-all">
-                Commencer
-              </button>
-            </Link>
-          </div>
-
-          {/* Plan: Premium - The "Vignette" of Power */}
-          <div className="lg:col-span-3 p-16 glass-card rounded-[4rem] border-yellow-500/20 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-12 opacity-5">
-              <Zap className="w-64 h-64 -rotate-12 group-hover:text-yellow-500 transition-colors duration-[2s]" />
-            </div>
-
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-16">
-                <div>
-                  <span className="text-yellow-500 text-[10px] font-black tracking-widest uppercase mb-4 block">
-                    Le Standard Senior
+              {/* Header */}
+              <div className="text-center mb-8">
+                <span className="text-[10px] font-black tracking-widest uppercase text-white/30 mb-4 block">
+                  {pack.name}
+                </span>
+                <div className="flex items-baseline justify-center gap-1 mb-2">
+                  <span className="text-5xl font-black text-white">
+                    {pack.credits}
                   </span>
-                  <h3 className="text-5xl font-bold text-white mb-2">
-                    Premium
-                  </h3>
+                  <span className="text-lg font-medium text-white/40">
+                    crédits
+                  </span>
                 </div>
-                <div className="text-6xl font-black text-white">
-                  {billingPeriod === "yearly" ? "3.99" : "4.99"}€
+                <div className="text-2xl text-yellow-500 font-bold">
+                  {pack.price}€
                 </div>
+                <p className="text-xs text-white/30 mt-2 h-8">
+                  {pack.description}
+                </p>
               </div>
 
-              <p className="text-xl text-white/40 mb-16 leading-relaxed max-w-sm">
-                L&apos;arsenal complet pour transformer votre gestion
-                contractuelle en avantage compétitif.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-24">
-                {[
-                  "Analyses illimitées 24/7",
-                  "Scrutin des risques critiques",
-                  "Support prioritaire (1h)",
-                  "Export Word éditable",
-                  "Historique illimité",
-                  "Intégration API",
-                ].map((f, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <Check className="w-4 h-4 text-yellow-500" />
-                    <span className="text-sm font-semibold text-white/70">
-                      {f}
-                    </span>
-                  </div>
+              {/* Features */}
+              <ul className="space-y-4 mb-10">
+                {pack.features.map((feature, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 text-sm text-white/60"
+                  >
+                    <Check
+                      className={`w-4 h-4 mt-0.5 ${pack.popular ? "text-yellow-500" : "text-white/20"}`}
+                    />
+                    <span>{feature}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
 
+              {/* Action */}
               <Link href="/upload" className="block">
                 <CustomButton
-                  size="lg"
-                  className="w-full h-20 rounded-full bg-yellow-600 hover:bg-yellow-500 text-gray-950 font-black text-xl shadow-[0_20px_40px_-10px_rgba(202,138,4,0.3)] hover:scale-[1.02] transition-transform"
+                  fullWidth
+                  className={`h-14 rounded-2xl font-bold text-lg transition-all
+                    ${
+                      pack.popular
+                        ? "bg-yellow-600 hover:bg-yellow-500 text-black shadow-lg shadow-yellow-900/20"
+                        : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                    }`}
                 >
-                  Acquérir la Puissance
+                  Choisir ce pack
                 </CustomButton>
               </Link>
             </div>
+          ))}
+        </div>
+
+        {/* Free Tier Info */}
+        <div className="mt-24 max-w-4xl mx-auto rounded-[3rem] bg-white/[0.02] border border-white/5 p-12 relative overflow-hidden reveal">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl" />
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
+            <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center shrink-0">
+              <Gift className="w-10 h-10 text-yellow-500" />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-2xl font-bold text-white mb-2">
+                Toujours gratuit pour commencer
+              </h3>
+              <p className="text-white/40 leading-relaxed">
+                Chaque mois, nous rechargeons votre compte avec{" "}
+                <strong className="text-white">3 crédits gratuits</strong>.
+                Utilisez-les pour analyser vos contrats, sans carte bancaire ni
+                engagement. Si vous avez besoin de plus, nos packs sont là.
+              </p>
+            </div>
+            <Link href="/register">
+              <CustomButton
+                variant="outline"
+                className="border-white/10 text-white hover:bg-white/5"
+              >
+                Créer un compte
+              </CustomButton>
+            </Link>
           </div>
         </div>
 
-        {/* Technical Mastery Footer - Micro-stats */}
-        <div className="mt-40 pt-16 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-12 reveal">
+        {/* Technical Footer */}
+        <div className="mt-32 pt-16 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-12 reveal opacity-50 hover:opacity-100 transition-opacity">
           {[
-            { label: "Modèle", val: "Legal-Instruct-v4" },
-            { label: "GDPR", val: "Strict Compliant" },
-            { label: "Uptime", val: "99.99%" },
-            { label: "Certif", val: "ISO 27001 Ready" },
+            { label: "Paiement", val: "Stripe Secure" },
+            { label: "Validité", val: "Illimitée" },
+            { label: "Facturation", val: "TVA Incluse" },
+            { label: "Support", val: "24/7 Expert" },
           ].map((stat, i) => (
             <div key={i} className="flex flex-col items-center md:items-start">
-              <span className="text-[10px] font-black tracking-widest uppercase text-white/10 mb-2">
+              <span className="text-[10px] font-black tracking-widest uppercase text-white/30 mb-2">
                 {stat.label}
               </span>
-              <span className="text-sm font-bold text-white/40">
+              <span className="text-sm font-bold text-white/60">
                 {stat.val}
               </span>
             </div>

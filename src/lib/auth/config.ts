@@ -8,13 +8,13 @@ import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
-  
+
   providers: [
     CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Mot de passe", type: "password" }
+        password: { label: "Mot de passe", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
+          where: { email: credentials.email },
         });
 
         if (!user || !user.password) {
@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
 
         const isValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!isValid) {
@@ -43,22 +43,24 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           plan: user.plan || "FREE",
-          credits: user.credits || 10
+          credits: user.credits || 10,
         };
-      }
+      },
     }),
-    
+
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
-    
+
     GitHubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
-    })
+      allowDangerousEmailAccountLinking: true,
+    }),
   ],
-  
+
   callbacks: {
     async jwt({ token, user }) {
       // Premier appel JWT - user est disponible
@@ -70,11 +72,11 @@ export const authOptions: NextAuthOptions = {
         token.plan = (user as any).plan || "FREE";
         token.credits = (user as any).credits || 10;
       }
-      
+
       // Appels suivants - token existe déjà
       return token;
     },
-    
+
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
@@ -85,44 +87,46 @@ export const authOptions: NextAuthOptions = {
         session.user.credits = token.credits as number;
       }
       return session;
-    }
+    },
   },
-  
+
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 jours
   },
-  
+
   jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 jours
   },
-  
+
   secret: process.env.NEXTAUTH_SECRET,
-  
+
   // Important pour le debug
   debug: process.env.NODE_ENV === "development",
-  
+
   // Cookies configuration
   cookies: {
     sessionToken: {
-      name: process.env.NODE_ENV === 'production' 
-        ? '__Secure-next-auth.session-token' 
-        : 'next-auth.session-token',
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Secure-next-auth.session-token"
+          : "next-auth.session-token",
       options: {
         httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production'
-      }
-    }
-  }
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
 };
 
 // Configuration pour le middleware et autres utilitaires
 export const authConfig = {
   secret: process.env.NEXTAUTH_SECRET!,
-  cookieName: process.env.NODE_ENV === 'production' 
-    ? '__Secure-next-auth.session-token' 
-    : 'next-auth.session-token',
-  baseUrl: process.env.NEXTAUTH_URL || 'http://localhost:3000'
+  cookieName:
+    process.env.NODE_ENV === "production"
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token",
+  baseUrl: process.env.NEXTAUTH_URL || "http://localhost:3000",
 };

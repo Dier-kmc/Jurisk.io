@@ -1,142 +1,146 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { 
-  X, 
-  Mail, 
-  Lock, 
-  AlertCircle, 
-  CheckCircle2, 
-  FileText, 
-  Shield, 
-  Zap, 
+import { useState } from "react";
+import {
+  X,
+  Mail,
+  Lock,
+  AlertCircle,
+  CheckCircle2,
+  FileText,
+  Shield,
+  Zap,
   TrendingUp,
   Chrome,
   Github,
-  Loader2
-} from 'lucide-react'
-import { CustomButton } from '@/components/ui/custom/CustomButton'
-import { InputField } from '../ui/custom/InputField'
-import { useAuth } from '@/lib/hooks/useAuth'
+  Loader2,
+} from "lucide-react";
+import { CustomButton } from "@/components/ui/custom/CustomButton";
+import { InputField } from "../ui/custom/InputField";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 interface LoginModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSwitchToRegister: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  onSwitchToRegister: () => void;
 }
 
-export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  
-  // Utiliser le hook useAuth
-  const { login, isLoading } = useAuth()
+export function LoginModal({
+  isOpen,
+  onClose,
+  onSwitchToRegister,
+}: LoginModalProps) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  if (!isOpen) return null
+  // Utiliser le hook useAuth
+  const { login, isLoading } = useAuth();
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
     try {
       // Utiliser la fonction login du hook useAuth
-      await login('credentials', { email, password })
-      
-      setSuccess('Connexion réussie ! Redirection...')
-      
+      await login("credentials", { email, password });
+
+      setSuccess("Connexion réussie ! Redirection...");
+
       // Fermer la modal après un délai
       setTimeout(() => {
-        onClose()
-      }, 1000)
-
+        onClose();
+      }, 1000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue')
+      setError(err instanceof Error ? err.message : "Une erreur est survenue");
     }
-  }
+  };
 
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
-    setError('')
+  const handleSocialLogin = async (provider: "google" | "github") => {
+    setError("");
     try {
-      await login(provider)
+      await login(provider);
       // La modal se fermera automatiquement via la redirection NextAuth
     } catch (err) {
-      setError(err instanceof Error ? err.message : `Erreur de connexion avec ${provider}`)
+      setError(
+        err instanceof Error
+          ? err.message
+          : `Erreur de connexion avec ${provider}`,
+      );
     }
-  }
+  };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-gradient-to-b from-gray-900/40 to-black rounded-2xl w-full max-w-5xl border border-gray-300/15 shadow-2xl shadow-yellow-500/5 animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
-        
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+      <div className="relative w-full max-w-5xl bg-[#050505] rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-y-auto">
+        {/* Noise & Background Effects */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(250,204,21,0.03)_0%,transparent_50%)] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-b from-white/[0.02] to-transparent rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
+
         {/* Header */}
-        <div className="relative overflow-hidden border-b border-gray-300/15">
-          <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/10 via-yellow-600/5 to-transparent"></div>
-          <div className="relative flex items-center justify-between p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
-                <FileText className="w-6 h-6 text-yellow-600" />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                  Bon retour !
-                </h2>
-                <p className="text-gray-400 text-sm mt-1">
-                  Connectez-vous pour accéder à vos analyses
-                </p>
-              </div>
+        <div className="relative border-b border-white/5 p-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
+              <span className="font-bold text-gray-950 text-lg">J</span>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-800/50 rounded-lg transition-all duration-200 hover:rotate-90 hover:cursor-pointer"
-              aria-label="Fermer"
-            >
-              <X className="w-6 h-6 text-gray-400" />
-            </button>
+            <div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">
+                Bon retour
+              </h2>
+              <p className="text-white/40 text-sm">
+                Connectez-vous pour accéder à vos analyses
+              </p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all hover:scale-105 group"
+            aria-label="Fermer"
+          >
+            <X className="w-5 h-5 text-white/40 group-hover:text-white transition-colors" />
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-          
+        <div className="grid grid-cols-1 lg:grid-cols-2">
           {/* Colonne gauche - Formulaire */}
-          <div className="space-y-6">
+          <div className="p-8 lg:p-12 space-y-8 relative z-10">
             {/* Boutons de connexion rapide */}
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-4">
               <CustomButton
-                onClick={() => handleSocialLogin('google')}
+                onClick={() => handleSocialLogin("google")}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-6 bg-transparent text-white hover:bg-gray-400/15 font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300/15 hover:border-yellow-500/30"
+                className="w-full flex items-center justify-center gap-2 py-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all"
               >
                 <Chrome className="w-5 h-5" />
-                <span>Continuer avec Google</span>
-                {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                <span>Google</span>
+                {isLoading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
               </CustomButton>
-              
+
               <CustomButton
-                onClick={() => handleSocialLogin('github')}
+                onClick={() => handleSocialLogin("github")}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-6 bg-transparent text-white hover:bg-gray-400/15 font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300/15 hover:border-yellow-500/30"
+                className="w-full flex items-center justify-center gap-2 py-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all"
               >
                 <Github className="w-5 h-5" />
-                <span>Continuer avec GitHub</span>
-                {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                <span>GitHub</span>
+                {isLoading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
               </CustomButton>
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700/50"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-black text-gray-400">ou</span>
-              </div>
+            <div className="relative flex items-center gap-4">
+              <div className="h-px bg-white/10 flex-1" />
+              <span className="text-xs font-medium text-white/20 uppercase tracking-widest">
+                ou continuer avec email
+              </span>
+              <div className="h-px bg-white/10 flex-1" />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Messages */}
               {error && (
                 <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3 animate-in slide-in-from-top duration-200">
@@ -152,182 +156,139 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalPr
                 </div>
               )}
 
-              {/* Email */}
-              <InputField
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="youremail@gmail.com"
-                label="Adresse email"
-                icon={Mail}
-                //disabled={isLoading}
-              />
+              <div className="space-y-4">
+                <InputField
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="exemple@entreprise.com"
+                  label="Adresse email"
+                  icon={Mail}
+                />
 
-              {/* Mot de passe */}
-              <InputField
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                label="Mot de passe"
-                required
-                icon={Lock}
-                showPasswordToggle
-                //disabled={isLoading}
-              />
-
-              {/* Options supplémentaires */}
-              <div className="flex items-end justify-end text-sm">
-                <button
-                  type="button"
-                  className="text-yellow-600 hover:text-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
-                  disabled={isLoading}
-                >
-                  Mot de passe oublié ?
-                </button>
+                <div className="space-y-2">
+                  <InputField
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    label="Mot de passe"
+                    required
+                    icon={Lock}
+                    showPasswordToggle
+                  />
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      className="text-xs text-white/40 hover:text-yellow-500 transition-colors"
+                      disabled={isLoading}
+                    >
+                      Mot de passe oublié ?
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Bouton */}
-              <CustomButton
-                type="submit"
-                fullWidth
-                size="lg"
-                variant="outline"
-                isLoading={isLoading}
-                disabled={isLoading}
-                className="mt-2 hover:bg-yellow-600/30 hover:border-yellow-600/20 hover:text-yellow-600/80 border-gray-300/30 transition-all"
-              >
-                {isLoading ? 'Connexion en cours...' : 'Se connecter'}
-              </CustomButton>
+              <div className="pt-4">
+                <CustomButton
+                  type="submit"
+                  fullWidth
+                  size="lg"
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                  className="h-14 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-black font-bold text-lg shadow-[0_4px_20px_-5px_rgba(202,138,4,0.3)] hover:shadow-[0_8px_30px_-5px_rgba(202,138,4,0.4)] transition-all"
+                >
+                  {isLoading ? "Connexion..." : "Se connecter"}
+                </CustomButton>
+              </div>
 
-              {/* Lien inscription */}
-              <div className="text-center pt-4">
-                <p className="text-gray-400 text-sm">
-                  Pas encore de compte ?{' '}
+              <div className="text-center">
+                <p className="text-white/40 text-sm">
+                  Pas encore de compte ?{" "}
                   <button
                     type="button"
                     onClick={onSwitchToRegister}
-                    className="text-yellow-600 hover:text-yellow-600/70 hover:cursor-pointer font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isLoading}
+                    className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors"
                   >
-                    Créer un compte →
+                    Créer un compte
                   </button>
                 </p>
               </div>
             </form>
           </div>
 
-          {/* Colonne droite - Statistiques & Avantages */}
-          <div className="space-y-6">
-            
-            {/* Stats principales */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-800/15 border border-gray-300/15 rounded-xl p-5 hover:border-yellow-500/20 transition-colors">
-                <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="w-5 h-5 text-green-400" />
-                  <span className="text-2xl font-bold text-white">1K+</span>
+          {/* Colonne droite - Visuel & Info */}
+          <div className="relative hidden lg:flex flex-col justify-between p-12 bg-white/[0.02] border-l border-white/5">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_100%_100%,rgba(250,204,21,0.05)_0%,transparent_50%)] pointer-events-none" />
+
+            <div className="relative space-y-8">
+              <div className="animate-slide-up [animation-delay:0.2s]">
+                <h3 className="text-3xl font-bold text-white mb-2 leading-tight">
+                  L'intelligence artificielle <br />
+                  <span className="text-white/40">
+                    au service de votre sécurité.
+                  </span>
+                </h3>
+              </div>
+
+              <div className="space-y-6 animate-slide-up [animation-delay:0.4s]">
+                {[
+                  {
+                    icon: TrendingUp,
+                    label: "Historique complet",
+                    sub: "Retrouvez toutes vos analyses",
+                  },
+                  {
+                    icon: Shield,
+                    label: "Données chiffrées",
+                    sub: "Protection AES-256",
+                  },
+                  {
+                    icon: Zap,
+                    label: "Analyse instantanée",
+                    sub: "Résultats en < 45s",
+                  },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-4 group">
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-yellow-500/10 group-hover:border-yellow-500/20 transition-all duration-500">
+                      <item.icon className="w-5 h-5 text-white/40 group-hover:text-yellow-500 transition-colors duration-500" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white text-sm group-hover:text-yellow-500 transition-colors">
+                        {item.label}
+                      </h4>
+                      <p className="text-xs text-white/30">{item.sub}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative mt-12 p-6 rounded-3xl bg-black/40 border border-white/5 backdrop-blur-md animate-slide-up [animation-delay:0.6s]">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex -space-x-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="w-8 h-8 rounded-full border-2 border-black bg-gray-600"
+                    />
+                  ))}
                 </div>
-                <p className="text-xs text-gray-400">Contrats analysés</p>
-              </div>
-              
-              <div className="bg-gray-800/15 border border-gray-300/15 rounded-xl p-5 hover:border-yellow-500/20 transition-colors">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle2 className="w-5 h-5 text-yellow-600" />
-                  <span className="text-2xl font-bold text-white">98%</span>
+                <div className="text-xs text-white/40">
+                  <span className="text-white font-bold">1,000+</span> experts
+                  nous font confiance
                 </div>
-                <p className="text-xs text-gray-400">Précision de l'IA</p>
               </div>
-            </div>
-
-            {/* Carte avantages */}
-            <div className="relative overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-yellow-500/10 to-transparent p-8 hover:border-yellow-500/30 transition-colors">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-500/20 rounded-full blur-3xl animate-pulse"></div>
-              <div className="relative space-y-4">
-                <h3 className="text-xl font-bold text-white">Pourquoi se connecter ?</h3>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-5 h-5 text-yellow-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Accès à votre historique</p>
-                      <p className="text-xs text-gray-400">Retrouvez toutes vos analyses</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-5 h-5 text-yellow-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Synchronisation multi-appareils</p>
-                      <p className="text-xs text-gray-400">Travaillez où que vous soyez</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-5 h-5 text-yellow-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">Données sécurisées</p>
-                      <p className="text-xs text-gray-400">Chiffrement de bout en bout</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-5 h-5 text-yellow-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">10 crédits gratuits</p>
-                      <p className="text-xs text-gray-400">Analysez vos premiers contrats</p>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Fonctionnalités */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-800/15 border border-gray-300/15 rounded-xl p-5 hover:border-blue-500/20 transition-colors">
-                <Shield className="w-8 h-8 text-blue-400 mb-3" />
-                <h4 className="font-semibold text-white mb-1">Sécurisé</h4>
-                <p className="text-xs text-gray-400">Protection maximale de vos données</p>
-              </div>
-              <div className="bg-gray-800/15 border border-gray-300/15 rounded-xl p-5 hover:border-purple-500/20 transition-colors">
-                <Zap className="w-8 h-8 text-purple-400 mb-3" />
-                <h4 className="font-semibold text-white mb-1">Rapide</h4>
-                <p className="text-xs text-gray-400">Résultats en quelques secondes</p>
-              </div>
-            </div>
-
-            {/* Footer légal */}
-            <div className="pt-2">
-              <p className="text-xs text-gray-500 leading-relaxed">
-                En vous connectant, vous acceptez nos{' '}
-                <a 
-                  href="/terms" 
-                  className="text-gray-400 hover:text-yellow-600 underline transition-colors hover:cursor-pointer"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Conditions d'utilisation
-                </a>{' '}
-                et notre{' '}
-                <a 
-                  href="/privacy" 
-                  className="text-gray-400 hover:text-yellow-600 underline transition-colors hover:cursor-pointer"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Politique de confidentialité
-                </a>
-                . Vos données sont traitées de manière sécurisée et confidentielle.
+              <p className="text-xs text-white/30 leading-relaxed">
+                "Jurisk.io a transformé notre façon de travailler. C'est l'outil
+                que nous attendions."
               </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default LoginModal
+export default LoginModal;

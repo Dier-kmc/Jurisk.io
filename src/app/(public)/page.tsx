@@ -148,7 +148,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-24">
             {[
               { label: "Précision", val: "99.4%" },
-              { label: "Vitesse", val: "3.2s" },
+              { label: "Vitesse", val: "45s" },
               { label: "Confidentialité", val: "AES-256" },
               { label: "Disponibilité", val: "24/7" },
             ].map((stat, i) => (
@@ -260,7 +260,7 @@ export default function HomePage() {
               <div className="aspect-square bg-white/[0.01] border border-white/5 rounded-full flex flex-col items-center justify-center text-center p-12">
                 <Zap className="w-12 h-12 text-yellow-500/20 mb-8" />
                 <h3 className="text-3xl font-bold text-white mb-4 italic">
-                  3.2s
+                  45s
                 </h3>
                 <p className="text-white/20 text-sm max-w-[200px]">
                   Temps moyen pour l&apos;identification d&apos;une clause de

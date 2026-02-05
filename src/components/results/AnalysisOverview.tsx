@@ -85,57 +85,68 @@ export default function AnalysisOverview({
           </div>
 
           <div className="space-y-6">
-            {analysis.probable_scenarios.map((scenario: any, index: number) => (
-              <div
-                key={index}
-                className="p-6 rounded-2xl bg-[#050505] border border-white/5 hover:border-white/10 transition-all group"
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h4 className="text-base font-bold text-white tracking-tight">
-                    {scenario.scenario}
-                  </h4>
-                  <span className="serif-display text-2xl text-white/10 group-hover:text-emerald-500/20 transition-colors">
-                    {scenario.probability}%
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
-                  <div>
-                    <span className="text-[9px] font-black tracking-widest text-white/20 uppercase mb-3 block">
-                      Conséquence A
-                    </span>
-                    <ul className="space-y-2">
-                      {scenario.consequences_party_a
-                        .slice(0, 2)
-                        .map((cons: string, i: number) => (
-                          <li
-                            key={i}
-                            className="text-xs text-white/40 leading-relaxed"
-                          >
-                            • {cons}
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <span className="text-[9px] font-black tracking-widest text-white/20 uppercase mb-3 block">
-                      Conséquence B
-                    </span>
-                    <ul className="space-y-2">
-                      {scenario.consequences_party_b
-                        .slice(0, 2)
-                        .map((cons: string, i: number) => (
-                          <li
-                            key={i}
-                            className="text-xs text-white/40 leading-relaxed"
-                          >
-                            • {cons}
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                </div>
+            {!analysis.probable_scenarios ||
+            analysis.probable_scenarios.length === 0 ? (
+              <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 text-center">
+                <p className="text-white/40 italic">
+                  Aucun scénario critique n'a été identifié pour ce contrat.
+                </p>
               </div>
-            ))}
+            ) : (
+              analysis.probable_scenarios.map(
+                (scenario: any, index: number) => (
+                  <div
+                    key={index}
+                    className="p-6 rounded-2xl bg-[#050505] border border-white/5 hover:border-white/10 transition-all group"
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="text-base font-bold text-white tracking-tight">
+                        {scenario.scenario}
+                      </h4>
+                      <span className="serif-display text-2xl text-white/10 group-hover:text-emerald-500/20 transition-colors">
+                        {scenario.probability}%
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                      <div>
+                        <span className="text-[9px] font-black tracking-widest text-white/20 uppercase mb-3 block">
+                          Conséquence A
+                        </span>
+                        <ul className="space-y-2">
+                          {scenario.consequences_party_a
+                            .slice(0, 2)
+                            .map((cons: string, i: number) => (
+                              <li
+                                key={i}
+                                className="text-xs text-white/40 leading-relaxed"
+                              >
+                                • {cons}
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <span className="text-[9px] font-black tracking-widest text-white/20 uppercase mb-3 block">
+                          Conséquence B
+                        </span>
+                        <ul className="space-y-2">
+                          {scenario.consequences_party_b
+                            .slice(0, 2)
+                            .map((cons: string, i: number) => (
+                              <li
+                                key={i}
+                                className="text-xs text-white/40 leading-relaxed"
+                              >
+                                • {cons}
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ),
+              )
+            )}
           </div>
         </div>
       </div>
