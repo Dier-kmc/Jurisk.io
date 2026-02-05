@@ -1,13 +1,12 @@
-/* ===== src/components/pricing/PricingCard.tsx ===== */
 'use client';
 
 import { Check, X, Star, Zap } from 'lucide-react';
 import { clsx } from 'clsx';
-import { PricingPlan } from '@/lib/constants/plans';
-import Button, { CustomButton } from '@/components/ui/custom/CustomButton';
+import { CustomButton } from '@/components/ui/custom/CustomButton';
+import { CreditPack } from '@/lib/constants/plans'; // Changé de PricingPlan à CreditPack
 
 interface PricingCardProps {
-  plan: PricingPlan;
+  plan: CreditPack; // Changé de PricingPlan à CreditPack
   selected?: boolean;
   onSelect?: () => void;
   className?: string;
@@ -20,6 +19,13 @@ const PricingCard = ({
   className,
 }: PricingCardProps) => {
   const isPopular = plan.popular;
+
+  // Créer un objet CURRENCY_SYMBOLS si non disponible
+  const CURRENCY_SYMBOLS: Record<string, string> = {
+    EUR: "€",
+    USD: "$",
+    GBP: "£",
+  };
 
   return (
     <div
@@ -45,43 +51,29 @@ const PricingCard = ({
         <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
         <div className="flex items-baseline mb-4">
           <span className="text-4xl font-bold text-white">
-            {plan.price === 0 ? 'Gratuit' : `${plan.price}${plan.currency || '€'}`}
+            {plan.price === 0 ? 'Gratuit' : `${plan.price}${CURRENCY_SYMBOLS[plan.currency] || plan.currency}`}
           </span>
-          {plan.price > 0 && (
-            <span className="text-gray-400 ml-2">/{plan.period}</span>
-          )}
+          {/* Supprimé le /{plan.period} car non présent dans CreditPack */}
         </div>
         <p className="text-gray-400">{plan.description}</p>
       </div>
 
       <div className="mb-10 space-y-4">
-        {plan.features.map((feature) => (
+        {plan.features.map((feature, index) => (
           <div
-            key={feature.id}
-            className={clsx(
-              'flex items-center',
-              feature.highlight && 'bg-yellow-600/10 p-3 rounded-lg'
-            )}
+            key={index}
+            className="flex items-center"
           >
-            {feature.included ? (
-              <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
-            ) : (
-              <X className="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" />
-            )}
-            <span
-              className={clsx(
-                feature.included ? 'text-gray-300' : 'text-gray-600',
-                feature.highlight && 'font-medium text-yellow-600'
-              )}
-            >
-              {feature.text}
+            <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+            <span className="text-gray-300">
+              {feature}
             </span>
           </div>
         ))}
       </div>
 
       <CustomButton
-        variant={plan.ctaVariant}
+        variant={isPopular ? "primary" : "outline"}
         fullWidth
         size="lg"
         className={clsx(
@@ -91,23 +83,18 @@ const PricingCard = ({
         onClick={onSelect}
         leftIcon={isPopular && <Zap size={18} />}
       >
-        {plan.ctaText}
+        {plan.price === 0 ? 'Commencer gratuitement' : 'Acheter maintenant'}
       </CustomButton>
 
-      {plan.limit && (
-        <div className="mt-4 text-center">
-          <div className="text-sm text-gray-500">
-            {plan.limit.uploads === Infinity ? (
-              'Analyses illimitées'
-            ) : (
-              `${plan.limit.uploads} analyse${plan.limit.uploads > 1 ? 's' : ''}/mois`
-            )}
-          </div>
-          <div className="text-xs text-gray-600 mt-1">
-            Taille max: {plan.limit.fileSize} • Historique: {plan.limit.history}
-          </div>
+      {/* Section limite modifiée pour correspondre à CreditPack */}
+      <div className="mt-4 text-center">
+        <div className="text-sm text-gray-500">
+          {plan.credits} crédits
         </div>
-      )}
+        <div className="text-xs text-gray-600 mt-1">
+          Valable à vie • +3 crédits offerts/mois
+        </div>
+      </div>
     </div>
   );
 };
