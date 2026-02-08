@@ -1,4 +1,8 @@
 import { getServerSession } from "next-auth";
+<<<<<<< HEAD
+=======
+import { authOptions } from "./auth";
+>>>>>>> 4f353cba33ac27cb4619a3397b35ebba694a2ed4
 import { prisma } from "@/lib/db/client";
 import { authOptions } from "./auth";
 
