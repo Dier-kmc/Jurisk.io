@@ -35,6 +35,9 @@ export function LoginModal({
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loadingProvider, setLoadingProvider] = useState<
+    "google" | "github" | "credentials" | null
+  >(null);
 
   // Utiliser le hook useAuth
   const { login, isLoading } = useAuth();
@@ -45,6 +48,7 @@ export function LoginModal({
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoadingProvider("credentials");
 
     try {
       // Utiliser la fonction login du hook useAuth
@@ -58,11 +62,13 @@ export function LoginModal({
       }, 1000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue");
+      setLoadingProvider(null);
     }
   };
 
   const handleSocialLogin = async (provider: "google" | "github") => {
     setError("");
+    setLoadingProvider(provider);
     try {
       await login(provider);
       // La modal se fermera automatiquement via la redirection NextAuth
@@ -72,6 +78,7 @@ export function LoginModal({
           ? err.message
           : `Erreur de connexion avec ${provider}`,
       );
+      setLoadingProvider(null);
     }
   };
 
@@ -118,7 +125,9 @@ export function LoginModal({
               >
                 <Chrome className="w-5 h-5" />
                 <span>Google</span>
-                {isLoading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
+                {loadingProvider === "google" && (
+                  <Loader2 className="w-4 h-4 animate-spin ml-2" />
+                )}
               </CustomButton>
 
               <CustomButton
@@ -128,7 +137,9 @@ export function LoginModal({
               >
                 <Github className="w-5 h-5" />
                 <span>GitHub</span>
-                {isLoading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
+                {loadingProvider === "github" && (
+                  <Loader2 className="w-4 h-4 animate-spin ml-2" />
+                )}
               </CustomButton>
             </div>
 
@@ -194,11 +205,13 @@ export function LoginModal({
                   type="submit"
                   fullWidth
                   size="lg"
-                  isLoading={isLoading}
+                  isLoading={loadingProvider === "credentials"}
                   disabled={isLoading}
                   className="h-14 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-black font-bold text-lg shadow-[0_4px_20px_-5px_rgba(202,138,4,0.3)] hover:shadow-[0_8px_30px_-5px_rgba(202,138,4,0.4)] transition-all"
                 >
-                  {isLoading ? "Connexion..." : "Se connecter"}
+                  {loadingProvider === "credentials"
+                    ? "Connexion..."
+                    : "Se connecter"}
                 </CustomButton>
               </div>
 

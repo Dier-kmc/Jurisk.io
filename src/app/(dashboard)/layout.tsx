@@ -181,6 +181,12 @@ export default function DashboardLayout({
     [],
   );
 
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-black/90">
@@ -189,9 +195,8 @@ export default function DashboardLayout({
     );
   }
 
-  if (!isAuthenticated && !isLoading) {
-    router.push("/login");
-    return null;
+  if (!isAuthenticated) {
+    return null; // Don't render dashboard content if not authenticated
   }
 
   return (
