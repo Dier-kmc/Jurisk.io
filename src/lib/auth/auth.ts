@@ -6,8 +6,13 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import bcrypt from "bcryptjs";
 
+// Vérifiez que les variables d'environnement requises sont définies
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error("NEXTAUTH_SECRET is not defined in environment variables");
+}
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any, // Cast pour éviter l'erreur TypeScript
+  adapter: PrismaAdapter(prisma),
   
   providers: [
     CredentialsProvider({
@@ -18,46 +23,63 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error("Email and password are required");
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email.toLowerCase() }
+          });
 
-        if (!user || !user.password) {
+          if (!user) {
+            throw new Error("Invalid credentials");
+          }
+
+          if (!user.password) {
+            throw new Error("Invalid credentials");
+          }
+
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+
+          if (!isValid) {
+            throw new Error("Invalid credentials");
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            plan: user.plan,
+            credits: user.credits
+          };
+        } catch (error) {
+          console.error("Authorization error:", error);
           return null;
         }
-
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!isValid) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          plan: user.plan,
-          credits: user.credits
-        };
       }
     }),
     
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
     
     GitHubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
+      clientId: process.env.GITHUB_ID || "",
+      clientSecret: process.env.GITHUB_SECRET || "",
     })
   ],
+  
+  pages: {
+    signIn: "/login",
+    signOut: "/",
+    error: "/auth/error",
+    verifyRequest: "/auth/verify",
+    newUser: "/auth/new-user"
+  },
   
   callbacks: {
     async jwt({ token, user, account }) {
@@ -96,4 +118,19 @@ export const authOptions: NextAuthOptions = {
   
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
+  
+  events: {
+    async signIn({ user, account, profile }) {
+      console.log("User signed in:", user.email);
+    },
+    async signOut({ token, session }) {
+      console.log("User signed out");
+    },
+    async createUser({ user }) {
+      console.log("New user created:", user.email);
+    },
+    async linkAccount({ user, account, profile }) {
+      console.log("Account linked:", user.email);
+    }
+  },
 };
