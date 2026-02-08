@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "./config";
 import { prisma } from "@/lib/db/client";
+import { authOptions } from "./auth";
 
 export interface CurrentUser {
   id: string;
