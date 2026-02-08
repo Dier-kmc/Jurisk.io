@@ -8,8 +8,6 @@ export async function authGuard(request: NextRequest) {
   // Routes publiques (pas besoin d'authentification)
   const publicRoutes = [
     '/',
-    '/login',
-    '/register',
     '/auth/error',
     '/auth/verify',
     '/auth/new-user',
@@ -42,7 +40,7 @@ export async function authGuard(request: NextRequest) {
     
     // Si non authentifié et route protégée, rediriger vers login
     if (!token) {
-      const loginUrl = new URL('/login', request.url)
+      const loginUrl = new URL('/', request.url)
       loginUrl.searchParams.set('callbackUrl', encodeURIComponent(path))
       return NextResponse.redirect(loginUrl)
     }
@@ -61,7 +59,7 @@ export async function authGuard(request: NextRequest) {
   } catch (error) {
     console.error('Auth guard error:', error)
     // En cas d'erreur, rediriger vers la page de login
-    const loginUrl = new URL('/login', request.url)
+    const loginUrl = new URL('/', request.url)
     loginUrl.searchParams.set('error', 'SessionExpired')
     return NextResponse.redirect(loginUrl)
   }

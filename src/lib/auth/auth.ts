@@ -78,7 +78,7 @@ export const authOptions: NextAuthOptions = {
     signOut: "/",
     error: "/auth/error",
     verifyRequest: "/auth/verify",
-    newUser: "/auth/new-user"
+    newUser: "/upload"
   },
   
   callbacks: {

@@ -55,8 +55,8 @@ export function useAuth() {
     try {
       setLoading(true);
       await signOut({ redirect: false });
-      router.push('/');
-      router.refresh();
+      // router.push('/');
+      // router.refresh();
     } catch (error) {
       console.error("Logout error:", error);
       throw error;
