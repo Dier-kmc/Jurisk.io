@@ -17,6 +17,10 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // State variables
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
@@ -29,6 +33,14 @@ export default function DashboardLayout({
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // State for mobile menu
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   const { user, logout, isAuthenticated, isLoading } = useAuth();
   const [analyses, setAnalyses] = useState<ContractAnalysis[]>([]);
   const [stats, setStats] = useState<AnalysisStats | null>(null);
@@ -39,9 +51,6 @@ export default function DashboardLayout({
     limit: 10,
     page: 1,
   });
-
-  const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     if (!isAuthenticated || isLoading) return;
@@ -172,6 +181,12 @@ export default function DashboardLayout({
     [],
   );
 
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-black/90">
@@ -180,17 +195,56 @@ export default function DashboardLayout({
     );
   }
 
-  if (!isAuthenticated && !isLoading) {
-    router.push("/login");
-    return null;
+  if (!isAuthenticated) {
+    return null; // Don't render dashboard content if not authenticated
   }
 
   return (
     <>
-      <div className="flex h-screen bg-[#050505] text-white relative">
+      <div className="flex h-screen bg-[#050505] text-white relative overflow-hidden">
         {/* Global Noise & Depth */}
-        <div className="noise-overlay pointer-events-none" />
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_0%,rgba(250,204,21,0.03)_0%,transparent_50%)] pointer-events-none" />
+        <div className="noise-overlay pointer-events-none fixed inset-0 z-0" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_0%,rgba(250,204,21,0.03)_0%,transparent_50%)] pointer-events-none fixed z-0" />
+
+        {/* Mobile Header */}
+        <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-lg flex items-center justify-center shadow-lg">
+              <span className="font-bold text-gray-900 text-sm">J</span>
+            </div>
+            <span className="font-bold text-sm tracking-tight text-white/90">
+              Jurisk.io
+            </span>
+          </div>
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="p-2 text-white/60 hover:text-white transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="4" x2="20" y1="12" y2="12" />
+              <line x1="4" x2="20" y1="6" y2="6" />
+              <line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Overlay */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
 
         <Sidebar
           analyses={analyses}
@@ -214,12 +268,15 @@ export default function DashboardLayout({
           onSetOpenMenuId={setOpenMenuId}
           onHandleFilterChange={handleFilterChange}
           onOpenDeleteModal={handleOpenDeleteModal}
+          // Mobile props
+          mobileMenuOpen={mobileMenuOpen}
+          onCloseMobileMenu={() => setMobileMenuOpen(false)}
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col relative z-10 ml-64 bg-[#050505]/40 backdrop-blur-sm">
+        <main className="flex-1 flex flex-col relative z-10 md:ml-64 bg-[#050505]/40 backdrop-blur-sm h-full overflow-hidden pt-16 md:pt-0 transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-b from-white/[0.01] to-transparent pointer-events-none" />
-          {children}
+          <div className="flex-1 overflow-y-auto">{children}</div>
         </main>
       </div>
 

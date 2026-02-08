@@ -184,11 +184,11 @@ export default function ResultPage() {
         getStatusColor={getStatusColor}
       />
 
-      <main className="container mx-auto px-6 py-12 relative z-10">
+      <main className="container mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10">
         <AnalysisHero summary={analysis.summary} />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-12">
-          <TabsList className="bg-white/5 border border-white/5 p-1 rounded-full h-14 w-fit flex gap-1">
+          <TabsList className="bg-white/5 border border-white/5 p-1 rounded-full h-14 w-full md:w-fit flex gap-1 overflow-x-auto no-scrollbar">
             {[
               { value: "overview", icon: BarChart3, label: "Vision Globale" },
               { value: "parties", icon: Users, label: "Parties" },
@@ -199,7 +199,7 @@ export default function ResultPage() {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/40 rounded-full px-6 transition-all hover:text-white/60 h-full text-[10px] font-black uppercase tracking-widest"
+                className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/40 rounded-full px-4 md:px-6 transition-all hover:text-white/60 h-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap flex-shrink-0"
               >
                 <tab.icon className="w-3.5 h-3.5 mr-2 opacity-50" />
                 {tab.label}

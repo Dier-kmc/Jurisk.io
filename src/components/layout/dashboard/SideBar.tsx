@@ -50,6 +50,8 @@ interface SidebarProps {
   onSetOpenMenuId: (id: string | null) => void;
   onHandleFilterChange: (newFilters: Partial<AnalysisFilters>) => void;
   onOpenDeleteModal?: (analysis: ContractAnalysis) => void;
+  mobileMenuOpen?: boolean;
+  onCloseMobileMenu?: () => void;
 }
 
 export default function Sidebar({
@@ -74,6 +76,8 @@ export default function Sidebar({
   onSetOpenMenuId,
   onHandleFilterChange,
   onOpenDeleteModal,
+  mobileMenuOpen = false,
+  onCloseMobileMenu,
 }: SidebarProps) {
   const { user, logout } = useAuth();
   const router = useRouter();
@@ -104,8 +108,9 @@ export default function Sidebar({
     (analysis: ContractAnalysis) => {
       onSetSelectedChat(analysis.id);
       router.push(`/result/${analysis.id}`);
+      if (onCloseMobileMenu) onCloseMobileMenu();
     },
-    [onSetSelectedChat, router],
+    [onSetSelectedChat, router, onCloseMobileMenu],
   );
 
   const handleDeleteAnalysis = useCallback(
@@ -150,10 +155,14 @@ export default function Sidebar({
   };
 
   return (
-    <div className="fixed w-64 h-screen border-r border-white/5 flex flex-col bg-black/40 backdrop-blur-2xl z-20">
+    <div
+      className={`fixed inset-y-0 left-0 w-64 border-r border-white/5 flex flex-col bg-black/95 md:bg-black/40 backdrop-blur-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+        mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      }`}
+    >
       {/* Header */}
-      <div className="p-6 border-b border-white/5">
-        <div className="flex items-center gap-3 mb-8 px-2 group">
+      <div className="p-6 border-b border-white/5 flex items-center justify-between">
+        <div className="flex items-center gap-3 px-2 group">
           <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
             <span className="font-bold text-gray-900 text-sm">J</span>
           </div>
@@ -162,6 +171,31 @@ export default function Sidebar({
           </span>
         </div>
 
+        {/* Mobile Close Button */}
+        {onCloseMobileMenu && (
+          <button
+            onClick={onCloseMobileMenu}
+            className="md:hidden p-2 text-white/40 hover:text-white transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 18 18" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      <div className="p-6 pt-0">
         <Link
           href="/upload"
           className="w-full bg-yellow-600 hover:bg-yellow-500 text-gray-950 font-black py-3 px-4 rounded-full transition-all flex items-center justify-center gap-2 text-xs mb-8 shadow-[0_10px_20px_-5px_rgba(202,138,4,0.2)] hover:scale-[1.02]"
@@ -375,56 +409,76 @@ export default function Sidebar({
 
         {/* User Dropdown Menu */}
         {userMenuOpen && (
-          <div className="absolute bottom-full left-3 right-3 mb-2 bg-gray-900 border border-gray-800 rounded-lg shadow-xl overflow-hidden z-30 backdrop-blur-sm">
-            <div className="px-4 py-3 border-b border-gray-300/15">
-              <div className="text-sm font-medium text-white">
-                {user?.name || user?.email}
-              </div>
-              <div className="text-xs text-gray-400 mt-1">
-                {user?.credits || 0} crédits disponibles
+          <div className="absolute bottom-full left-0 right-0 mb-4 mx-3 bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in slide-in-from-bottom-2 fade-in duration-200">
+            {/* User Info Header */}
+            <div className="px-4 py-4 bg-gradient-to-br from-white/5 to-transparent border-b border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 p-[1px] shadow-lg">
+                  <div className="w-full h-full rounded-full bg-gray-900 flex items-center justify-center">
+                    <span className="font-bold text-white text-sm">
+                      {user?.name
+                        ? user.name.charAt(0).toUpperCase()
+                        : user?.email?.charAt(0).toUpperCase() || "U"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-white truncate">
+                    {user?.name || user?.email}
+                  </div>
+                  <div className="text-[10px] font-medium text-white/40 truncate">
+                    {user?.email}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <Link
-              href="/pricing"
-              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-800 hover:cursor-pointer transition-colors text-left border-b border-gray-300/15"
-            >
-              <div className="w-7 h-7 rounded bg-yellow-600/10 flex items-center justify-center">
-                <Sparkles className="h-3 w-3 text-yellow-600" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-white">
-                  Acheter des crédits
+            {/* Credits Section */}
+            <div className="px-2 py-2">
+              <Link
+                href="/pricing"
+                className="group flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-yellow-500/10 to-transparent border border-yellow-500/10 hover:border-yellow-500/30 transition-all cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center group-hover:bg-yellow-500/30 transition-colors">
+                  <Sparkles className="h-4 w-4 text-yellow-500" />
                 </div>
-                <div className="text-xs text-gray-500">
-                  Recharger votre compte
+                <div className="flex-1">
+                  <div className="text-xs font-bold text-yellow-500">
+                    {user?.credits || 0} crédits
+                  </div>
+                  <div className="text-[10px] text-yellow-500/60">
+                    Recharger mon compte
+                  </div>
                 </div>
-              </div>
-            </Link>
+                <Plus className="h-4 w-4 text-yellow-500/40 group-hover:text-yellow-500 transition-colors" />
+              </Link>
+            </div>
 
-            <Link
-              href="/account"
-              className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-800 hover:cursor-pointer transition-colors text-left"
-            >
-              <User className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-gray-300">Mon compte</span>
-            </Link>
+            <div className="px-2 pb-2">
+              <Link
+                href="/account"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition-all cursor-pointer group"
+              >
+                <User className="h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
+                <span className="text-sm font-medium">Mon compte</span>
+              </Link>
 
-            <Link
-              href="/settings"
-              className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-800 hover:cursor-pointer border-t border-gray-300/15 transition-colors text-left"
-            >
-              <Settings className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-gray-300">Paramètres</span>
-            </Link>
+              <Link
+                href="/settings"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 text-gray-400 hover:text-white transition-all cursor-pointer group"
+              >
+                <Settings className="h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
+                <span className="text-sm font-medium">Paramètres</span>
+              </Link>
+            </div>
 
-            <div className="border-t border-gray-300/15">
+            <div className="p-2 border-t border-white/5 bg-white/[0.02]">
               <button
                 onClick={() => logout()}
-                className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-600/10 text-gray-400 hover:text-red-400 hover:cursor-pointer transition-colors text-left"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-all cursor-pointer group"
               >
-                <LogOut className="h-4 w-4" />
-                <span className="text-sm">Déconnexion</span>
+                <LogOut className="h-4 w-4 text-gray-500 group-hover:text-red-400 transition-colors" />
+                <span className="text-sm font-medium">Déconnexion</span>
               </button>
             </div>
           </div>
