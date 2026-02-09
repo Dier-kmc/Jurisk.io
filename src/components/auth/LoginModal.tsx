@@ -1,22 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   X,
   Mail,
   Lock,
   AlertCircle,
   CheckCircle2,
-  FileText,
-  Shield,
-  Zap,
-  TrendingUp,
   Chrome,
   Github,
   Loader2,
+  TrendingUp,
+  Shield,
+  Zap,
 } from "lucide-react";
 import { CustomButton } from "@/components/ui/custom/CustomButton";
-import { InputField } from "../ui/custom/InputField";
+import { InputField } from "@/components/ui/custom/InputField";
 import { useAuth } from "@/lib/hooks/useAuth";
 
 interface LoginModalProps {
@@ -39,8 +38,30 @@ export function LoginModal({
     "google" | "github" | "credentials" | null
   >(null);
 
-  // Utiliser le hook useAuth
+  // Utiliser le hook useAuth corrigé
   const { login, isLoading } = useAuth();
+
+  // Réinitialiser l'état quand la modal s'ouvre
+  useEffect(() => {
+    if (isOpen) {
+      resetForm();
+    }
+  }, [isOpen]);
+
+  // Fonction pour réinitialiser tous les champs
+  const resetForm = () => {
+    setEmail("");
+    setPassword("");
+    setShowPassword(false);
+    setError("");
+    setSuccess("");
+    setLoadingProvider(null);
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -58,10 +79,10 @@ export function LoginModal({
 
       // Fermer la modal après un délai
       setTimeout(() => {
-        onClose();
+        handleClose();
       }, 1000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue");
+    } catch (err: any) {
+      setError(err.message || "Une erreur est survenue");
       setLoadingProvider(null);
     }
   };
@@ -70,14 +91,12 @@ export function LoginModal({
     setError("");
     setLoadingProvider(provider);
     try {
+      // Pour OAuth, laisser NextAuth gérer la redirection
       await login(provider);
-      // La modal se fermera automatiquement via la redirection NextAuth
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : `Erreur de connexion avec ${provider}`,
-      );
+      // Réinitialiser avant de fermer
+      resetForm();
+    } catch (err: any) {
+      setError(err.message || `Erreur de connexion avec ${provider}`);
       setLoadingProvider(null);
     }
   };
@@ -105,7 +124,7 @@ export function LoginModal({
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all hover:scale-105 group"
             aria-label="Fermer"
           >
@@ -120,7 +139,7 @@ export function LoginModal({
             <div className="grid grid-cols-2 gap-4">
               <CustomButton
                 onClick={() => handleSocialLogin("google")}
-                disabled={isLoading}
+                disabled={isLoading || !!loadingProvider}
                 className="w-full flex items-center justify-center gap-2 py-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all"
               >
                 <Chrome className="w-5 h-5" />
@@ -132,7 +151,7 @@ export function LoginModal({
 
               <CustomButton
                 onClick={() => handleSocialLogin("github")}
-                disabled={isLoading}
+                disabled={isLoading || !!loadingProvider}
                 className="w-full flex items-center justify-center gap-2 py-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all"
               >
                 <Github className="w-5 h-5" />
@@ -175,6 +194,7 @@ export function LoginModal({
                   placeholder="exemple@entreprise.com"
                   label="Adresse email"
                   icon={Mail}
+                  disabled={isLoading || !!loadingProvider}
                 />
 
                 <div className="space-y-2">
@@ -187,12 +207,13 @@ export function LoginModal({
                     required
                     icon={Lock}
                     showPasswordToggle
+                    disabled={isLoading || !!loadingProvider}
                   />
                   <div className="flex justify-end">
                     <button
                       type="button"
-                      className="text-xs text-white/40 hover:text-yellow-500 transition-colors"
-                      disabled={isLoading}
+                      className="text-xs text-white/40 hover:text-yellow-500 transition-colors disabled:opacity-50"
+                      disabled={isLoading || !!loadingProvider}
                     >
                       Mot de passe oublié ?
                     </button>
@@ -206,8 +227,8 @@ export function LoginModal({
                   fullWidth
                   size="lg"
                   isLoading={loadingProvider === "credentials"}
-                  disabled={isLoading}
-                  className="h-14 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-black font-bold text-lg shadow-[0_4px_20px_-5px_rgba(202,138,4,0.3)] hover:shadow-[0_8px_30px_-5px_rgba(202,138,4,0.4)] transition-all"
+                  disabled={isLoading || !!loadingProvider || !email || !password}
+                  className="h-14 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-black font-bold text-lg shadow-[0_4px_20px_-5px_rgba(202,138,4,0.3)] hover:shadow-[0_8px_30px_-5px_rgba(202,138,4,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loadingProvider === "credentials"
                     ? "Connexion..."
@@ -220,8 +241,12 @@ export function LoginModal({
                   Pas encore de compte ?{" "}
                   <button
                     type="button"
-                    onClick={onSwitchToRegister}
-                    className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors"
+                    onClick={() => {
+                      resetForm();
+                      onSwitchToRegister();
+                    }}
+                    className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors disabled:opacity-50"
+                    disabled={isLoading || !!loadingProvider}
                   >
                     Créer un compte
                   </button>

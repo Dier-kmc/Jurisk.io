@@ -60,24 +60,15 @@ export function useRegisterForm({ onClose }: UseRegisterFormProps) {
           throw new Error(data.error || "Erreur d'inscription");
         }
 
-        // Connexion automatique après inscription
-        const result = await signIn("credentials", {
-          email,
-          password,
-          redirect: false,
-        });
-
-        if (result?.error) {
-          console.error("Auto-login error:", result.error);
-          setSuccess("Inscription réussie ! Veuillez vous connecter.");
-        } else {
-          setSuccess("Inscription réussie ! Connexion en cours...");
-          window.location.reload();
+        if (!response.ok) {
+          throw new Error(data.error || "Erreur d'inscription");
         }
+
+        setSuccess("Inscription réussie ! Veuillez vous connecter.");
 
         setTimeout(() => {
           onClose();
-        }, 1000);
+        }, 1500);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Une erreur est survenue",
