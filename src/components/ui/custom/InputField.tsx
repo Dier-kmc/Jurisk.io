@@ -16,6 +16,7 @@ interface InputFieldProps {
   error?: string
   success?: string
   className?: string
+  disabled?: boolean
 }
 
 export function InputField({
@@ -29,7 +30,8 @@ export function InputField({
   showPasswordToggle = false,
   error,
   success,
-  className = ''
+  className = '',
+  disabled = false
 }: InputFieldProps) {
   const [showPassword, setShowPassword] = useState(false)
   const inputType = showPasswordToggle && showPassword ? 'text' : type
@@ -54,6 +56,7 @@ export function InputField({
           placeholder={placeholder}
           className={`w-full pl-12 pr-12 py-2.5 bg-black/50 border rounded-xl focus:outline-none focus:ring-1 text-white placeholder-gray-500 transition-all ${getBorderColor()} ${className}`}
           required={required}
+          disabled={disabled}
         />
         {showPasswordToggle && (
           <button
