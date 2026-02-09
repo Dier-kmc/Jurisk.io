@@ -4,28 +4,40 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/db/client";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import GitHubProvider from "next-auth/providers/github";
 import bcrypt from "bcryptjs";
 
-// Vérifiez que les variables d'environnement requises sont définies
-if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error("NEXTAUTH_SECRET is not defined in environment variables");
-}
+// Déterminer l'URL de base pour la production
+const getBaseUrl = () => {
+  // Priorité 1 : Variable explicite
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL;
+  }
+  // Priorité 2 : Vercel
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  // Défaut : localhost
+  return "http://localhost:3000";
+};
 
-if (!process.env.GOOGLE_CLIENT_ID) {
-  console.warn("⚠️ GOOGLE_CLIENT_ID is not defined");
-}
+const baseUrl = getBaseUrl();
 
-if (!process.env.GOOGLE_CLIENT_SECRET) {
-  console.warn("⚠️ GOOGLE_CLIENT_SECRET is not defined");
-}
+console.log("🔧 Environment:", process.env.NODE_ENV);
+console.log("🔧 Base URL:", baseUrl);
+console.log("🔧 VERCEL_URL:", process.env.VERCEL_URL);
+console.log("🔧 NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
 
-if (!process.env.GITHUB_SECRET) {
-  console.warn("GITHUB_SECRET is not defined");
-}
-
-if (!process.env.GITHUB_ID) {
-  console.warn("GITHUB_ID is not defined");
+// Vérifications strictes en production
+if (process.env.NODE_ENV === "production") {
+  if (!process.env.NEXTAUTH_SECRET) {
+    throw new Error("NEXTAUTH_SECRET is required in production");
+  }
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    throw new Error("GOOGLE_CLIENT_ID is required in production");
+  }
+  if (!process.env.GOOGLE_CLIENT_SECRET) {
+    throw new Error("GOOGLE_CLIENT_SECRET is required in production");
+  }
 }
 
 export const authOptions: NextAuthOptions = {
@@ -40,23 +52,16 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required");
+          return null;
         }
 
         try {
-          console.log("Attempting login for:", credentials.email);
           const user = await prisma.user.findUnique({
             where: { email: credentials.email.toLowerCase() },
           });
 
-          if (!user) {
-            console.log("User not found");
-            throw new Error("Invalid credentials");
-          }
-
-          if (!user.password) {
-            console.log("User has no password (provider account?)");
-            throw new Error("Invalid credentials");
+          if (!user || !user.password) {
+            return null;
           }
 
           const isValid = await bcrypt.compare(
@@ -65,11 +70,8 @@ export const authOptions: NextAuthOptions = {
           );
 
           if (!isValid) {
-            console.log("Invalid password");
-            throw new Error("Invalid credentials");
+            return null;
           }
-
-          console.log("Login successful for user:", user.id);
 
           return {
             id: user.id,
@@ -88,67 +90,59 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        }
-      }
-    }),
-
-    GitHubProvider({
-      clientId: process.env.GITHUB_ID || "",
-      clientSecret: process.env.GITHUB_SECRET || "",
+      // Configuration simplifiée pour production
     }),
   ],
 
   callbacks: {
-
-    async signIn({ user, account, profile, email }) {
-      // Permettre la liaison de compte OAuth avec un compte existant
-      if (account?.provider !== "credentials") {
-        // Vérifier si l'utilisateur existe déjà par email
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-        });
-
-        if (existingUser) {
-          // Vérifier si le compte OAuth est déjà lié
-          const existingAccount = await prisma.account.findFirst({
-            where: {
-              userId: existingUser.id,
-              provider: account?.provider,
-              providerAccountId: account?.providerAccountId,
-            },
+    async signIn({ user, account, profile }) {
+      try {
+        if (account?.provider === "google") {
+          // Log simple pour debug
+          console.log("Google sign-in attempt for:", user.email);
+          
+          // Vérifier si l'utilisateur existe déjà
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+            include: { accounts: true },
           });
 
-          // Si pas encore lié, créer la liaison
-          if (!existingAccount && account) {
-            await prisma.account.create({
-              data: {
-                userId: existingUser.id,
-                type: account.type,
-                provider: account.provider,
-                providerAccountId: account.providerAccountId,
-                access_token: account.access_token,
-                expires_at: account.expires_at,
-                token_type: account.token_type,
-                scope: account.scope,
-                id_token: account.id_token,
-              },
-            });
-            console.log(`Compte ${account.provider} lié pour: ${user.email}`);
-          }
+          if (existingUser) {
+            // Vérifier si Google est déjà lié
+            const hasGoogleAccount = existingUser.accounts.some(
+              acc => acc.provider === "google"
+            );
 
-          // Mettre à jour l'ID de l'utilisateur pour la session
-          user.id = existingUser.id;
+            if (!hasGoogleAccount && account) {
+              // Créer la liaison
+              await prisma.account.create({
+                data: {
+                  userId: existingUser.id,
+                  type: account.type,
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                  access_token: account.access_token,
+                  expires_at: account.expires_at,
+                  token_type: account.token_type,
+                  scope: account.scope,
+                  id_token: account.id_token,
+                },
+              });
+              console.log("Google account linked for:", user.email);
+            }
+            
+            // Mettre à jour l'ID utilisateur
+            user.id = existingUser.id;
+          }
         }
+        return true;
+      } catch (error) {
+        console.error("SignIn callback error:", error);
+        return true; // Laisser NextAuth gérer
       }
-      return true;
     },
-    async jwt({ token, user, account }) {
-      // Persist user data to token
+
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.plan = (user as any).plan || "FREE";
@@ -158,7 +152,6 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      // Send properties to the client
       if (session.user) {
         session.user.id = token.id as string;
         session.user.plan = token.plan as string;
@@ -168,34 +161,43 @@ export const authOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+      // Redirection après OAuth
+      if (url.includes("/api/auth/callback")) {
+        return `${baseUrl}/dashboard`;
+      }
+      return url.startsWith("/") ? `${baseUrl}${url}` : url;
     },
   },
 
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
-
-  events: {
-    async signIn({ user, account, profile }) {
-      console.log("User signed in:", user.email);
-    },
-    async signOut({ token, session }) {
-      console.log("User signed out");
-    },
-    async createUser({ user }) {
-      console.log("New user created:", user.email);
-    },
-    async linkAccount({ user, account, profile }) {
-      console.log("Account linked:", user.email);
+  
+  // Important pour Vercel
+  useSecureCookies: process.env.NODE_ENV === "production",
+  
+  // Configuration des cookies pour Vercel
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" 
+        ? "__Secure-next-auth.session-token" 
+        : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
     },
   },
+  
+  pages: {
+    signIn: "/login",
+    error: "/auth/error",
+  },
+  
+  debug: process.env.NODE_ENV === "development",
 };
