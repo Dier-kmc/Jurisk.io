@@ -409,7 +409,7 @@ export default function Sidebar({
 
         {/* User Dropdown Menu */}
         {userMenuOpen && (
-          <div className="absolute bottom-full left-0 right-0 mb-4 mx-3 bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in slide-in-from-bottom-2 fade-in duration-200">
+          <div className="absolute bottom-full left-0 right-0 mb-4 mx-3 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in slide-in-from-bottom-2 fade-in duration-200">
             {/* User Info Header */}
             <div className="px-4 py-4 bg-gradient-to-br from-white/5 to-transparent border-b border-white/5">
               <div className="flex items-center gap-3">

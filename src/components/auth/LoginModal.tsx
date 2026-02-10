@@ -136,7 +136,7 @@ export function LoginModal({
           {/* Colonne gauche - Formulaire */}
           <div className="p-8 lg:p-12 space-y-8 relative z-10">
             {/* Boutons de connexion rapide */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <CustomButton
                 onClick={() => handleSocialLogin("google")}
                 disabled={isLoading || !!loadingProvider}
@@ -149,7 +149,7 @@ export function LoginModal({
                 )}
               </CustomButton>
 
-              <CustomButton
+              {/* <CustomButton
                 onClick={() => handleSocialLogin("github")}
                 disabled={isLoading || !!loadingProvider}
                 className="w-full flex items-center justify-center gap-2 py-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all"
@@ -159,7 +159,7 @@ export function LoginModal({
                 {loadingProvider === "github" && (
                   <Loader2 className="w-4 h-4 animate-spin ml-2" />
                 )}
-              </CustomButton>
+              </CustomButton> */}
             </div>
 
             <div className="relative flex items-center gap-4">

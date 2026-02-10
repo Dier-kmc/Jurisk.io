@@ -5,9 +5,23 @@ import { CustomButton } from "@/components/ui/custom/CustomButton";
 import { CREDIT_PACKS } from "@/lib/constants/plans";
 import Link from "next/link";
 import { useReveal } from "@/lib/hooks/useReveal";
+import { useState } from "react";
+import RegisterModal from "@/components/auth/RegisterModal";
+import LoginModal from "@/components/auth/LoginModal";
 
 export default function PricingPage() {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showRegisterModal, setShowRegisterModal] = useState(false);
   useReveal();
+
+  const handleLoginClick = () => {
+    setShowLoginModal(true);
+    setShowRegisterModal(false);
+  };
+  const handleRegisterClick = () => {
+    setShowRegisterModal(true);
+    setShowLoginModal(false);
+  };
 
   return (
     <div className="bg-[#050505] min-h-screen pt-32 pb-24 overflow-hidden relative">
@@ -126,14 +140,13 @@ export default function PricingPage() {
                 engagement. Si vous avez besoin de plus, nos packs sont là.
               </p>
             </div>
-            <Link href="/register">
               <CustomButton
+              onClick={handleRegisterClick}
                 variant="outline"
                 className="border-white/10 text-white hover:bg-white/5"
               >
                 Créer un compte
               </CustomButton>
-            </Link>
           </div>
         </div>
 
@@ -156,6 +169,16 @@ export default function PricingPage() {
           ))}
         </div>
       </div>
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSwitchToRegister={handleRegisterClick}
+      />
+      <RegisterModal
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+        onSwitchToLogin={handleLoginClick}
+      />
     </div>
   );
 }

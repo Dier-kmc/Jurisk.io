@@ -88,79 +88,82 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section - Senior Designer Vision */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-24 pb-12 overflow-hidden bg-[#050505]">
-        {/* Subtle Depth Gradient */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.03)_0%,transparent_50%)]" />
+      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-16 md:pt-28 md:pb-20 overflow-hidden bg-[#050505]">
+        {/* Enhanced Background Effects */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Main gradient */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[600px] bg-gradient-to-b from-yellow-500/10 via-transparent to-transparent blur-3xl" />
 
-        <div className="container relative z-10 px-6">
-          <div className="max-w-5xl mx-auto flex flex-col items-center text-center">
-            {/* Status Badge */}
-            <div className="animate-slide-up [animation-delay:0.2s] opacity-0 flex items-center space-x-3 mb-12 bg-white/[0.03] border border-white/[0.08] px-4 py-2 rounded-full backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-500 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
-              </span>
-              <span className="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
-                Analyse Juridique 2.0
-              </span>
-            </div>
+          {/* Grid overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_70%)]" />
 
-            {/* Massive Editorial Headline */}
-            <h1 className="animate-slide-up [animation-delay:0.4s] opacity-0 text-[clamp(2.5rem,8vw,6.5rem)] font-bold mb-12 tracking-[-0.04em] leading-[0.9] text-white">
-              La lucidité radicale, <br />
-              <span className="serif-display gradient-subtle">
-                enfin accessible.
+          {/* Animated orbs */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-500/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-yellow-500/3 rounded-full blur-3xl animate-pulse delay-1000" />
+        </div>
+
+        <div className="container relative z-10 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
+            
+
+            {/* Refined Headline */}
+            <h1 className="animate-slide-up [animation-delay:0.4s] opacity-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] font-bold mb-8 md:mb-12 lg:mb-14 tracking-tight leading-[0.95]">
+              <span className="text-white">Décryptez vos contrats</span>
+              <br />
+              <span className="bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-300 bg-clip-text text-transparent">
+                avec une intelligence absolue
               </span>
             </h1>
 
-            {/* Sub-text with brand voice */}
-            <p className="animate-slide-up [animation-delay:0.6s] opacity-0 max-w-3xl text-lg sm:text-xl text-white/40 leading-relaxed mb-16 px-4">
-              Jurisk.io transcende la lecture traditionnelle.{" "}
-              <br className="hidden md:block" />
-              Nous extrayons
-              <span className="text-white/80">
-                {" "}
-                le risque, l&apos;obligation et la puissance{" "}
+            {/* Powerful Subheading */}
+            <p className="animate-slide-up [animation-delay:0.6s] opacity-0 max-w-3xl text-base sm:text-lg md:text-xl text-white/50 leading-relaxed mb-12 md:mb-16 lg:mb-20 px-4">
+              Notre IA analyse chaque clause avec une précision chirurgicale,
+              révélant les{" "}
+              <span className="text-white/80 font-semibold">
+                risques cachés
               </span>
-              de chaque paragraphe avec une précision chirurgicale.
+              , les{" "}
+              <span className="text-white/80 font-semibold">
+                obligations critiques
+              </span>{" "}
+              et les
+              <span className="text-white/80 font-semibold">
+                {" "}
+                leviers de négociation
+              </span>{" "}
+              en quelques secondes.
             </p>
 
-            {/* Hero Actions */}
-            <div className="animate-slide-up [animation-delay:0.8s] opacity-0 grid grid-cols-1 sm:flex items-center gap-6">
-              <Link href="/upload">
+            {/* Hero CTA - Single Powerful Button */}
+            <div className="animate-slide-up [animation-delay:0.8s] opacity-0 w-full max-w-sm sm:max-w-md mx-auto">
+              <Link href="/upload" className="block group">
                 <CustomButton
                   size="lg"
-                  className="h-20 px-14 rounded-full bg-yellow-600 hover:bg-yellow-500 text-gray-950 font-black text-xl shadow-[0_20px_40px_-10px_rgba(202,138,4,0.3)] hover:scale-[1.02] transition-all"
+                  className="group relative h-16 sm:h-20 px-10 sm:px-16 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-gray-950 font-bold text-lg sm:text-xl shadow-[0_20px_60px_-15px_rgba(202,138,4,0.4)] hover:shadow-[0_25px_70px_-15px_rgba(202,138,4,0.5)] hover:scale-[1.03] transition-all duration-300"
                 >
-                  Engager l&apos;Analyse
-                  <ArrowRight className="ml-3 w-6 h-6" />
+                  <span className="flex items-center gap-3">
+                    Analyser mon contrat
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" />
+                  </span>
                 </CustomButton>
+
+                {/* Micro-copy */}
+                <p className="mt-4 text-xs sm:text-sm text-white/30 font-medium">
+                  ✓ Gratuit • ✓ Sécurisé • ✓ Résultat en 45 secondes
+                </p>
               </Link>
-              <button className="h-20 px-10 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all text-white/70 font-bold text-lg">
-                L&apos;Expérience Jurisk.io
-              </button>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="animate-slide-up [animation-delay:1s] opacity-0 mt-6 md:mt-6 w-full max-w-2xl">
             </div>
           </div>
         </div>
 
-        {/* Floating Stat Bars - Aesthetic element */}
-        <div className="absolute bottom-12 left-0 right-0 animate-slide-up [animation-delay:1s] opacity-0 flex justify-center px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-24">
-            {[
-              { label: "Précision", val: "99.4%" },
-              { label: "Vitesse", val: "45s" },
-              { label: "Confidentialité", val: "AES-256" },
-              { label: "Disponibilité", val: "24/7" },
-            ].map((stat, i) => (
-              <div key={i} className="flex flex-col">
-                <span className="text-[10px] font-black tracking-widest text-white/20 mb-1 uppercase text-center md:text-left">
-                  {stat.label}
-                </span>
-                <span className="text-sm font-bold text-white/80 text-center md:text-left">
-                  {stat.val}
-                </span>
-              </div>
-            ))}
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-white/40 rounded-full mt-2 animate-pulse" />
           </div>
         </div>
       </section>
@@ -168,59 +171,83 @@ export default function HomePage() {
       {/* Organic Features Section - The "Craftmanship" approach */}
       <section className="py-32 bg-[#050505] relative overflow-hidden">
         <div className="container px-6">
-          <div className="flex flex-col lg:flex-row gap-24 items-center mb-40 reveal">
-            <div className="lg:w-1/2">
-              <span className="text-yellow-500/80 text-xs font-black tracking-[0.3em] uppercase mb-6 block">
-                01 — L&apos;Expertise
-              </span>
-              <h2 className="text-5xl md:text-6xl font-bold mb-8 tracking-tighter leading-[0.95] text-white">
-                Bienvenue dans <br />
-                <span className="serif-display text-white/40">
-                  l&apos;ère de l&apos;évidence.
-                </span>
-              </h2>
-              <p className="text-xl text-white/30 leading-relaxed max-w-lg mb-10">
-                L&apos;IA ne se contente plus de lire. Elle comprend
-                l&apos;intention, balance les risques et anticipe les litiges
-                avant même qu&apos;ils ne naissent.
-              </p>
-              <div className="flex flex-col gap-6">
-                {[
-                  "Détection des déséquilibres contractuels majeurs",
-                  "Scrutin des clauses de responsabilité limitative",
-                  "Identification des obligations de moyens vs résultat",
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start group">
-                    <div className="w-1 h-6 bg-yellow-600/30 mr-6 group-hover:bg-yellow-500 transition-colors" />
-                    <span className="text-white/60 font-medium group-hover:text-white transition-colors">
-                      {item}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="lg:w-1/2 relative">
-              <div className="aspect-[4/5] bg-white/[0.02] border border-white/10 rounded-[4rem] flex items-center justify-center relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                <Shield className="w-48 h-48 text-white/[0.03] group-hover:text-yellow-500/10 transition-colors duration-1000" />
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-center mb-20 lg:mb-40 reveal">
+  {/* Texte - Gauche */}
+  <div className="lg:w-1/2 order-2 lg:order-1 px-4 sm:px-0">
+    <span className="text-yellow-500/80 text-xs font-black tracking-[0.3em] uppercase mb-4 lg:mb-6 block">
+      01 — L&apos;Expertise
+    </span>
+    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 lg:mb-8 tracking-tight leading-[0.95] text-white">
+      Bienvenue dans <br />
+      <span className="serif-display text-white/40">
+        l&apos;ère de l&apos;évidence.
+      </span>
+    </h2>
+    <p className="text-base sm:text-lg md:text-xl text-white/30 leading-relaxed max-w-lg mb-8 lg:mb-10">
+      L&apos;IA ne se contente plus de lire. Elle comprend
+      l&apos;intention, balance les risques et anticipe les litiges
+      avant même qu&apos;ils ne naissent.
+    </p>
+    <div className="flex flex-col gap-4 lg:gap-6">
+      {[
+        "Détection des déséquilibres contractuels majeurs",
+        "Scrutin des clauses de responsabilité limitative",
+        "Identification des obligations de moyens vs résultat",
+      ].map((item, i) => (
+        <div key={i} className="flex items-start group">
+          <div className="w-1 h-5 lg:h-6 bg-yellow-600/30 mr-4 lg:mr-6 group-hover:bg-yellow-500 transition-colors flex-shrink-0" />
+          <span className="text-sm sm:text-base text-white/60 font-medium group-hover:text-white transition-colors">
+            {item}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
 
-                {/* Asymmetrical "Floating Clause" */}
-                <div className="absolute -bottom-10 -right-10 w-80 p-8 glass-card rounded-3xl animate-float">
-                  <div className="h-2 w-12 bg-red-500/20 rounded mb-4" />
-                  <p className="text-xs text-white/40 italic leading-relaxed">
-                    "La responsabilité du Prestataire est exclue en cas de force
-                    majeure, y compris les cyber-attaques..."
-                  </p>
-                  <div className="mt-6 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-[10px] font-black tracking-widest uppercase text-red-500/80">
-                      Risque Critique
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  {/* Visual - Droite */}
+  <div className="lg:w-1/2 relative order-1 lg:order-2 px-4 sm:px-0 w-full mb-10 lg:mb-0">
+    <div className="aspect-square sm:aspect-[4/5] max-w-sm mx-auto lg:max-w-none bg-white/[0.02] border border-white/10 rounded-3xl lg:rounded-[4rem] flex items-center justify-center relative overflow-hidden group p-4 sm:p-0">
+      
+      {/* Effet de gradient au hover */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+      
+      {/* Shield - Taille responsive */}
+      <Shield className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 text-white/[0.03] group-hover:text-yellow-500/10 transition-colors duration-1000" />
+
+      {/* Clause flottante - Position responsive */}
+      <div className="absolute bottom-4 right-4 sm:-bottom-8 sm:-right-8 lg:-bottom-10 lg:-right-10 w-60 sm:w-64 lg:w-80 p-4 sm:p-6 lg:p-8 glass-card rounded-xl sm:rounded-2xl lg:rounded-3xl animate-float max-w-[calc(100%-32px)] sm:max-w-none">
+        
+        {/* Barre rouge d'indicateur */}
+        <div className="h-1.5 sm:h-2 w-8 sm:w-12 bg-red-500/20 rounded mb-3 lg:mb-4" />
+        
+        {/* Texte de la clause */}
+        <p className="text-[10px] sm:text-xs text-white/40 italic leading-relaxed">
+          "La responsabilité du Prestataire est exclue en cas de force
+          majeure, y compris les cyber-attaques..."
+        </p>
+        
+        {/* Badge d'alerte */}
+        <div className="mt-4 sm:mt-6 flex items-center gap-2">
+          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+          <span className="text-[9px] sm:text-[10px] font-black tracking-widest uppercase text-red-500/80 whitespace-nowrap">
+            Risque Critique
+          </span>
+        </div>
+      </div>
+
+      {/* Points décoratifs - Seulement sur desktop */}
+      <div className="hidden lg:block absolute -top-4 -left-4 w-8 h-8 rounded-full border border-white/5 bg-white/[0.01]" />
+      <div className="hidden lg:block absolute -bottom-6 -right-6 w-12 h-12 rounded-full border border-white/5 bg-white/[0.01]" />
+    </div>
+
+    {/* Légende informative pour mobile */}
+    <div className="block lg:hidden mt-4 text-center">
+      <p className="text-xs text-white/30">
+        ⬆️ Clause à risque détectée automatiquement
+      </p>
+    </div>
+  </div>
+</div>
 
           <div className="flex flex-col lg:flex-row-reverse gap-24 items-center reveal">
             <div className="lg:w-1/2">
