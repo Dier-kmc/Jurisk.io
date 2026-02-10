@@ -92,7 +92,7 @@ export function RegisterModal({
           {/* Colonne gauche - Formulaire */}
           <div className="p-8 lg:p-12 space-y-8 relative z-10">
             {/* Boutons de connexion rapide */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-2 gap-4">
               <CustomButton
                 onClick={() => handleSocialLogin("google")} // Note: handleSocialLogin needs to be implemented or linked correctly if missing in RegisterModal context, strictly speaking RegisterModal has it defined in line 50.
                 disabled={isAuthLoading}
@@ -118,7 +118,7 @@ export function RegisterModal({
                 ou avec email
               </span>
               <div className="h-px bg-white/10 flex-1" />
-            </div>
+            </div> */}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Messages */}

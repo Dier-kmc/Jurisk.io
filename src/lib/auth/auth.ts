@@ -1,5 +1,5 @@
 // lib/auth/auth.ts
-import { NextAuthOptions } from "next-auth";
+import { Account, NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/db/client";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -91,56 +91,130 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       // Configuration simplifiée pour production
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
     }),
   ],
 
   callbacks: {
     async signIn({ user, account, profile }) {
-      try {
-        if (account?.provider === "google") {
-          // Log simple pour debug
-          console.log("Google sign-in attempt for:", user.email);
-          
-          // Vérifier si l'utilisateur existe déjà
-          const existingUser = await prisma.user.findUnique({
-            where: { email: user.email! },
-            include: { accounts: true },
+  try {
+    if (account?.provider === "google") {
+      // Normaliser l'email en minuscules
+      const normalizedEmail = user.email!.toLowerCase().trim();
+      console.log("Google sign-in for normalized email:", normalizedEmail);
+      
+      // Rechercher l'utilisateur avec l'email normalisé
+      const existingUser = await prisma.user.findUnique({
+        where: { 
+          email: normalizedEmail // Utiliser l'email normalisé
+        },
+      });
+
+      if (existingUser) {
+        // Mettre à jour l'ID de l'utilisateur
+        user.id = existingUser.id;
+        
+        // Vérifier si le compte Google est déjà lié
+        const existingAccount = await prisma.account.findFirst({
+          where: {
+            userId: existingUser.id,
+            provider: "google",
+            providerAccountId: account.providerAccountId,
+          },
+        });
+
+        if (!existingAccount && account) {
+          // Créer le lien entre les comptes
+          await prisma.account.create({
+            data: {
+              userId: existingUser.id,
+              type: account.type,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              refresh_token: account.refresh_token,
+              access_token: account.access_token,
+              expires_at: account.expires_at,
+              token_type: account.token_type,
+              scope: account.scope,
+              id_token: account.id_token,
+              session_state: account.session_state,
+            },
           });
-
-          if (existingUser) {
-            // Vérifier si Google est déjà lié
-            const hasGoogleAccount = existingUser.accounts.some(
-              acc => acc.provider === "google"
-            );
-
-            if (!hasGoogleAccount && account) {
-              // Créer la liaison
-              await prisma.account.create({
-                data: {
-                  userId: existingUser.id,
-                  type: account.type,
-                  provider: account.provider,
-                  providerAccountId: account.providerAccountId,
-                  access_token: account.access_token,
-                  expires_at: account.expires_at,
-                  token_type: account.token_type,
-                  scope: account.scope,
-                  id_token: account.id_token,
-                },
-              });
-              console.log("Google account linked for:", user.email);
-            }
-            
-            // Mettre à jour l'ID utilisateur
-            user.id = existingUser.id;
-          }
+          console.log("Google account linked successfully");
         }
-        return true;
-      } catch (error) {
-        console.error("SignIn callback error:", error);
-        return true; // Laisser NextAuth gérer
+
+        // Optionnel : Mettre à jour le nom avec la version de Google
+        if (user.name && user.name !== existingUser.name) {
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: { name: user.name }
+          });
+          console.log("Updated user name from Google:", user.name);
+        }
       }
-    },
+    }
+    return true;
+  } catch (error) {
+    console.error("SignIn callback error:", error);
+    return false;
+  }
+},
+    // async signIn({ user, account, profile }) {
+    //   try {
+    //     if (account?.provider === "google") {
+    //       console.log("Google sign-in for:", user.email);
+          
+    //       // Vérifier si l'utilisateur existe
+    //       const existingUser = await prisma.user.findUnique({
+    //         where: { email: user.email! },
+    //       });
+
+    //       if (existingUser) {
+    //         // Mettre à jour l'ID de l'utilisateur
+    //         user.id = existingUser.id;
+            
+    //         // Vérifier si le compte Google est déjà lié
+    //         const existingAccount = await prisma.account.findFirst({
+    //           where: {
+    //             userId: existingUser.id,
+    //             provider: "google",
+    //             providerAccountId: account.providerAccountId,
+    //           },
+    //         });
+
+    //         if (!existingAccount) {
+    //           // Créer le lien entre les comptes
+    //           await prisma.account.create({
+    //             data: {
+    //               userId: existingUser.id,
+    //               type: account.type,
+    //               provider: account.provider,
+    //               providerAccountId: account.providerAccountId,
+    //               refresh_token: account.refresh_token,
+    //               access_token: account.access_token,
+    //               expires_at: account.expires_at,
+    //               token_type: account.token_type,
+    //               scope: account.scope,
+    //               id_token: account.id_token,
+    //               session_state: account.session_state,
+    //             },
+    //           });
+    //           console.log("Google account linked successfully");
+    //         }
+    //       }
+    //     }
+    //     return true;
+    //   } catch (error) {
+    //     console.error("SignIn callback error:", error);
+    //     return false; // Bloquer la connexion en cas d'erreur
+    //   }
+    // },
 
     async jwt({ token, user }) {
       if (user) {
@@ -195,7 +269,7 @@ export const authOptions: NextAuthOptions = {
   },
   
   pages: {
-    signIn: "/login",
+    signIn: "/",
     error: "/auth/error",
   },
   
