@@ -7,6 +7,8 @@ import { prisma } from '@/lib/db/client'
 import { DocumentExtractor } from '@/lib/pdf/extractText'
 import { analyzeContract } from '@/lib/services/analysisService'
 import { AuthService } from '@/lib/auth/auth-service'
+import { supabase } from '@/lib/supabase/client'
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -102,23 +104,43 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Sauvegarder le fichier
-    const uploadsDir = join(process.cwd(), 'uploads');
+    // // Sauvegarder le fichier
+    // const uploadsDir = join(process.cwd(), 'uploads');
+    // const fileId = uuidv4();
+    // const fileName = `${fileId}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    // const filePath = join(uploadsDir, fileName);
+
+    // console.log('Sauvegarde du fichier:', {
+    //   uploadsDir,
+    //   fileId,
+    //   fileName,
+    //   filePath
+    // });
+
+    // // Créer le dossier uploads s'il n'existe pas
+    // await mkdir(uploadsDir, { recursive: true });
+    // await writeFile(filePath, buffer);
+    // console.log('Fichier sauvegardé');
+
     const fileId = uuidv4();
     const fileName = `${fileId}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    const filePath = join(uploadsDir, fileName);
 
-    console.log('Sauvegarde du fichier:', {
-      uploadsDir,
-      fileId,
-      fileName,
-      filePath
-    });
+    const { data, error: uploadError } = await supabase.storage
+      .from('jurisk-io')
+      .upload(`uploads/${fileName}`, buffer, {
+        contentType: file.type
+      });
 
-    // Créer le dossier uploads s'il n'existe pas
-    await mkdir(uploadsDir, { recursive: true });
-    await writeFile(filePath, buffer);
-    console.log('Fichier sauvegardé');
+    if (uploadError) {
+      console.error('Erreur upload Supabase:', uploadError);
+      return NextResponse.json(
+        { success: false, error: 'Impossible de sauvegarder le fichier' },
+        { status: 500 }
+      );
+    }
+
+    // Créer l'entrée en base avec l'URL Supabase
+    const fileUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/jurisk-io/uploads/${fileName}`;
 
     // Créer l'entrée en base de données
     const contract = await prisma.contract.create({
