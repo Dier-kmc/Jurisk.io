@@ -19,7 +19,7 @@ export default function AnalysisFooter({ onNewAnalysis }: AnalysisFooterProps) {
             </span>
             <div className="text-xs text-white/20 font-medium">
               Analyse Certifiée • {formatDate(new Date())} • Intelligence
-              Jurisk.io4
+              Jurisk.io
             </div>
           </div>
 
@@ -32,14 +32,6 @@ export default function AnalysisFooter({ onNewAnalysis }: AnalysisFooterProps) {
             </button>
 
             <div className="w-[1px] h-4 bg-white/5" />
-
-            <Link
-              href="/history"
-              className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors flex items-center gap-2"
-            >
-              Archives
-              <ChevronRight className="w-3 h-3" />
-            </Link>
           </div>
         </div>
       </div>

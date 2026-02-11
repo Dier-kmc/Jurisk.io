@@ -11,6 +11,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import DeleteConfirmationModal from "@/components/layout/dashboard/DeleteConfirmation";
 import Sidebar from "@/components/layout/dashboard/SideBar";
+import Link from "next/link";
 
 export default function DashboardLayout({
   children,
@@ -62,18 +63,6 @@ export default function DashboardLayout({
       setSelectedChat(null);
     }
   }, [pathname]);
-
-  // Fermer le menu quand on clique ailleurs
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (openMenuId) {
-        setOpenMenuId(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openMenuId]);
 
   const fetchAnalyses = useCallback(async () => {
     try {
@@ -208,14 +197,15 @@ export default function DashboardLayout({
 
         {/* Mobile Header */}
         <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-lg flex items-center justify-center shadow-lg">
-              <span className="font-bold text-gray-900 text-sm">J</span>
+          <Link href="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <span className="font-bold text-gray-900 text-lg">J</span>
             </div>
-            <span className="font-bold text-sm tracking-tight text-white/90">
-              Jurisk.io
+            <span className="text-white font-bold text-xl tracking-tight hidden sm:block">
+              Jurisk
+              <span className="gradient-text italic font-serif">.io</span>
             </span>
-          </div>
+          </Link>
           <button
             onClick={() => setMobileMenuOpen(true)}
             className="p-2 text-white/60 hover:text-white transition-colors"

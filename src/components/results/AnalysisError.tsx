@@ -126,14 +126,6 @@ export default function AnalysisError({
                 <FileText className="w-5 h-5 mr-2" />
                 Nouvelle Analyse
               </Button>
-              <Button
-                onClick={() => router.push("/history")}
-                variant="outline"
-                className="flex-1 h-14 border-2 border-white/10 text-white hover:bg-white/5 rounded-full transition-all"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Historique
-              </Button>
             </div>
           </div>
         </div>
@@ -207,14 +199,6 @@ export default function AnalysisError({
                 <RefreshCw className="w-5 h-5 mr-2" />
                 Actualiser
               </Button>
-              <Button
-                onClick={() => router.push("/history")}
-                variant="outline"
-                className="flex-1 h-14 border-2 border-white/10 text-white hover:bg-white/5 rounded-full transition-all"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Historique
-              </Button>
             </div>
           </div>
         </div>
@@ -287,20 +271,6 @@ export default function AnalysisError({
                     </div>
                     <div className="text-xs text-gray-500">
                       Actualiser la page
-                    </div>
-                  </div>
-                </button>
-                <button
-                  onClick={() => router.push("/history")}
-                  className="flex items-center gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all text-left"
-                >
-                  <ArrowLeft className="w-5 h-5 text-yellow-500" />
-                  <div>
-                    <div className="text-sm font-bold text-white">
-                      Historique
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Voir mes analyses
                     </div>
                   </div>
                 </button>

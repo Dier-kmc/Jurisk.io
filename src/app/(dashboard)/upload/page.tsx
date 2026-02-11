@@ -10,6 +10,8 @@ import {
   CreditCard,
   Loader2,
   Zap,
+  Sparkles,
+  Crown,
 } from "lucide-react";
 import FileUpload from "@/components/upload/FileUpload";
 import CustomButton from "@/components/ui/custom/CustomButton";
@@ -189,43 +191,76 @@ export default function UploadPage() {
         )}
 
         {/* HUD de Crédits Glassmorphic */}
-        <div className="mb-16">
-          <div className="p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 relative overflow-hidden group hover:bg-white/[0.04] transition-all">
-            <div className="flex flex-col lg:flex-row justify-between items-center gap-10">
-              <div className="flex-1 w-full lg:w-auto">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
-                    <CreditCard className="w-4 h-4 text-yellow-500" />
+        <div className="mb-24 relative group">
+          <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 via-amber-500/20 to-yellow-600/20 rounded-[2.5rem] blur-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-700" />
+
+          <div className="relative p-10 md:p-14 rounded-[2.5rem] bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10 backdrop-blur-2xl overflow-hidden">
+            <div className="absolute top-0 right-0 p-12 opacity-50 pointer-events-none">
+              <div className="w-64 h-64 bg-yellow-500/20 rounded-full blur-[80px]" />
+            </div>
+
+            <div className="flex flex-col lg:flex-row justify-between items-end gap-12 relative z-10">
+              <div className="flex-1 space-y-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400/20 to-amber-600/20 border border-yellow-500/30 flex items-center justify-center shadow-[0_0_30px_-10px_rgba(234,179,8,0.3)]">
+                    <Sparkles className="w-6 h-6 text-yellow-400" />
                   </div>
-                  <h3 className="serif-display text-2xl text-white">
-                    Solde de Crédits
-                  </h3>
+                  <div>
+                    <h2 className="text-sm font-bold text-yellow-500 tracking-widest uppercase mb-1">
+                      Votre Carburant
+                    </h2>
+                    <h3 className="serif-display text-3xl md:text-4xl text-white">
+                      Solde de Crédits
+                    </h3>
+                  </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="flex justify-between items-end mb-2">
-                    <span className="text-[10px] font-black tracking-widest text-white/20 uppercase">
-                      Disponible
-                    </span>
-                    <span className="text-4xl font-bold text-yellow-500 tracking-tighter">
+                <div className="space-y-4">
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-7xl md:text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/50 tracking-tighter filter drop-shadow-lg">
                       {loadingCredits ? "..." : userCredits?.credits || 0}
                     </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] text-white/20 font-medium">
-                      Utilisez vos crédits pour lancer des analyses
-                      approfondies. 1 analyse = 1 crédit.
+                    <span className="text-xl font-medium text-white/40 pb-4">
+                      crédits disponibles
                     </span>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-sm text-white/40 max-w-md">
+                    <div className="w-1 h-1 rounded-full bg-yellow-500" />
+                    <p>
+                      Chaque analyse consomme 1 crédit pour générer un rapport
+                      complet et détaillé.
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex-shrink-0">
-                <Link href="/pricing" className="block">
-                  <button className="h-14 px-8 rounded-full border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white hover:bg-white/10 transition-all hover:scale-[1.02]">
-                    Acheter des crédits
+              <div className="w-full lg:w-auto">
+                <Link href="/pricing" className="block w-full">
+                  <button className="w-full relative group/btn overflow-hidden rounded-2xl bg-white p-[1px] transition-all hover:scale-[1.02] active:scale-[0.98]">
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-600 opacity-100 group-hover/btn:opacity-100 transition-opacity" />
+                    <div className="relative h-16 px-10 bg-black/50 backdrop-blur-sm rounded-2xl flex items-center justify-center gap-3 group-hover/btn:bg-black/40 transition-colors">
+                      <span className="text-xs font-black uppercase tracking-[0.2em] text-white">
+                        Recharger mon compte
+                      </span>
+                      <CreditCard className="w-4 h-4 text-white group-hover/btn:translate-x-1 transition-transform" />
+                    </div>
                   </button>
                 </Link>
+
+                <div className="mt-4 flex justify-center gap-6">
+                  {userCredits?.plan === "FREE" && (
+                    <span className="text-[10px] font-bold text-yellow-500/60 uppercase tracking-widest">
+                      Plan Gratuit
+                    </span>
+                  )}
+                  {userCredits?.plan === "PREMIUM" && (
+                    <span className="text-[10px] font-bold text-purple-400/80 uppercase tracking-widest flex items-center gap-2">
+                      <Crown className="w-3 h-3" />
+                      Membre Premium
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -37,9 +37,9 @@ export default function StatusPage() {
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               { name: "Analyse IA", status: "Opérationnel" },
-              { name: "API Gateway", status: "Opérationnel" },
+              { name: "API Gateway", status: "Non-Opérationnel" },
               { name: "Dashboard Client", status: "Opérationnel" },
-              { name: "Export Documents", status: "Opérationnel" },
+              { name: "Export Documents", status: "Non-Opérationnel" },
             ].map((s, i) => (
               <div
                 key={i}

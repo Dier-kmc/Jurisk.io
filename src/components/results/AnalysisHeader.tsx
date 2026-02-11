@@ -98,7 +98,7 @@ export default function AnalysisHeader({
 
             <div className="h-6 md:h-8 w-[1px] bg-white/5 mx-1 md:mx-2 hidden sm:block" />
 
-            <div className="flex items-center gap-2 flex-shrink-0">
+            {/* <div className="flex items-center gap-2 flex-shrink-0">
               <Button
                 variant="outline"
                 size="sm"
@@ -122,7 +122,7 @@ export default function AnalysisHeader({
               >
                 <Printer className="w-3 h-3 md:w-4 md:h-4" />
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

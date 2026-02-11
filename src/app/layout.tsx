@@ -6,6 +6,8 @@ import { SessionProvider } from "next-auth/react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { Toaster } from "sonner";
+import DeviceDetector from "@/components/layout/DeviceDetector";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,7 +41,11 @@ export default function RootLayout({
       </head>
       <body className="bg-black text-white min-h-screen flex flex-col relative">
         <div className="noise-overlay" />
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <Toaster richColors theme="dark" position="top-center" />
+          <DeviceDetector />
+        </AuthProvider>
       </body>
     </html>
   );

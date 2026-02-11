@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import {
   FileText,
   Plus,
@@ -84,6 +84,23 @@ export default function Sidebar({
   const pathname = usePathname();
   const menuRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
+  // Fermer le menu lors d'un clic à l'extérieur
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!openMenuId) return;
+
+      const menuRef = menuRefs.current.get(openMenuId);
+
+      // Si le clic est à l'extérieur du menu ouvert, on le ferme
+      if (menuRef && !menuRef.contains(event.target as Node)) {
+        onSetOpenMenuId(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openMenuId, onSetOpenMenuId]);
+
   const handleSearch = useCallback(
     (term: string) => {
       onSetSearchQuery(term);
@@ -162,14 +179,15 @@ export default function Sidebar({
     >
       {/* Header */}
       <div className="p-6 border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-3 px-2 group">
-          <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-            <span className="font-bold text-gray-900 text-sm">J</span>
+        <Link href="/" className="flex items-center gap-3 px-2 group">
+          <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+            <span className="font-bold text-gray-900 text-lg">J</span>
           </div>
-          <span className="font-bold text-sm tracking-tight text-white/90">
-            Jurisk.io
+          <span className="text-white font-bold text-xl tracking-tight hidden sm:block">
+            Jurisk
+            <span className="gradient-text italic font-serif">.io</span>
           </span>
-        </div>
+        </Link>
 
         {/* Mobile Close Button */}
         {onCloseMobileMenu && (
@@ -195,7 +213,7 @@ export default function Sidebar({
         )}
       </div>
 
-      <div className="p-6 pt-0">
+      <div className="p-6 pt-0 mt-6">
         <Link
           href="/upload"
           className="w-full bg-yellow-600 hover:bg-yellow-500 text-gray-950 font-black py-3 px-4 rounded-full transition-all flex items-center justify-center gap-2 text-xs mb-8 shadow-[0_10px_20px_-5px_rgba(202,138,4,0.2)] hover:scale-[1.02]"
