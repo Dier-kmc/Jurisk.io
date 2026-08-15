@@ -10,14 +10,14 @@ interface AnalysisFooterProps {
 
 export default function AnalysisFooter({ onNewAnalysis }: AnalysisFooterProps) {
   return (
-    <footer className="border-t border-white/5 mt-24 py-12">
+    <footer className="border-t border-border mt-24 py-12">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex flex-col gap-2 text-center md:text-left">
-            <span className="text-[10px] font-black tracking-[0.4em] uppercase text-white/10">
+            <span className="text-[10px] font-black tracking-[0.4em] uppercase text-faint">
               Sceau de Lucidité Digital
             </span>
-            <div className="text-xs text-white/20 font-medium">
+            <div className="text-xs text-faint font-medium">
               Analyse Certifiée • {formatDate(new Date())} • Intelligence
               Jurisk.io
             </div>
@@ -26,7 +26,7 @@ export default function AnalysisFooter({ onNewAnalysis }: AnalysisFooterProps) {
           <div className="flex items-center gap-6">
             <button
               onClick={onNewAnalysis}
-              className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors"
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-muted hover:text-foreground transition-colors"
             >
               Nouvelle Analyse
             </button>

@@ -103,20 +103,20 @@ export default function ClauseEditor({
   };
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+    <Card className="bg-gradient-to-br from-surface-2 to-surface-1 border-border">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between text-white">
+        <CardTitle className="flex items-center justify-between text-foreground">
           <div className="flex items-center">
-            <Edit2 className="w-4 h-4 mr-2 text-blue-500" />
+            <Edit2 className="w-4 h-4 mr-2 text-accent" />
             Éditeur de clause
           </div>
           <Badge
             className={
               clause.priority === "high"
-                ? "bg-red-500"
+                ? "bg-risk-high"
                 : clause.priority === "medium"
-                  ? "bg-yellow-500"
-                  : "bg-green-500"
+                  ? "bg-risk-medium"
+                  : "bg-risk-low"
             }
           >
             {clause.priority}
@@ -127,15 +127,15 @@ export default function ClauseEditor({
       <CardContent>
         <div className="space-y-4">
           {/* Informations de la clause */}
-          <div className="p-3 bg-gray-900/50 rounded-lg">
+          <div className="p-3 bg-surface-2 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
-              <FileText className="w-4 h-4 text-gray-400" />
-              <span className="text-sm font-medium text-white">
+              <FileText className="w-4 h-4 text-muted" />
+              <span className="text-sm font-medium text-foreground">
                 {clause.clause_number}
               </span>
             </div>
-            <h4 className="font-semibold text-white mb-1">{clause.title}</h4>
-            <p className="text-xs text-gray-400">
+            <h4 className="font-semibold text-foreground mb-1">{clause.title}</h4>
+            <p className="text-xs text-muted">
               {clause.problem.substring(0, 80)}...
             </p>
           </div>
@@ -143,7 +143,7 @@ export default function ClauseEditor({
           {/* Éditeur de texte */}
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
-              <label className="text-sm font-medium text-gray-300">
+              <label className="text-sm font-medium text-muted">
                 Solution proposée
               </label>
               <div className="flex flex-wrap items-center gap-2">
@@ -154,7 +154,7 @@ export default function ClauseEditor({
                       size="sm"
                       onClick={handleReset}
                       disabled={isSaving}
-                      className="h-7 text-xs text-gray-400 hover:text-white"
+                      className="h-7 text-xs text-muted hover:text-foreground"
                     >
                       <RotateCcw className="w-3 h-3 mr-1" />
                       Annuler
@@ -164,7 +164,7 @@ export default function ClauseEditor({
                       size="sm"
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="h-7 text-xs text-green-400 hover:text-green-300"
+                      className="h-7 text-xs text-risk-low hover:text-risk-low"
                     >
                       {isSaving ? (
                         <div className="w-3 h-3 mr-1 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -179,7 +179,7 @@ export default function ClauseEditor({
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsEditing(true)}
-                    className="h-7 text-xs text-blue-400 hover:text-blue-300"
+                    className="h-7 text-xs text-accent hover:text-accent"
                   >
                     <Edit2 className="w-3 h-3 mr-1" />
                     Modifier
@@ -191,8 +191,8 @@ export default function ClauseEditor({
             <Textarea
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
-              className={`min-h-[150px] bg-gray-900/50 border-gray-700 text-gray-300 ${
-                isEditing ? "border-blue-500/50" : ""
+              className={`min-h-[150px] bg-surface-2 border-border text-muted ${
+                isEditing ? "border-accent/50" : ""
               }`}
               readOnly={!isEditing}
               placeholder="Modifiez la solution proposée..."
@@ -203,7 +203,7 @@ export default function ClauseEditor({
                 variant="ghost"
                 size="sm"
                 onClick={handleCopy}
-                className="h-7 text-xs text-gray-400 hover:text-white"
+                className="h-7 text-xs text-muted hover:text-foreground"
               >
                 <Copy className="w-3 h-3 mr-1" />
                 Copier
@@ -214,7 +214,7 @@ export default function ClauseEditor({
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsEditing(true)}
-                  className="h-7 text-xs text-blue-400 hover:text-blue-300"
+                  className="h-7 text-xs text-accent hover:text-accent"
                 >
                   <Edit2 className="w-3 h-3 mr-1" />
                   Éditer cette clause
@@ -227,8 +227,8 @@ export default function ClauseEditor({
           <div className="space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-purple-500" />
-                <span className="text-sm font-medium text-white">
+                <Sparkles className="w-4 h-4 text-accent" />
+                <span className="text-sm font-medium text-foreground">
                   Suggestions IA
                 </span>
               </div>
@@ -236,7 +236,7 @@ export default function ClauseEditor({
                 variant="ghost"
                 size="sm"
                 onClick={generateAlternative}
-                className="h-7 text-xs text-yellow-400 hover:text-yellow-300 w-full sm:w-auto justify-center"
+                className="h-7 text-xs text-accent hover:text-accent w-full sm:w-auto justify-center"
               >
                 <Zap className="w-3 h-3 mr-1" />
                 Générer une alternative
@@ -250,27 +250,27 @@ export default function ClauseEditor({
                   onClick={() => handleApplySuggestion(suggestion)}
                   className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
                     selectedSuggestion === suggestion
-                      ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30"
-                      : "bg-gray-900/50 hover:bg-gray-800/50"
+                      ? "bg-gradient-to-r from-accent/20 to-accent/10 border border-accent/30"
+                      : "bg-surface-2 hover:bg-surface-2"
                   }`}
                 >
                   <div className="flex items-start gap-2">
                     <div
                       className={`w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
                         selectedSuggestion === suggestion
-                          ? "bg-gradient-to-r from-purple-500 to-pink-500"
-                          : "bg-gray-800"
+                          ? "bg-gradient-to-r from-accent to-accent-bright"
+                          : "bg-surface-2"
                       }`}
                     >
                       {selectedSuggestion === suggestion ? (
-                        <CheckCircle className="w-3 h-3 text-white" />
+                        <CheckCircle className="w-3 h-3 text-background" />
                       ) : (
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-muted">
                           {index + 1}
                         </span>
                       )}
                     </div>
-                    <span className="text-sm text-gray-300">{suggestion}</span>
+                    <span className="text-sm text-muted">{suggestion}</span>
                   </div>
                 </button>
               ))}
@@ -278,32 +278,32 @@ export default function ClauseEditor({
           </div>
 
           {/* Validation juridique */}
-          <div className="p-3 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-lg border border-blue-500/20">
+          <div className="p-3 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg border border-accent/20">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle className="w-4 h-4 text-blue-400" />
-              <span className="text-sm font-medium text-white">
+              <AlertCircle className="w-4 h-4 text-accent" />
+              <span className="text-sm font-medium text-foreground">
                 Validation recommandée
               </span>
             </div>
-            <p className="text-xs text-gray-300">
+            <p className="text-xs text-muted">
               Toute modification de clause doit être validée par un conseil
               juridique avant signature.
             </p>
           </div>
 
           {/* Historique des modifications */}
-          <div className="pt-4 border-t border-gray-800">
-            <h4 className="text-sm font-medium text-white mb-2">
+          <div className="pt-4 border-t border-border">
+            <h4 className="text-sm font-medium text-foreground mb-2">
               Historique des modifications
             </h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-400">Version originale</span>
-                <span className="text-gray-500">Aujourd'hui</span>
+                <span className="text-muted">Version originale</span>
+                <span className="text-faint">Aujourd'hui</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-400">Modification suggérée</span>
-                <span className="text-gray-500">Juste maintenant</span>
+                <span className="text-muted">Modification suggérée</span>
+                <span className="text-faint">Juste maintenant</span>
               </div>
             </div>
           </div>

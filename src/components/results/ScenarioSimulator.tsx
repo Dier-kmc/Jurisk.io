@@ -55,10 +55,10 @@ export default function ScenarioSimulator({
   return (
     <div className="space-y-6">
       {/* En-tête avec statistiques */}
-      <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+      <Card className="bg-gradient-to-br from-surface-2 to-surface-1 border-border">
         <CardHeader>
-          <CardTitle className="flex items-center text-white">
-            <Activity className="w-5 h-5 mr-2 text-blue-500" />
+          <CardTitle className="flex items-center text-foreground">
+            <Activity className="w-5 h-5 mr-2 text-accent" />
             Simulateur de scénarios
           </CardTitle>
           <CardDescription>
@@ -67,23 +67,23 @@ export default function ScenarioSimulator({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="text-center p-4 bg-gray-900/50 rounded-lg">
-              <div className="text-3xl font-bold text-white">
+            <div className="text-center p-4 bg-surface-2 rounded-lg">
+              <div className="text-3xl font-bold text-foreground">
                 {scenarios.length}
               </div>
-              <div className="text-sm text-gray-400">Scénarios identifiés</div>
+              <div className="text-sm text-muted">Scénarios identifiés</div>
             </div>
-            <div className="text-center p-4 bg-gray-900/50 rounded-lg">
-              <div className="text-3xl font-bold text-yellow-500">
+            <div className="text-center p-4 bg-surface-2 rounded-lg">
+              <div className="text-3xl font-bold text-accent">
                 {Math.round(avgProbability)}%
               </div>
-              <div className="text-sm text-gray-400">Probabilité moyenne</div>
+              <div className="text-sm text-muted">Probabilité moyenne</div>
             </div>
-            <div className="text-center p-4 bg-gray-900/50 rounded-lg">
-              <div className="text-3xl font-bold text-red-500">
+            <div className="text-center p-4 bg-surface-2 rounded-lg">
+              <div className="text-3xl font-bold text-risk-high">
                 {highRiskScenarios.length}
               </div>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-muted">
                 Scénarios à haut risque
               </div>
             </div>
@@ -94,12 +94,12 @@ export default function ScenarioSimulator({
               variant="outline"
               size="sm"
               onClick={handleReset}
-              className="border-gray-700 text-gray-400 hover:text-white"
+              className="border-border text-muted hover:text-foreground"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Réinitialiser
             </CustomButton>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-muted">
               Sélectionnez un scénario pour simuler ses conséquences
             </div>
           </div>
@@ -109,10 +109,10 @@ export default function ScenarioSimulator({
       {/* Sélection des scénarios */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Liste des scénarios */}
-        <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+        <Card className="bg-gradient-to-br from-surface-2 to-surface-1 border-border">
           <CardHeader>
-            <CardTitle className="flex items-center text-white">
-              <Zap className="w-5 h-5 mr-2 text-yellow-500" />
+            <CardTitle className="flex items-center text-foreground">
+              <Zap className="w-5 h-5 mr-2 text-accent" />
               Scénarios disponibles
             </CardTitle>
             <CardDescription>
@@ -127,8 +127,8 @@ export default function ScenarioSimulator({
                   onClick={() => handleScenarioSelect(index)}
                   className={`w-full text-left p-4 rounded-lg transition-all duration-200 ${
                     selectedScenario === index
-                      ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30"
-                      : "bg-gray-900/50 hover:bg-gray-800/50"
+                      ? "bg-gradient-to-r from-accent/20 to-accent/10 border border-accent/30"
+                      : "bg-surface-2 hover:bg-surface-2"
                   }`}
                 >
                   <div className="flex justify-between items-start mb-2">
@@ -136,29 +136,29 @@ export default function ScenarioSimulator({
                       <div
                         className={`w-3 h-3 rounded-full ${
                           scenario.probability > 70
-                            ? "bg-red-500"
+                            ? "bg-risk-high"
                             : scenario.probability > 40
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
+                              ? "bg-risk-medium"
+                              : "bg-risk-low"
                         }`}
                       />
-                      <h4 className="font-semibold text-white">
+                      <h4 className="font-semibold text-foreground">
                         {scenario.scenario}
                       </h4>
                     </div>
                     <Badge
                       className={
                         scenario.probability > 70
-                          ? "bg-red-500"
+                          ? "bg-risk-high"
                           : scenario.probability > 40
-                            ? "bg-yellow-500"
-                            : "bg-green-500"
+                            ? "bg-risk-medium"
+                            : "bg-risk-low"
                       }
                     >
                       {scenario.probability}%
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-400 mb-3">
+                  <p className="text-sm text-muted mb-3">
                     {(
                       scenario.consequences_party_a?.[0] ||
                       "Aucune conséquence majeure identifiée"
@@ -166,17 +166,17 @@ export default function ScenarioSimulator({
                     ...
                   </p>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <div className="flex items-center gap-2 text-xs text-faint">
                       <TrendingUp className="w-3 h-3" />
                       Impact: {scenario.global_impact}/10
                     </div>
                     <div
                       className={`text-xs ${
                         scenario.global_impact > 7
-                          ? "text-red-400"
+                          ? "text-risk-high"
                           : scenario.global_impact > 4
-                            ? "text-yellow-400"
-                            : "text-green-400"
+                            ? "text-risk-medium"
+                            : "text-risk-low"
                       }`}
                     >
                       {scenario.global_impact > 7
@@ -193,10 +193,10 @@ export default function ScenarioSimulator({
         </Card>
 
         {/* Simulation du scénario sélectionné */}
-        <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+        <Card className="bg-gradient-to-br from-surface-2 to-surface-1 border-border">
           <CardHeader>
-            <CardTitle className="flex items-center text-white">
-              <Target className="w-5 h-5 mr-2 text-green-500" />
+            <CardTitle className="flex items-center text-foreground">
+              <Target className="w-5 h-5 mr-2 text-risk-low" />
               {simulationActive
                 ? "Simulation en cours"
                 : "Sélectionnez un scénario"}
@@ -211,19 +211,19 @@ export default function ScenarioSimulator({
             {simulationActive && currentScenario ? (
               <div className="space-y-6">
                 {/* En-tête du scénario */}
-                <div className="p-4 bg-gray-900/50 rounded-lg">
+                <div className="p-4 bg-surface-2 rounded-lg">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-white">
+                    <h3 className="text-xl font-bold text-foreground">
                       {currentScenario.scenario}
                     </h3>
                     <div className="flex items-center gap-2">
                       <Badge
                         className={
                           currentScenario.probability > 70
-                            ? "bg-red-500"
+                            ? "bg-risk-high"
                             : currentScenario.probability > 40
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
+                              ? "bg-risk-medium"
+                              : "bg-risk-low"
                         }
                       >
                         {currentScenario.probability}% de probabilité
@@ -231,10 +231,10 @@ export default function ScenarioSimulator({
                       <Badge
                         className={
                           currentScenario.global_impact > 7
-                            ? "bg-red-500"
+                            ? "bg-risk-high"
                             : currentScenario.global_impact > 4
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
+                              ? "bg-risk-medium"
+                              : "bg-risk-low"
                         }
                       >
                         Impact: {currentScenario.global_impact}/10
@@ -244,13 +244,13 @@ export default function ScenarioSimulator({
 
                   {/* Barre de probabilité */}
                   <div className="mb-4">
-                    <div className="flex justify-between text-sm text-gray-400 mb-1">
+                    <div className="flex justify-between text-sm text-muted mb-1">
                       <span>Probabilité d'occurrence</span>
                       <span>{currentScenario.probability}%</span>
                     </div>
-                    <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-surface-2 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-accent to-accent-bright transition-all duration-500"
                         style={{ width: `${currentScenario.probability}%` }}
                       ></div>
                     </div>
@@ -259,9 +259,9 @@ export default function ScenarioSimulator({
 
                 {/* Conséquences */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-gray-900/50 rounded-lg">
-                    <h4 className="font-semibold text-white mb-3 flex items-center">
-                      <TrendingUp className="w-4 h-4 mr-2 text-green-400" />
+                  <div className="p-4 bg-surface-2 rounded-lg">
+                    <h4 className="font-semibold text-foreground mb-3 flex items-center">
+                      <TrendingUp className="w-4 h-4 mr-2 text-risk-low" />
                       Conséquences positives
                     </h4>
                     <ul className="space-y-2">
@@ -274,8 +274,8 @@ export default function ScenarioSimulator({
                         .slice(0, 3)
                         .map((consequence, index) => (
                           <li key={index} className="flex items-start gap-2">
-                            <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
-                            <span className="text-sm text-gray-300">
+                            <div className="w-2 h-2 rounded-full bg-risk-low mt-2 flex-shrink-0"></div>
+                            <span className="text-sm text-muted">
                               {consequence}
                             </span>
                           </li>
@@ -283,9 +283,9 @@ export default function ScenarioSimulator({
                     </ul>
                   </div>
 
-                  <div className="p-4 bg-gray-900/50 rounded-lg">
-                    <h4 className="font-semibold text-white mb-3 flex items-center">
-                      <TrendingDown className="w-4 h-4 mr-2 text-red-400" />
+                  <div className="p-4 bg-surface-2 rounded-lg">
+                    <h4 className="font-semibold text-foreground mb-3 flex items-center">
+                      <TrendingDown className="w-4 h-4 mr-2 text-risk-high" />
                       Risques identifiés
                     </h4>
                     <ul className="space-y-2">
@@ -298,8 +298,8 @@ export default function ScenarioSimulator({
                         .slice(0, 3)
                         .map((consequence, index) => (
                           <li key={index} className="flex items-start gap-2">
-                            <div className="w-2 h-2 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
-                            <span className="text-sm text-gray-300">
+                            <div className="w-2 h-2 rounded-full bg-risk-high mt-2 flex-shrink-0"></div>
+                            <span className="text-sm text-muted">
                               {consequence}
                             </span>
                           </li>
@@ -309,9 +309,9 @@ export default function ScenarioSimulator({
                 </div>
 
                 {/* Recommandations */}
-                <div className="p-4 bg-black/30 rounded-lg">
-                  <h4 className="font-semibold text-white mb-3 flex items-center">
-                    <AlertTriangle className="w-4 h-4 mr-2 text-yellow-400" />
+                <div className="p-4 bg-surface-2 rounded-lg">
+                  <h4 className="font-semibold text-foreground mb-3 flex items-center">
+                    <AlertTriangle className="w-4 h-4 mr-2 text-accent" />
                     Recommandations pour ce scénario
                   </h4>
                   <div className="space-y-3">
@@ -319,14 +319,14 @@ export default function ScenarioSimulator({
                       (recommendation, index) => (
                         <div
                           key={index}
-                          className="flex items-start gap-3 p-3 bg-gray-900/30 rounded-lg"
+                          className="flex items-start gap-3 p-3 bg-surface-2 rounded-lg"
                         >
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 flex items-center justify-center flex-shrink-0">
-                            <span className="text-xs font-bold text-black">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-accent to-accent-bright flex items-center justify-center flex-shrink-0">
+                            <span className="text-xs font-bold text-background">
                               {index + 1}
                             </span>
                           </div>
-                          <span className="text-sm text-gray-300">
+                          <span className="text-sm text-muted">
                             {recommendation}
                           </span>
                         </div>
@@ -336,8 +336,8 @@ export default function ScenarioSimulator({
                 </div>
 
                 {/* Actions préventives */}
-                <div className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
-                  <h4 className="font-semibold text-white mb-3">
+                <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg border border-accent/20">
+                  <h4 className="font-semibold text-foreground mb-3">
                     Actions préventives recommandées
                   </h4>
                   <div className="space-y-2">
@@ -351,8 +351,8 @@ export default function ScenarioSimulator({
                         key={index}
                         className="flex items-center gap-2 text-sm"
                       >
-                        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                        <span className="text-gray-300">{action}</span>
+                        <div className="w-2 h-2 rounded-full bg-accent"></div>
+                        <span className="text-muted">{action}</span>
                       </div>
                     ))}
                   </div>
@@ -360,11 +360,11 @@ export default function ScenarioSimulator({
               </div>
             ) : (
               <div className="text-center py-12">
-                <BarChart className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-400 mb-2">
+                <BarChart className="w-16 h-16 text-faint mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-muted mb-2">
                   Aucun scénario sélectionné
                 </h3>
-                <p className="text-gray-500">
+                <p className="text-faint">
                   Sélectionnez un scénario dans la liste pour voir la simulation
                   détaillée
                 </p>
@@ -375,10 +375,10 @@ export default function ScenarioSimulator({
       </div>
 
       {/* Analyse comparative */}
-      <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+      <Card className="bg-gradient-to-br from-surface-2 to-surface-1 border-border">
         <CardHeader>
-          <CardTitle className="flex items-center text-white">
-            <BarChart className="w-5 h-5 mr-2 text-blue-500" />
+          <CardTitle className="flex items-center text-foreground">
+            <BarChart className="w-5 h-5 mr-2 text-accent" />
             Analyse comparative des scénarios
           </CardTitle>
           <CardDescription>
@@ -389,20 +389,20 @@ export default function ScenarioSimulator({
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-800">
-                  <th className="text-left py-3 px-4 text-gray-400 font-semibold">
+                <tr className="border-b border-border">
+                  <th className="text-left py-3 px-4 text-muted font-semibold">
                     Scénario
                   </th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-semibold">
+                  <th className="text-left py-3 px-4 text-muted font-semibold">
                     Probabilité
                   </th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-semibold">
+                  <th className="text-left py-3 px-4 text-muted font-semibold">
                     Impact global
                   </th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-semibold">
+                  <th className="text-left py-3 px-4 text-muted font-semibold">
                     Risque
                   </th>
-                  <th className="text-left py-3 px-4 text-gray-400 font-semibold">
+                  <th className="text-left py-3 px-4 text-muted font-semibold">
                     Recommandation
                   </th>
                 </tr>
@@ -411,25 +411,25 @@ export default function ScenarioSimulator({
                 {scenarios.map((scenario, index) => (
                   <tr
                     key={index}
-                    className={`border-b border-gray-800/50 hover:bg-gray-900/30 cursor-pointer ${
-                      selectedScenario === index ? "bg-blue-500/10" : ""
+                    className={`border-b border-border hover:bg-surface-2 cursor-pointer ${
+                      selectedScenario === index ? "bg-accent/10" : ""
                     }`}
                     onClick={() => handleScenarioSelect(index)}
                   >
                     <td className="py-3 px-4">
-                      <div className="font-medium text-white">
+                      <div className="font-medium text-foreground">
                         {scenario.scenario}
                       </div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-16 h-2 bg-gray-800 rounded-full overflow-hidden">
+                        <div className="w-16 h-2 bg-surface-2 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                            className="h-full bg-gradient-to-r from-accent to-accent-bright"
                             style={{ width: `${scenario.probability}%` }}
                           ></div>
                         </div>
-                        <span className="text-gray-300">
+                        <span className="text-muted">
                           {scenario.probability}%
                         </span>
                       </div>
@@ -438,10 +438,10 @@ export default function ScenarioSimulator({
                       <div
                         className={`font-medium ${
                           scenario.global_impact > 7
-                            ? "text-red-400"
+                            ? "text-risk-high"
                             : scenario.global_impact > 4
-                              ? "text-yellow-400"
-                              : "text-green-400"
+                              ? "text-risk-medium"
+                              : "text-risk-low"
                         }`}
                       >
                         {scenario.global_impact}/10
@@ -451,11 +451,11 @@ export default function ScenarioSimulator({
                       <Badge
                         className={
                           scenario.probability * scenario.global_impact > 500
-                            ? "bg-red-500"
+                            ? "bg-risk-high"
                             : scenario.probability * scenario.global_impact >
                                 200
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
+                              ? "bg-risk-medium"
+                              : "bg-risk-low"
                         }
                       >
                         {scenario.probability * scenario.global_impact > 500
@@ -466,7 +466,7 @@ export default function ScenarioSimulator({
                       </Badge>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-muted">
                         {(
                           scenario.recommendations?.[0] ||
                           "Aucune recommandation"

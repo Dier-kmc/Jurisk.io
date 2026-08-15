@@ -35,7 +35,7 @@ export default function AnalysisHeader({
   getStatusColor,
 }: AnalysisHeaderProps) {
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-xl bg-black/40 border-b border-white/5">
+    <header className="sticky top-0 z-40 backdrop-blur-xl bg-surface-1/80 border-b border-border">
       <div className="container mx-auto px-4 md:px-6 py-4 md:py-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6">
           <div className="flex items-center gap-4 md:gap-6">
@@ -48,7 +48,7 @@ export default function AnalysisHeader({
 
             <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
               <div className="w-10 h-10 md:w-12 md:h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <FileText className="w-4 h-4 md:w-5 md:h-5 text-yellow-600" />
+                <FileText className="w-4 h-4 md:w-5 md:h-5 text-accent" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2 md:gap-3 mb-1">

@@ -30,44 +30,44 @@ const SummaryCard = ({
   className,
 }: SummaryCardProps) => {
   return (
-    <div className={clsx('bg-gray-900/50 rounded-xl p-6', className)}>
+    <div className={clsx('bg-surface-1 rounded-xl p-6 border border-border', className)}>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
         <div>
           <div className="flex items-center mb-2">
-            <FileText className="w-5 h-5 text-yellow-600 mr-2" />
-            <h1 className="text-2xl font-bold text-white truncate max-w-lg">
+            <FileText className="w-5 h-5 text-accent mr-2" />
+            <h1 className="text-2xl font-bold text-foreground truncate max-w-lg">
               {fileName}
             </h1>
           </div>
           
-          <div className="flex flex-wrap gap-4 text-sm text-gray-400">
+          <div className="flex flex-wrap gap-4 text-sm text-muted">
             {fileSize && (
               <span className="flex items-center">
-                <span className="text-yellow-600 mr-1">📦</span>
+                <span className="text-accent mr-1">📦</span>
                 {formatFileSize(fileSize)}
               </span>
             )}
             
             <span className="flex items-center">
-              <Calendar className="w-3 h-3 text-yellow-600 mr-1" />
+              <Calendar className="w-3 h-3 text-accent mr-1" />
               Uploadé le {formatDate(uploadDate)}
             </span>
             
             <span className="flex items-center">
-              <User className="w-3 h-3 text-yellow-600 mr-1" />
+              <User className="w-3 h-3 text-accent mr-1" />
               Analysé le {formatDate(analysisDate)}
             </span>
             
             {pageCount && (
               <span className="flex items-center">
-                <Hash className="w-3 h-3 text-yellow-600 mr-1" />
+                <Hash className="w-3 h-3 text-accent mr-1" />
                 {pageCount} page{pageCount > 1 ? 's' : ''}
               </span>
             )}
             
             {wordCount && (
               <span className="flex items-center">
-                <span className="text-yellow-600 mr-1">📝</span>
+                <span className="text-accent mr-1">📝</span>
                 {wordCount.toLocaleString()} mots
               </span>
             )}
@@ -100,39 +100,39 @@ const SummaryCard = ({
 
       {/* Métriques rapides */}
       {(pageCount || wordCount) && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-gray-800">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-border">
           {fileSize && (
             <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-600">
+              <div className="text-2xl font-bold text-accent">
                 {formatFileSize(fileSize)}
               </div>
-              <div className="text-sm text-gray-400">Taille du fichier</div>
+              <div className="text-sm text-muted">Taille du fichier</div>
             </div>
           )}
           
           {pageCount && (
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-500">
+              <div className="text-2xl font-bold text-accent">
                 {pageCount}
               </div>
-              <div className="text-sm text-gray-400">Pages</div>
+              <div className="text-sm text-muted">Pages</div>
             </div>
           )}
           
           {wordCount && (
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-500">
+              <div className="text-2xl font-bold text-risk-low">
                 {(wordCount / 1000).toFixed(1)}k
               </div>
-              <div className="text-sm text-gray-400">Mots</div>
+              <div className="text-sm text-muted">Mots</div>
             </div>
           )}
           
           <div className="text-center">
-            <div className="text-2xl font-bold text-purple-500">
+            <div className="text-2xl font-bold text-accent">
               {formatDate(analysisDate, { month: 'short', day: 'numeric' })}
             </div>
-            <div className="text-sm text-gray-400">Date d'analyse</div>
+            <div className="text-sm text-muted">Date d'analyse</div>
           </div>
         </div>
       )}

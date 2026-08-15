@@ -17,12 +17,12 @@ export default function AnalysisOverview({
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Analyse des parties */}
-        <div className="p-10 rounded-[2rem] bg-white/[0.02] border border-white/5 relative overflow-hidden">
+        <div className="p-10 rounded-xl bg-surface-1 border border-border relative overflow-hidden">
           <div className="mb-10">
-            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-yellow-500/60 block mb-4">
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-accent/60 block mb-4">
               Équilibre des forces
             </span>
-            <h3 className="serif-display text-4xl text-white">
+            <h3 className="text-4xl font-bold text-foreground">
               Analyse Comparative
             </h3>
           </div>
@@ -36,13 +36,13 @@ export default function AnalysisOverview({
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-2 h-2 rounded-full ${index === 0 ? "bg-yellow-500" : "bg-purple-500"} shadow-[0_0_12px_rgba(234,179,8,0.4)]`}
+                      className={`w-2 h-2 rounded-full ${index === 0 ? "bg-accent" : "bg-accent/60"}`}
                     />
-                    <h4 className="text-xl font-bold text-white tracking-tight">
+                    <h4 className="text-xl font-bold text-foreground tracking-tight">
                       {party.party_name}
                     </h4>
                   </div>
-                  <Badge className="bg-white/5 border-white/5 text-[9px] font-black uppercase tracking-widest text-white/40">
+                  <Badge className="bg-surface-2 border-border text-[9px] font-black uppercase tracking-widest text-muted">
                     SCORE:{" "}
                     {party.negotiation_power === "strong"
                       ? "MAXIMAL"
@@ -50,20 +50,20 @@ export default function AnalysisOverview({
                   </Badge>
                 </div>
 
-                <div className="grid grid-cols-2 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/5">
-                  <div className="bg-[#050505] p-6 text-center">
-                    <span className="text-[9px] font-black tracking-widest text-white/20 uppercase block mb-1">
+                <div className="grid grid-cols-2 gap-px bg-border rounded-xl overflow-hidden border border-border">
+                  <div className="bg-surface-2 p-6 text-center">
+                    <span className="text-[9px] font-black tracking-widest text-faint uppercase block mb-1">
                       Impact Risque
                     </span>
-                    <span className="text-2xl font-bold text-white tracking-tighter">
+                    <span className="text-2xl font-bold text-foreground tracking-tighter">
                       {party.risk_score}
                     </span>
                   </div>
-                  <div className="bg-[#050505] p-6 text-center">
-                    <span className="text-[9px] font-black tracking-widest text-white/20 uppercase block mb-1">
+                  <div className="bg-surface-2 p-6 text-center">
+                    <span className="text-[9px] font-black tracking-widest text-faint uppercase block mb-1">
                       Opportunité
                     </span>
-                    <span className="text-2xl font-bold text-white tracking-tighter">
+                    <span className="text-2xl font-bold text-foreground tracking-tighter">
                       {party.opportunity_score}
                     </span>
                   </div>
@@ -74,12 +74,12 @@ export default function AnalysisOverview({
         </div>
 
         {/* Scénarios probables */}
-        <div className="p-10 rounded-[2rem] bg-white/[0.02] border border-white/5 relative overflow-hidden">
+        <div className="p-10 rounded-xl bg-surface-1 border border-border relative overflow-hidden">
           <div className="mb-10">
-            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-emerald-500/60 block mb-4">
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-accent/60 block mb-4">
               Projection temporelle
             </span>
-            <h3 className="serif-display text-4xl text-white">
+            <h3 className="text-4xl font-bold text-foreground">
               Scénarios Probables
             </h3>
           </div>
@@ -87,8 +87,8 @@ export default function AnalysisOverview({
           <div className="space-y-6">
             {!analysis.probable_scenarios ||
             analysis.probable_scenarios.length === 0 ? (
-              <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 text-center">
-                <p className="text-white/40 italic">
+              <div className="p-8 rounded-xl bg-surface-1 border border-border text-center">
+                <p className="text-faint italic">
                   Aucun scénario critique n'a été identifié pour ce contrat.
                 </p>
               </div>
@@ -97,19 +97,19 @@ export default function AnalysisOverview({
                 (scenario: any, index: number) => (
                   <div
                     key={index}
-                    className="p-6 rounded-2xl bg-[#050505] border border-white/5 hover:border-white/10 transition-all group"
+                    className="p-6 rounded-xl bg-surface-2 border border-border hover:border-white/20 transition-all group"
                   >
                     <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-base font-bold text-white tracking-tight">
+                      <h4 className="text-base font-bold text-foreground tracking-tight">
                         {scenario.scenario}
                       </h4>
-                      <span className="serif-display text-2xl text-white/10 group-hover:text-emerald-500/20 transition-colors">
+                      <span className="text-2xl font-bold text-faint group-hover:text-accent/40 transition-colors">
                         {scenario.probability}%
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border">
                       <div>
-                        <span className="text-[9px] font-black tracking-widest text-white/20 uppercase mb-3 block">
+                        <span className="text-[9px] font-black tracking-widest text-faint uppercase mb-3 block">
                           Conséquence A
                         </span>
                         <ul className="space-y-2">
@@ -118,7 +118,7 @@ export default function AnalysisOverview({
                             .map((cons: string, i: number) => (
                               <li
                                 key={i}
-                                className="text-xs text-white/40 leading-relaxed"
+                                className="text-xs text-muted leading-relaxed"
                               >
                                 • {cons}
                               </li>
@@ -126,7 +126,7 @@ export default function AnalysisOverview({
                         </ul>
                       </div>
                       <div>
-                        <span className="text-[9px] font-black tracking-widest text-white/20 uppercase mb-3 block">
+                        <span className="text-[9px] font-black tracking-widest text-faint uppercase mb-3 block">
                           Conséquence B
                         </span>
                         <ul className="space-y-2">
@@ -135,7 +135,7 @@ export default function AnalysisOverview({
                             .map((cons: string, i: number) => (
                               <li
                                 key={i}
-                                className="text-xs text-white/40 leading-relaxed"
+                                className="text-xs text-muted leading-relaxed"
                               >
                                 • {cons}
                               </li>
@@ -155,10 +155,10 @@ export default function AnalysisOverview({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
         <div className="space-y-8">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
-              <Zap className="w-5 h-5 text-yellow-500" />
+            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+              <Zap className="w-5 h-5 text-accent" />
             </div>
-            <h3 className="serif-display text-3xl text-white">
+            <h3 className="text-3xl font-bold text-foreground">
               Points de Vigilance
             </h3>
           </div>
@@ -166,12 +166,12 @@ export default function AnalysisOverview({
             {analysis.summary.key_points.map((point: string, index: number) => (
               <div
                 key={index}
-                className="flex gap-6 p-6 rounded-2xl bg-white/[0.02] border border-white/5 items-start group hover:bg-white/[0.04] transition-colors"
+                className="flex gap-6 p-6 rounded-xl bg-surface-1 border border-border items-start group hover:bg-surface-2 transition-colors"
               >
-                <span className="serif-display text-3xl text-white/10 group-hover:text-yellow-500/40 transition-colors leading-none">
+                <span className="text-3xl font-bold text-faint group-hover:text-accent/40 transition-colors leading-none">
                   0{index + 1}
                 </span>
-                <p className="text-sm text-white/60 leading-relaxed pt-1">
+                <p className="text-sm text-muted leading-relaxed pt-1">
                   {point}
                 </p>
               </div>
@@ -181,10 +181,10 @@ export default function AnalysisOverview({
 
         <div className="space-y-8">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
-              <Brain className="w-5 h-5 text-purple-500" />
+            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20">
+              <Brain className="w-5 h-5 text-accent" />
             </div>
-            <h3 className="serif-display text-3xl text-white">
+            <h3 className="text-3xl font-bold text-foreground">
               Conseils Stratégiques
             </h3>
           </div>
@@ -193,12 +193,12 @@ export default function AnalysisOverview({
               (conseil: string, index: number) => (
                 <div
                   key={index}
-                  className="flex gap-6 p-6 rounded-2xl bg-white/[0.02] border border-white/5 items-start group hover:bg-white/[0.04] transition-colors"
+                  className="flex gap-6 p-6 rounded-xl bg-surface-1 border border-border items-start group hover:bg-surface-2 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-full border border-purple-500/20 flex items-center justify-center flex-shrink-0 mt-1">
-                    <Sparkles className="w-4 h-4 text-purple-500/40 group-hover:text-purple-500 transition-colors" />
+                  <div className="w-8 h-8 rounded-full border border-accent/20 flex items-center justify-center flex-shrink-0 mt-1">
+                    <Sparkles className="w-4 h-4 text-accent/40 group-hover:text-accent transition-colors" />
                   </div>
-                  <p className="text-sm text-white/60 leading-relaxed pt-1">
+                  <p className="text-sm text-muted leading-relaxed pt-1">
                     {conseil}
                   </p>
                 </div>

@@ -20,46 +20,46 @@ export default function AnalysisParties({ analysis }: AnalysisPartiesProps) {
           return (
             <div
               key={key}
-              className="p-10 rounded-[2rem] bg-white/[0.02] border border-white/5 relative overflow-hidden group hover:bg-white/[0.04] transition-all"
+              className="p-10 rounded-xl bg-surface-1 border border-border relative overflow-hidden group hover:bg-surface-2 transition-all"
             >
               <div className="flex flex-col gap-10">
                 <div>
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                      <Users className="w-5 h-5 text-white/40" />
+                    <div className="w-12 h-12 rounded-xl bg-surface-2 border border-border flex items-center justify-center">
+                      <Users className="w-5 h-5 text-muted" />
                     </div>
                     <div>
-                      <h3 className="serif-display text-3xl text-white">
+                      <h3 className="text-3xl font-bold text-foreground">
                         {partieInfo.name}
                       </h3>
-                      <span className="text-[10px] font-black tracking-widest uppercase text-white/20">
+                      <span className="text-[10px] font-black tracking-widest uppercase text-faint">
                         {partieInfo.role} • {partieInfo.legal_status}
                       </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/5">
-                    <div className="bg-[#050505] p-6 text-center">
-                      <span className="text-[9px] font-black tracking-widest text-white/20 uppercase block mb-1">
+                  <div className="grid grid-cols-3 gap-px bg-border rounded-xl overflow-hidden border border-border">
+                    <div className="bg-surface-2 p-6 text-center">
+                      <span className="text-[9px] font-black tracking-widest text-faint uppercase block mb-1">
                         Risque
                       </span>
-                      <span className="text-2xl font-bold text-white tracking-tighter">
+                      <span className="text-2xl font-bold text-foreground tracking-tighter">
                         {party.risk_score}
                       </span>
                     </div>
-                    <div className="bg-[#050505] p-6 text-center">
-                      <span className="text-[9px] font-black tracking-widest text-white/20 uppercase block mb-1">
+                    <div className="bg-surface-2 p-6 text-center">
+                      <span className="text-[9px] font-black tracking-widest text-faint uppercase block mb-1">
                         Opportunité
                       </span>
-                      <span className="text-2xl font-bold text-white tracking-tighter">
+                      <span className="text-2xl font-bold text-foreground tracking-tighter">
                         {party.opportunity_score}
                       </span>
                     </div>
-                    <div className="bg-[#050505] p-6 text-center">
-                      <span className="text-[9px] font-black tracking-widest text-white/20 uppercase block mb-1">
+                    <div className="bg-surface-2 p-6 text-center">
+                      <span className="text-[9px] font-black tracking-widest text-faint uppercase block mb-1">
                         Pouvoir
                       </span>
-                      <span className="text-[10px] font-black text-yellow-500 uppercase">
+                      <span className="text-[10px] font-black text-accent uppercase">
                         {party.negotiation_power}
                       </span>
                     </div>
@@ -68,18 +68,18 @@ export default function AnalysisParties({ analysis }: AnalysisPartiesProps) {
 
                 <div className="space-y-8">
                   <div>
-                    <h4 className="text-[10px] font-black tracking-[0.2em] uppercase text-red-500/60 mb-6 flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                    <h4 className="text-[10px] font-black tracking-[0.2em] uppercase text-risk-high/60 mb-6 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-risk-high" />
                       Exposition Critique
                     </h4>
                     <ul className="space-y-4">
                       {party.major_risks.map(
                         (risque: string, index: number) => (
                           <li key={index} className="flex gap-4 items-start">
-                            <span className="text-white/10 text-xs font-bold pt-0.5">
+                            <span className="text-faint text-xs font-bold pt-0.5">
                               0{index + 1}
                             </span>
-                            <p className="text-sm text-white/60 leading-relaxed">
+                            <p className="text-sm text-muted leading-relaxed">
                               {risque}
                             </p>
                           </li>
@@ -89,18 +89,18 @@ export default function AnalysisParties({ analysis }: AnalysisPartiesProps) {
                   </div>
 
                   <div>
-                    <h4 className="text-[10px] font-black tracking-[0.2em] uppercase text-emerald-500/60 mb-6 flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <h4 className="text-[10px] font-black tracking-[0.2em] uppercase text-risk-low/60 mb-6 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-risk-low" />
                       Leviers Stratégiques
                     </h4>
                     <ul className="space-y-4">
                       {party.advantages.map(
                         (advantage: string, index: number) => (
                           <li key={index} className="flex gap-4 items-start">
-                            <span className="text-white/10 text-xs font-bold pt-0.5">
+                            <span className="text-faint text-xs font-bold pt-0.5">
                               0{index + 1}
                             </span>
-                            <p className="text-sm text-white/60 leading-relaxed">
+                            <p className="text-sm text-muted leading-relaxed">
                               {advantage}
                             </p>
                           </li>
@@ -109,8 +109,8 @@ export default function AnalysisParties({ analysis }: AnalysisPartiesProps) {
                     </ul>
                   </div>
 
-                  <div className="pt-8 border-t border-white/5">
-                    <h4 className="text-[10px] font-black tracking-[0.2em] uppercase text-white/20 mb-6">
+                  <div className="pt-8 border-t border-border">
+                    <h4 className="text-[10px] font-black tracking-[0.2em] uppercase text-faint mb-6">
                       Recommandations Proximales
                     </h4>
                     <div className="space-y-3">
@@ -118,9 +118,9 @@ export default function AnalysisParties({ analysis }: AnalysisPartiesProps) {
                         (reco: string, index: number) => (
                           <div
                             key={index}
-                            className="p-5 rounded-2xl bg-white/[0.02] border border-white/5"
+                            className="p-5 rounded-xl bg-surface-1 border border-border"
                           >
-                            <p className="text-xs text-white/40 leading-relaxed italic">
+                            <p className="text-xs text-muted leading-relaxed italic">
                               "{reco}"
                             </p>
                           </div>

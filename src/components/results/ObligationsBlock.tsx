@@ -31,28 +31,28 @@ const ObligationsBlock = ({
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
-    <div className={clsx('bg-gray-900/50 rounded-xl border border-blue-500/30 overflow-hidden', className)}>
+    <div className={clsx('bg-surface-1 rounded-xl border border-accent/30 overflow-hidden', className)}>
       {/* En-tête */}
       <div 
         className={clsx(
-          'bg-blue-500/20 p-4 border-b border-blue-500/30',
+          'bg-accent/10 p-4 border-b border-accent/30',
           collapsible && 'cursor-pointer'
         )}
         onClick={() => collapsible && setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-              <FileText className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center mr-3">
+              <FileText className="w-4 h-4 text-background" />
             </div>
-            <h2 className="text-xl font-bold text-white">{title}</h2>
-            <span className="ml-3 bg-blue-500/30 text-blue-300 text-sm px-2 py-1 rounded-full">
+            <h2 className="text-xl font-bold text-foreground">{title}</h2>
+            <span className="ml-3 bg-accent/30 text-accent text-sm px-2 py-1 rounded-full">
               {obligations.length}
             </span>
           </div>
           
           {collapsible && (
-            <div className="text-blue-300">
+            <div className="text-accent">
               {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
           )}
@@ -64,37 +64,37 @@ const ObligationsBlock = ({
         <div className="p-6">
           {obligations.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-400">Aucune obligation identifiée dans ce document.</p>
+              <p className="text-muted">Aucune obligation identifiée dans ce document.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {obligations.map((obligation) => (
                 <div
                   key={obligation.id}
-                  className="p-4 bg-black/30 rounded-lg border-l-4 border-blue-500"
+                  className="p-4 bg-surface-2 rounded-lg border-l-4 border-accent"
                 >
                   <div className="flex items-start">
                     <div className="flex-1">
-                      <p className="text-white">{obligation.text}</p>
+                      <p className="text-foreground">{obligation.text}</p>
                       
-                      <div className="flex flex-wrap gap-3 mt-3 text-sm text-gray-400">
+                      <div className="flex flex-wrap gap-3 mt-3 text-sm text-muted">
                         {obligation.clause && (
-                          <span className="inline-flex items-center bg-gray-800 px-2 py-1 rounded">
-                            <span className="text-blue-400 mr-1">§</span>
+                          <span className="inline-flex items-center bg-surface-2 px-2 py-1 rounded">
+                            <span className="text-accent mr-1">§</span>
                             Clause {obligation.clause}
                           </span>
                         )}
                         
                         {obligation.deadline && (
-                          <span className="inline-flex items-center bg-gray-800 px-2 py-1 rounded">
-                            <span className="text-yellow-600 mr-1">⏰</span>
+                          <span className="inline-flex items-center bg-surface-2 px-2 py-1 rounded">
+                            <span className="text-accent mr-1">⏰</span>
                             {obligation.deadline}
                           </span>
                         )}
                         
                         {obligation.responsible && (
-                          <span className="inline-flex items-center bg-gray-800 px-2 py-1 rounded">
-                            <span className="text-green-400 mr-1">👤</span>
+                          <span className="inline-flex items-center bg-surface-2 px-2 py-1 rounded">
+                            <span className="text-risk-low mr-1">👤</span>
                             {obligation.responsible}
                           </span>
                         )}
@@ -108,19 +108,19 @@ const ObligationsBlock = ({
 
           {/* Résumé */}
           {obligations.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-800">
-              <h4 className="font-semibold text-blue-500 mb-2">Points d'attention</h4>
-              <ul className="space-y-2 text-gray-300">
+            <div className="mt-6 pt-6 border-t border-border">
+              <h4 className="font-semibold text-accent mb-2">Points d'attention</h4>
+              <ul className="space-y-2 text-muted">
                 <li className="flex items-start">
-                  <span className="text-blue-500 mr-2 mt-1">•</span>
+                  <span className="text-accent mr-2 mt-1">•</span>
                   Vérifier les délais et échéances
                 </li>
                 <li className="flex items-start">
-                  <span className="text-blue-500 mr-2 mt-1">•</span>
+                  <span className="text-accent mr-2 mt-1">•</span>
                   S'assurer des ressources nécessaires
                 </li>
                 <li className="flex items-start">
-                  <span className="text-blue-500 mr-2 mt-1">•</span>
+                  <span className="text-accent mr-2 mt-1">•</span>
                   Documenter les preuves d'exécution
                 </li>
               </ul>
