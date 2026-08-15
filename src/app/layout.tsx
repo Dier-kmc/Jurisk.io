@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist } from "next/font/google";
 import "@/app/globals.css";
 import { SessionProvider } from "next-auth/react";
 
@@ -9,7 +9,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Toaster } from "sonner";
 import DeviceDetector from "@/components/layout/DeviceDetector";
 
-const inter = Inter({ subsets: ["latin"] });
+const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Jurisk.io - Analyse IA de contrats",
@@ -35,12 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="fr">
       <head>
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className="bg-black text-white min-h-screen flex flex-col relative">
-        <div className="noise-overlay" />
+      <body className={`${geist.className} bg-background text-foreground min-h-screen flex flex-col relative`}>
         <AuthProvider>
           {children}
           <Toaster richColors theme="dark" position="top-center" />
