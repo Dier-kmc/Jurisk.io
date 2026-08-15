@@ -30,17 +30,17 @@ const PricingCard = ({
   return (
     <div
       className={clsx(
-        'relative rounded-2xl p-8 transition-all duration-300',
+        'relative rounded-xl p-8 transition-all duration-300 border',
         isPopular
-          ? 'bg-gray-900/20 border border-yellow-600/40'
-          : 'bg-gray-900/20 border border-gray-300/30',
-        selected && 'ring-1 ring-yellow-500',
+          ? 'border-accent bg-accent/5'
+          : 'border-border bg-surface-1',
+        selected && 'ring-1 ring-accent',
         className
       )}
     >
       {isPopular && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <div className="bg-yellow-600 text-gray-300 font-bold px-6 py-1 rounded-full text-sm flex items-center">
+          <div className="bg-accent text-background font-bold px-6 py-1 rounded-full text-sm flex items-center">
             <Star size={12} className="mr-1" />
             {plan.badge || 'Populaire'}
           </div>
@@ -55,7 +55,7 @@ const PricingCard = ({
           </span>
           {/* Supprimé le /{plan.period} car non présent dans CreditPack */}
         </div>
-        <p className="text-gray-400">{plan.description}</p>
+        <p className="text-muted">{plan.description}</p>
       </div>
 
       <div className="mb-10 space-y-4">
@@ -64,8 +64,8 @@ const PricingCard = ({
             key={index}
             className="flex items-center"
           >
-            <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
-            <span className="text-gray-300">
+            <Check className="w-5 h-5 text-risk-low mr-3 flex-shrink-0" />
+            <span className="text-muted">
               {feature}
             </span>
           </div>
@@ -77,8 +77,8 @@ const PricingCard = ({
         fullWidth
         size="lg"
         className={clsx(
-          'transition-transform hover:scale-[1.02] border-gray-300/40',
-          isPopular && 'shadow-lg shadow-yellow-500/20 border border-gray-300/70 bg-yellow-600/90'
+          'transition-transform hover:scale-[1.02]',
+          isPopular && 'border-accent bg-accent text-background hover:bg-accent-bright'
         )}
         onClick={onSelect}
         leftIcon={isPopular && <Zap size={18} />}
@@ -88,10 +88,10 @@ const PricingCard = ({
 
       {/* Section limite modifiée pour correspondre à CreditPack */}
       <div className="mt-4 text-center">
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-faint">
           {plan.credits} crédits
         </div>
-        <div className="text-xs text-gray-600 mt-1">
+        <div className="text-xs text-faint mt-1">
           Valable à vie • +3 crédits offerts/mois
         </div>
       </div>

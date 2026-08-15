@@ -24,21 +24,19 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="bg-[#050505] min-h-screen pt-32 pb-24 overflow-hidden relative">
+    <div className="bg-background min-h-screen pt-32 pb-24 overflow-hidden relative">
       {/* Background Depth */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.03)_0%,transparent_50%)] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(52,211,153,0.03)_0%,transparent_50%)] pointer-events-none" />
 
       <div className="container max-w-7xl relative z-10 px-6">
         {/* Editorial Header */}
         <div className="max-w-4xl mb-24 animate-slide-up mx-auto text-center">
-          <span className="text-yellow-500/80 text-xs font-black tracking-[0.3em] uppercase mb-6 block">
+          <span className="text-accent/80 text-xs font-black tracking-[0.3em] uppercase mb-6 block">
             Crédits à la carte
           </span>
           <h1 className="text-[clamp(2.5rem,6vw,5rem)] font-bold tracking-tighter leading-[0.95] text-white mb-8">
             Analysez{" "}
-            <span className="serif-display text-white/30 italic">
-              votre rythme.
-            </span>
+            <span className="text-white/30 italic">votre rythme.</span>
           </h1>
 
           <p className="max-w-xl mx-auto text-xl text-white/40 leading-relaxed">
@@ -54,15 +52,15 @@ export default function PricingPage() {
           {CREDIT_PACKS.map((pack, index) => (
             <div
               key={pack.id}
-              className={`p-10 glass-card rounded-[2.5rem] relative group transition-all duration-500 hover:-translate-y-2
+              className={`p-10 rounded-xl border relative group transition-all duration-500 hover:-translate-y-2
                 ${
                   pack.popular
-                    ? "bg-gradient-to-b from-white/[0.08] to-black/80 border-yellow-500/20 shadow-2xl shadow-yellow-900/10 z-10 scale-105"
-                    : "bg-white/[0.02] border-white/5 hover:bg-white/[0.04]"
+                    ? "border-accent bg-accent/5 z-10 scale-105"
+                    : "bg-surface-1 border-border hover:bg-white/[0.04]"
                 }`}
             >
               {pack.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-yellow-500 text-black text-[10px] font-black tracking-widest uppercase">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-accent text-background text-[10px] font-black tracking-widest uppercase">
                   {pack.badge || "Populaire"}
                 </div>
               )}
@@ -80,7 +78,7 @@ export default function PricingPage() {
                     crédits
                   </span>
                 </div>
-                <div className="text-2xl text-yellow-500 font-bold">
+                <div className="text-2xl text-accent font-bold">
                   {pack.price}€
                 </div>
                 <p className="text-xs text-white/30 mt-2 h-8">
@@ -96,7 +94,7 @@ export default function PricingPage() {
                     className="flex items-start gap-3 text-sm text-white/60"
                   >
                     <Check
-                      className={`w-4 h-4 mt-0.5 ${pack.popular ? "text-yellow-500" : "text-white/20"}`}
+                      className={`w-4 h-4 mt-0.5 ${pack.popular ? "text-accent" : "text-faint"}`}
                     />
                     <span>{feature}</span>
                   </li>
@@ -110,8 +108,8 @@ export default function PricingPage() {
                   className={`h-14 rounded-2xl font-bold text-lg transition-all
                     ${
                       pack.popular
-                        ? "bg-yellow-600 hover:bg-yellow-500 text-black shadow-lg shadow-yellow-900/20"
-                        : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                        ? "bg-accent hover:bg-accent-bright text-background"
+                        : "bg-surface-2 hover:bg-white/[0.06] text-foreground border border-border"
                     }`}
                 >
                   Choisir ce pack
@@ -122,12 +120,10 @@ export default function PricingPage() {
         </div>
 
         {/* Free Tier Info */}
-        <div className="mt-24 max-w-4xl mx-auto rounded-[3rem] bg-white/[0.02] border border-white/5 p-12 relative overflow-hidden reveal">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl" />
-
+        <div className="mt-24 max-w-4xl mx-auto rounded-xl bg-surface-1 border border-border p-12 relative overflow-hidden reveal">
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-            <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center shrink-0">
-              <Gift className="w-10 h-10 text-yellow-500" />
+            <div className="w-20 h-20 rounded-3xl bg-surface-2 flex items-center justify-center shrink-0">
+              <Gift className="w-10 h-10 text-accent" />
             </div>
             <div className="flex-1 text-center md:text-left">
               <h3 className="text-2xl font-bold text-white mb-2">
@@ -143,7 +139,7 @@ export default function PricingPage() {
               <CustomButton
               onClick={handleRegisterClick}
                 variant="outline"
-                className="border-white/10 text-white hover:bg-white/5"
+                className="border-border text-foreground hover:bg-white/[0.04]"
               >
                 Créer un compte
               </CustomButton>
@@ -151,7 +147,7 @@ export default function PricingPage() {
         </div>
 
         {/* Technical Footer */}
-        <div className="mt-32 pt-16 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-12 reveal opacity-50 hover:opacity-100 transition-opacity">
+        <div className="mt-32 pt-16 border-t border-border grid grid-cols-2 md:grid-cols-4 gap-12 reveal opacity-50 hover:opacity-100 transition-opacity">
           {[
             { label: "Paiement", val: "Stripe Secure" },
             { label: "Validité", val: "Illimitée" },

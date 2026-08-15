@@ -37,12 +37,12 @@ const FeatureList = ({ showComparison = true, className }: FeatureListProps) => 
               <div className="text-3xl font-bold text-white mb-1">
                 {freePlan.price === 0 ? 'Gratuit' : `${freePlan.price}€`}
               </div>
-              <div className="text-gray-400 text-sm">/{freePlan.period}</div>
+              <div className="text-muted text-sm">/{freePlan.period}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-bold text-white mb-2">{premiumPlan.name}</div>
               <div className="text-3xl font-bold text-white mb-1">{premiumPlan.price}€</div>
-              <div className="text-gray-400 text-sm">/{premiumPlan.period}</div>
+              <div className="text-muted text-sm">/{premiumPlan.period}</div>
             </div>
           </div>
 
@@ -52,7 +52,7 @@ const FeatureList = ({ showComparison = true, className }: FeatureListProps) => 
               const categoryFeatures = FEATURES.filter(f => f.category === category.id);
               
               return (
-                <div key={category.id} className="bg-gray-600/10 rounded-xl p-6">
+                <div key={category.id} className="bg-surface-1 rounded-xl p-6">
                   <div className="flex items-center mb-4">
                     <div className={`w-10 h-10 rounded-lg ${category.color} flex items-center justify-center mr-3`}>
                       {getFeatureIcon(category.id)}
@@ -68,14 +68,14 @@ const FeatureList = ({ showComparison = true, className }: FeatureListProps) => 
                       return (
                         <div
                           key={feature.id}
-                          className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center py-3 border-b border-gray-300/30 last:border-0"
+                          className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center py-3 border-b border-border last:border-0"
                         >
                           <div className="md:col-span-1">
                             <div className="flex items-center">
                               <span className="text-xl mr-3">{feature.icon}</span>
                               <div>
                                 <p className="font-medium text-white">{feature.title}</p>
-                                <p className="text-sm text-gray-400">{feature.description}</p>
+                                <p className="text-sm text-muted">{feature.description}</p>
                               </div>
                             </div>
                           </div>
@@ -83,16 +83,16 @@ const FeatureList = ({ showComparison = true, className }: FeatureListProps) => 
                           <div className="md:col-span-2 grid grid-cols-2 gap-6">
                             <div className="text-center">
                               {freeIncluded ? (
-                                <Check className="w-6 h-6 text-green-500 mx-auto" />
+                                <Check className="w-6 h-6 text-risk-low mx-auto" />
                               ) : (
-                                <X className="w-6 h-6 text-gray-600 mx-auto" />
+                                <X className="w-6 h-6 text-faint mx-auto" />
                               )}
                             </div>
                             <div className="text-center">
                               {premiumIncluded ? (
-                                <Check className="w-6 h-6 text-green-500 mx-auto" />
+                                <Check className="w-6 h-6 text-risk-low mx-auto" />
                               ) : (
-                                <X className="w-6 h-6 text-gray-600 mx-auto" />
+                                <X className="w-6 h-6 text-faint mx-auto" />
                               )}
                             </div>
                           </div>
@@ -112,7 +112,7 @@ const FeatureList = ({ showComparison = true, className }: FeatureListProps) => 
             const categoryFeatures = FEATURES.filter(f => f.category === category.id);
             
             return (
-              <div key={category.id} className="bg-gray-900/30 rounded-xl p-6">
+              <div key={category.id} className="bg-surface-1 rounded-xl p-6">
                 <div className="flex items-center mb-4">
                   <div className={`w-10 h-10 rounded-lg ${category.color} flex items-center justify-center mr-3`}>
                     {getFeatureIcon(category.id)}
@@ -131,7 +131,7 @@ const FeatureList = ({ showComparison = true, className }: FeatureListProps) => 
                       <span className={`mt-1 ${category.textColor}`}>•</span>
                       <div className="ml-2">
                         <p className="text-white">{feature.title}</p>
-                        <p className="text-sm text-gray-400">{feature.description}</p>
+                        <p className="text-sm text-muted">{feature.description}</p>
                       </div>
                     </div>
                   ))}
