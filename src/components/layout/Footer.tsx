@@ -35,14 +35,11 @@ const Footer = () => {
 
   return (
     <footer className="relative bg-black pt-24 pb-12 overflow-hidden reveal">
-      {/* Background glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-yellow-600/5 rounded-full blur-[100px] pointer-events-none" />
-
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-3 mb-6 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center transition-transform duration-300">
                 <span className="font-bold text-gray-900 text-lg">CS</span>
               </div>
               <span className="text-white font-bold text-xl tracking-tight">
@@ -96,7 +93,7 @@ const Footer = () => {
                 <a
                   key={social.name}
                   href="#"
-                  className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-yellow-500 hover:bg-yellow-500/10 hover:border-yellow-500/30 transition-all duration-300"
+                  className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-accent hover:bg-accent/10 hover:border-accent/30 transition-all duration-300"
                 >
                   <span className="sr-only">{social.name}</span>
                   {social.icon}
@@ -120,7 +117,7 @@ const Footer = () => {
             },
           ].map((column) => (
             <div key={column.title}>
-              <h3 className="text-white font-bold mb-6 tracking-wide uppercase text-xs">
+              <h3 className="text-muted font-bold mb-6 tracking-widest uppercase text-[11px]">
                 {column.title}
               </h3>
               <ul className="space-y-4">
@@ -128,7 +125,7 @@ const Footer = () => {
                   <li key={link.id}>
                     <Link
                       href={link.href}
-                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                      className="text-faint hover:text-foreground transition-colors text-sm"
                     >
                       {link.label}
                     </Link>
