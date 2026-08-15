@@ -178,8 +178,8 @@ export default function DashboardLayout({
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-black/90">
-        <Loader2 className="h-8 w-8 animate-spin text-yellow-600" />
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-accent" />
       </div>
     );
   }
@@ -190,20 +190,16 @@ export default function DashboardLayout({
 
   return (
     <>
-      <div className="flex h-screen bg-[#050505] text-white relative overflow-hidden">
-        {/* Global Noise & Depth */}
-        <div className="noise-overlay pointer-events-none fixed inset-0 z-0" />
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_0%,rgba(250,204,21,0.03)_0%,transparent_50%)] pointer-events-none fixed z-0" />
-
+      <div className="flex h-screen bg-background text-white relative overflow-hidden">
         {/* Mobile Header */}
-        <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex items-center justify-between">
+        <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+            <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
               <span className="font-bold text-gray-900 text-lg">J</span>
             </div>
             <span className="text-white font-bold text-xl tracking-tight hidden sm:block">
               Jurisk
-              <span className="gradient-text italic font-serif">.io</span>
+              <span className="gradient-text">.io</span>
             </span>
           </Link>
           <button
@@ -264,7 +260,7 @@ export default function DashboardLayout({
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col relative z-10 md:ml-64 bg-[#050505]/40 backdrop-blur-sm h-full overflow-hidden pt-16 md:pt-0 transition-all duration-300">
+        <main className="flex-1 flex flex-col relative z-10 md:ml-64 bg-background/40 backdrop-blur-sm h-full overflow-hidden pt-16 md:pt-0 transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-b from-white/[0.01] to-transparent pointer-events-none" />
           <div className="flex-1 overflow-y-auto">{children}</div>
         </main>

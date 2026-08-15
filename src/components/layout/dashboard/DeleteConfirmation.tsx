@@ -32,10 +32,10 @@ export default function DeleteConfirmationModal({
   return (
     <Portal> {/* Enveloppez avec Portal */}
       <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200">
-        <div className="bg-gradient-to-b from-gray-900 to-black rounded-2xl w-full max-w-md border border-gray-800/50 shadow-2xl animate-in zoom-in-95 duration-300">
+        <div className="bg-surface-2 rounded-2xl w-full max-w-md border border-border shadow-xl animate-in zoom-in-95 duration-300">
           
           {/* Header */}
-          <div className="relative overflow-hidden border-b border-gray-800/50 p-6">
+          <div className="relative overflow-hidden border-b border-border p-6">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0">
                 <AlertTriangle className="w-6 h-6 text-red-400" />
@@ -44,17 +44,17 @@ export default function DeleteConfirmationModal({
                 <h2 className="text-xl font-bold text-white mb-1">
                   {title}
                 </h2>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-muted">
                   {description}
                 </p>
               </div>
               <button
                 onClick={onClose}
                 disabled={isDeleting}
-                className="p-1 hover:bg-gray-800/50 rounded-lg transition-colors disabled:opacity-50"
+                className="p-1 hover:bg-white/5 rounded-lg transition-colors disabled:opacity-50"
                 aria-label="Fermer"
               >
-                <X className="w-5 h-5 text-gray-400" />
+                <X className="w-5 h-5 text-muted" />
               </button>
             </div>
           </div>
@@ -62,8 +62,8 @@ export default function DeleteConfirmationModal({
           {/* Content */}
           <div className="p-6">
             {itemName && (
-              <div className="bg-gray-800/50 border border-gray-700/50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-gray-400 mb-1">Analyse à supprimer :</p>
+              <div className="bg-surface-1 border border-border rounded-lg p-4 mb-6">
+                <p className="text-sm text-muted mb-1">Analyse à supprimer :</p>
                 <p className="text-white font-medium truncate">{itemName}</p>
               </div>
             )}

@@ -59,15 +59,14 @@ export function RegisterModal({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="relative w-full max-w-5xl bg-[#050505] rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-y-auto">
-        {/* Noise & Background Effects */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(250,204,21,0.03)_0%,transparent_50%)] pointer-events-none" />
+      <div className="relative w-full max-w-5xl bg-surface-2 rounded-2xl border border-border shadow-xl overflow-hidden animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-y-auto">
+        {/* Background Effects */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-b from-white/[0.02] to-transparent rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
 
         {/* Header */}
-        <div className="relative border-b border-white/5 p-8 flex items-center justify-between">
+        <div className="relative border-b border-border p-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
+            <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
               <span className="font-bold text-gray-950 text-lg">J</span>
             </div>
             <div>
@@ -195,7 +194,7 @@ export function RegisterModal({
                   size="lg"
                   isLoading={loading}
                   disabled={loading}
-                  className="h-14 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-black font-bold text-lg shadow-[0_4px_20px_-5px_rgba(202,138,4,0.3)] hover:shadow-[0_8px_30px_-5px_rgba(202,138,4,0.4)] transition-all"
+                  className="h-14 rounded-xl font-bold text-lg transition-all"
                 >
                   {loading ? "Création..." : "Commencer gratuitement"}
                 </CustomButton>
@@ -207,7 +206,7 @@ export function RegisterModal({
                   <button
                     type="button"
                     onClick={onSwitchToLogin}
-                    className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors"
+                    className="text-accent hover:text-accent-bright font-medium transition-colors"
                   >
                     Se connecter
                   </button>
@@ -217,8 +216,7 @@ export function RegisterModal({
           </div>
 
           {/* Colonne droite - Visuel & Info */}
-          <div className="relative hidden lg:flex flex-col justify-between p-12 bg-white/[0.02] border-l border-white/5">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_100%_100%,rgba(250,204,21,0.05)_0%,transparent_50%)] pointer-events-none" />
+          <div className="relative hidden lg:flex flex-col justify-between p-12 bg-white/[0.02] border-l border-border">
 
             <div className="relative space-y-8">
               <div className="animate-slide-up [animation-delay:0.2s]">
@@ -247,8 +245,8 @@ export function RegisterModal({
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-4 group">
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-yellow-500/10 group-hover:border-yellow-500/20 transition-all duration-500">
-                      <item.icon className="w-5 h-5 text-white/40 group-hover:text-yellow-500 transition-colors duration-500" />
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-accent/10 group-hover:border-accent/20 transition-all duration-500">
+                      <item.icon className="w-5 h-5 text-white/40 group-hover:text-accent transition-colors duration-500" />
                     </div>
                     <div>
                       <span className="text-sm font-medium text-white/60 group-hover:text-white transition-colors">
@@ -261,15 +259,15 @@ export function RegisterModal({
               </div>
             </div>
 
-            <div className="relative mt-12 p-6 rounded-3xl bg-black/40 border border-white/5 backdrop-blur-md animate-slide-up [animation-delay:0.6s]">
+            <div className="relative mt-12 p-6 rounded-3xl bg-black/40 border border-border backdrop-blur-md animate-slide-up [animation-delay:0.6s]">
               <div className="flex -space-x-3 mb-4">
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="w-8 h-8 rounded-full border-2 border-black bg-gray-600"
+                    className="w-8 h-8 rounded-full border-2 border-black bg-surface-2"
                   />
                 ))}
-                <div className="w-8 h-8 rounded-full border-2 border-black bg-yellow-600 flex items-center justify-center text-xs font-bold text-black">
+                <div className="w-8 h-8 rounded-full border-2 border-black bg-accent flex items-center justify-center text-xs font-bold text-background">
                   +1k
                 </div>
               </div>

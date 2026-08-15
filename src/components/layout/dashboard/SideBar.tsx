@@ -159,9 +159,9 @@ export default function Sidebar({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "COMPLETED":
-        return <CheckCircle className="h-3 w-3 text-green-500" />;
+        return <CheckCircle className="h-3 w-3 text-risk-low" />;
       case "PROCESSING":
-        return <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />;
+        return <Loader2 className="h-3 w-3 text-accent animate-spin" />;
       case "FAILED":
         return <XCircle className="h-3 w-3 text-red-500" />;
       case "PENDING":
@@ -173,19 +173,19 @@ export default function Sidebar({
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 w-64 border-r border-white/5 flex flex-col bg-black/95 md:bg-black/40 backdrop-blur-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+      className={`fixed inset-y-0 left-0 w-64 border-r border-border flex flex-col bg-surface-1 z-50 transform transition-transform duration-300 ease-in-out ${
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       }`}
     >
       {/* Header */}
-      <div className="p-6 border-b border-white/5 flex items-center justify-between">
+      <div className="p-6 border-b border-border flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 px-2 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+          <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
             <span className="font-bold text-gray-900 text-lg">J</span>
           </div>
           <span className="text-white font-bold text-xl tracking-tight hidden sm:block">
             Jurisk
-            <span className="gradient-text italic font-serif">.io</span>
+            <span className="gradient-text">.io</span>
           </span>
         </Link>
 
@@ -216,7 +216,7 @@ export default function Sidebar({
       <div className="p-6 pt-0 mt-6">
         <Link
           href="/upload"
-          className="w-full bg-yellow-600 hover:bg-yellow-500 text-gray-950 font-black py-3 px-4 rounded-full transition-all flex items-center justify-center gap-2 text-xs mb-8 shadow-[0_10px_20px_-5px_rgba(202,138,4,0.2)] hover:scale-[1.02]"
+          className="w-full bg-accent hover:bg-accent-bright text-background font-black py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 text-xs mb-8"
         >
           <Plus className="h-4 w-4" />
           Nouvelle analyse
@@ -230,7 +230,7 @@ export default function Sidebar({
               placeholder="Rechercher..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 text-white text-xs rounded-xl pl-9 pr-3 py-2 focus:outline-none focus:border-yellow-600/50 transition-colors"
+              className="w-full bg-white/5 border border-border text-white text-xs rounded-xl pl-9 pr-3 py-2 focus:outline-none focus:border-accent/50 transition-colors"
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-white/20" />
           </div>
@@ -238,8 +238,8 @@ export default function Sidebar({
             onClick={() => onSetFilterMenuOpen(!filterMenuOpen)}
             className={`px-3 py-2 rounded-xl border transition-all ${
               filterMenuOpen || selectedStatus !== "ALL"
-                ? "bg-yellow-600 border-yellow-600 text-white shadow-lg"
-                : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
+                ? "bg-accent border-accent text-background"
+                : "bg-white/5 border-border text-white/40 hover:bg-white/10"
             }`}
           >
             <Filter className="h-3.5 w-3.5" />
@@ -248,14 +248,14 @@ export default function Sidebar({
 
         {/* Status Filter Menu */}
         {filterMenuOpen && (
-          <div className="absolute left-3 right-3 mt-2 bg-gray-300/10 border border-gray-300/20 rounded-lg shadow-xl z-30 backdrop-blur-sm">
+          <div className="absolute left-3 right-3 mt-2 bg-surface-2 border border-border rounded-lg shadow-xl z-30 backdrop-blur-sm">
             {["ALL", "PROCESSING", "COMPLETED", "FAILED"].map((status) => (
               <button
                 key={status}
                 onClick={() => handleStatusFilter(status)}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-300/15 transition-colors ${
+                className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-white/5 transition-colors ${
                   selectedStatus === status
-                    ? "bg-yellow-600/20 text-yellow-600"
+                    ? "bg-accent/15 text-accent"
                     : "text-gray-300"
                 }`}
               >
@@ -271,7 +271,7 @@ export default function Sidebar({
 
       {/* Stats Overview */}
       {stats && (
-        <div className="px-6 py-4 border-b border-white/5">
+        <div className="px-6 py-4 border-b border-border">
           <div className="grid grid-cols-2 gap-4 text-[10px] font-black tracking-widest uppercase">
             <div className="flex flex-col">
               <span className="text-white/20 mb-1">Total</span>
@@ -279,7 +279,7 @@ export default function Sidebar({
             </div>
             <div className="flex flex-col">
               <span className="text-white/20 mb-1">Terminés</span>
-              <span className="text-green-500/80">{stats.completed}</span>
+              <span className="text-risk-low">{stats.completed}</span>
             </div>
           </div>
         </div>
@@ -289,7 +289,7 @@ export default function Sidebar({
       <div className="flex-1 overflow-y-auto py-2 px-2">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-yellow-600" />
+            <Loader2 className="h-6 w-6 animate-spin text-accent" />
           </div>
         ) : analyses.length === 0 ? (
           <div className="text-center py-8 px-4">
@@ -316,7 +316,7 @@ export default function Sidebar({
                 onClick={() => handleAnalysisClick(analysis)}
                 className={`w-full text-left px-4 py-3 rounded-xl mb-1 transition-all border ${
                   selectedChat === analysis.id || pathname.includes(analysis.id)
-                    ? "bg-white/5 border-white/10"
+                    ? "bg-white/5 border-border"
                     : "border-transparent hover:bg-white/[0.02]"
                 }`}
               >
@@ -325,7 +325,7 @@ export default function Sidebar({
                     className={`w-1.5 h-1.5 rounded-full transition-all ${
                       selectedChat === analysis.id ||
                       pathname.includes(analysis.id)
-                        ? "bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]"
+                        ? "bg-accent"
                         : "bg-white/10"
                     }`}
                   />
@@ -369,7 +369,7 @@ export default function Sidebar({
                       menuRefs.current.delete(analysis.id);
                     }
                   }}
-                  className="absolute right-2 top-8 z-50 w-48 bg-black border border-gray-300/20 rounded-lg shadow-xl"
+                  className="absolute right-2 top-8 z-50 w-48 bg-surface-2 border border-border rounded-lg shadow-xl"
                 >
                   <div className="p-1">
                     <button
@@ -398,12 +398,12 @@ export default function Sidebar({
       </div>
 
       {/* Footer - User Menu */}
-      <div className="p-4 border-t border-white/5 relative">
+      <div className="p-4 border-t border-border relative">
         <button
           onClick={() => onSetUserMenuOpen(!userMenuOpen)}
           className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-white/5 transition-all group"
         >
-          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-black text-white text-[10px] flex-shrink-0 border border-white/10 group-hover:border-yellow-500/30 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-black text-white text-[10px] flex-shrink-0 border border-border group-hover:border-accent/30 transition-colors">
             {user?.name
               ? user.name.charAt(0).toUpperCase()
               : user?.email?.charAt(0).toUpperCase() || "U"}
@@ -427,12 +427,12 @@ export default function Sidebar({
 
         {/* User Dropdown Menu */}
         {userMenuOpen && (
-          <div className="absolute bottom-full left-0 right-0 mb-4 mx-3 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in slide-in-from-bottom-2 fade-in duration-200">
+          <div className="absolute bottom-full left-0 right-0 mb-4 mx-3 bg-surface-2 backdrop-blur-xl border border-border rounded-2xl shadow-2xl overflow-hidden z-50 animate-in slide-in-from-bottom-2 fade-in duration-200">
             {/* User Info Header */}
-            <div className="px-4 py-4 bg-gradient-to-br from-white/5 to-transparent border-b border-white/5">
+            <div className="px-4 py-4 bg-gradient-to-br from-white/5 to-transparent border-b border-border">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 p-[1px] shadow-lg">
-                  <div className="w-full h-full rounded-full bg-gray-900 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent-bright p-[1px] shadow-lg">
+                  <div className="w-full h-full rounded-full bg-surface-1 flex items-center justify-center">
                     <span className="font-bold text-white text-sm">
                       {user?.name
                         ? user.name.charAt(0).toUpperCase()
@@ -455,20 +455,20 @@ export default function Sidebar({
             <div className="px-2 py-2">
               <Link
                 href="/pricing"
-                className="group flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-yellow-500/10 to-transparent border border-yellow-500/10 hover:border-yellow-500/30 transition-all cursor-pointer"
+                className="group flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-accent/10 to-transparent border border-accent/10 hover:border-accent/30 transition-all cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center group-hover:bg-yellow-500/30 transition-colors">
-                  <Sparkles className="h-4 w-4 text-yellow-500" />
+                <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center group-hover:bg-accent/30 transition-colors">
+                  <Sparkles className="h-4 w-4 text-accent" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-xs font-bold text-yellow-500">
+                  <div className="text-xs font-bold text-accent">
                     {user?.credits || 0} crédits
                   </div>
-                  <div className="text-[10px] text-yellow-500/60">
+                  <div className="text-[10px] text-accent/60">
                     Recharger mon compte
                   </div>
                 </div>
-                <Plus className="h-4 w-4 text-yellow-500/40 group-hover:text-yellow-500 transition-colors" />
+                <Plus className="h-4 w-4 text-accent/40 group-hover:text-accent transition-colors" />
               </Link>
             </div>
 
@@ -490,7 +490,7 @@ export default function Sidebar({
               </Link>
             </div>
 
-            <div className="p-2 border-t border-white/5 bg-white/[0.02]">
+            <div className="p-2 border-t border-border bg-white/[0.02]">
               <button
                 onClick={() => logout()}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-all cursor-pointer group"
