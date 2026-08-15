@@ -27,10 +27,10 @@ const Card = ({
   return (
     <div
       className={clsx(
-        'bg-gray-900/50 rounded-xl',
-        border && 'border border-gray-800',
+        'bg-surface-1 rounded-xl',
+        border && 'border border-border',
         paddingClasses[padding],
-        hover && 'hover:border-gray-700 transition-colors',
+        hover && 'hover:border-white/20 transition-colors',
         className
       )}
     >
@@ -52,7 +52,7 @@ const CardHeader = ({ title, description, action, className }: CardHeaderProps) 
       <div>
         <h3 className="text-xl font-semibold text-white">{title}</h3>
         {description && (
-          <p className="text-gray-400 mt-1">{description}</p>
+          <p className="text-muted mt-1">{description}</p>
         )}
       </div>
       {action && <div>{action}</div>}
@@ -76,7 +76,7 @@ interface CardFooterProps {
 
 const CardFooter = ({ children, className }: CardFooterProps) => {
   return (
-    <div className={clsx('mt-6 pt-6 border-t border-gray-800', className)}>
+    <div className={clsx('mt-6 pt-6 border-t border-border', className)}>
       {children}
     </div>
   );

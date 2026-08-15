@@ -39,7 +39,7 @@ export function InputField({
   const getBorderColor = () => {
     if (error) return 'border-red-500/50 focus:ring-red-500/50'
     if (success) return 'border-green-500/50 focus:ring-green-500/50'
-    return 'border-gray-700/50 focus:ring-yellow-500/50 focus:border-yellow-500/50'
+    return 'border-border focus:ring-accent focus:border-accent'
   }
 
   return (
@@ -48,13 +48,13 @@ export function InputField({
         {label} {required && <span className="text-red-400">*</span>}
       </label>
       <div className="relative group">
-        <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-yellow-600 transition-colors" />
+        <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-faint group-focus-within:text-accent transition-colors" />
         <input
           type={inputType}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full pl-12 pr-12 py-2.5 bg-black/50 border rounded-xl focus:outline-none focus:ring-1 text-white placeholder-gray-500 transition-all ${getBorderColor()} ${className}`}
+          className={`w-full pl-12 pr-12 py-2.5 bg-surface-1 border rounded-xl focus:outline-none focus:ring-1 text-white placeholder-faint transition-all ${getBorderColor()} ${className}`}
           required={required}
           disabled={disabled}
         />
@@ -62,7 +62,7 @@ export function InputField({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-faint hover:text-gray-300 transition-colors"
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>

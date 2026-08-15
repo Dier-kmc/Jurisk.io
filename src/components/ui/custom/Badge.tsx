@@ -15,11 +15,11 @@ const Badge = ({
   className,
 }: BadgeProps) => {
   const variantClasses = {
-    default: 'bg-gray-800 text-gray-300',
-    success: 'bg-green-500/20 text-green-400',
-    warning: 'bg-yellow-600/20 text-yellow-600',
-    danger: 'bg-red-500/20 text-red-400',
-    info: 'bg-blue-500/20 text-blue-400',
+    default: 'bg-surface-2 text-muted',
+    success: 'bg-risk-low/15 text-risk-low',
+    warning: 'bg-risk-medium/15 text-risk-medium',
+    danger: 'bg-risk-high/15 text-risk-high',
+    info: 'bg-white/5 text-muted',
   };
 
   const sizeClasses = {

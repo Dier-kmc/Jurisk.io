@@ -15,9 +15,9 @@ export function PasswordStrengthIndicator({ strength }: PasswordStrengthIndicato
       {Object.entries(strength).map(([key, value]) => (
         <div
           key={key}
-          className={`flex items-center gap-1.5 text-xs ${value ? 'text-green-400' : 'text-gray-500'}`}
+          className={`flex items-center gap-1.5 text-xs ${value ? 'text-risk-low' : 'text-gray-500'}`}
         >
-          <div className={`w-1.5 h-1.5 rounded-full ${value ? 'bg-green-400' : 'bg-gray-600'}`}></div>
+          <div className={`w-1.5 h-1.5 rounded-full ${value ? 'bg-risk-low' : 'bg-faint'}`}></div>
           {key === 'hasMinLength' && '8+ caractères'}
           {key === 'hasLetter' && 'Lettres'}
           {key === 'hasNumber' && 'Chiffres'}

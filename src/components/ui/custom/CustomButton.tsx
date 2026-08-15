@@ -142,7 +142,7 @@ export function CustomButton({
       variant={variantMap[variant] as any}
       size={sizeMap[size] as any}
       disabled={isLoading}
-      className={cn(fullWidth && 'w-full', className)}
+      className={cn('rounded-lg', fullWidth && 'w-full', className)}
       {...props}
     >
       {isLoading ? (

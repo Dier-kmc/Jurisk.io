@@ -37,17 +37,17 @@ const Alert = ({
       icon: <Info className="w-5 h-5" />,
     },
     success: {
-      bg: 'bg-green-500/10',
-      border: 'border-green-500/30',
-      text: 'text-green-400',
-      iconBg: 'bg-green-500/20',
+      bg: 'bg-risk-low/10',
+      border: 'border-risk-low/30',
+      text: 'text-risk-low',
+      iconBg: 'bg-risk-low/20',
       icon: <CheckCircle className="w-5 h-5" />,
     },
     warning: {
-      bg: 'bg-yellow-600/10',
-      border: 'border-yellow-500/30',
-      text: 'text-yellow-600',
-      iconBg: 'bg-yellow-500/20',
+      bg: 'bg-risk-medium/10',
+      border: 'border-risk-medium/30',
+      text: 'text-risk-medium',
+      iconBg: 'bg-risk-medium/20',
       icon: <AlertTriangle className="w-5 h-5" />,
     },
     error: {
@@ -66,7 +66,7 @@ const Alert = ({
     filled: {
       info: 'bg-blue-500 border-blue-600 text-white',
       success: 'bg-green-500 border-green-600 text-white',
-      warning: 'bg-yellow-500 border-yellow-600 text-white',
+      warning: 'bg-risk-medium border-risk-medium text-white',
       error: 'bg-red-500 border-red-600 text-white',
     },
   };
@@ -121,7 +121,7 @@ const Alert = ({
           )}
           <div className={clsx(
             'text-sm',
-            variant === 'filled' ? 'text-white/90' : 'text-gray-300',
+            variant === 'filled' ? 'text-white/90' : 'text-muted',
             !inline && title && 'mt-1',
             inline && 'ml-2'
           )}>
