@@ -36,7 +36,7 @@ export default function AnalysisClausesTab({
                     clause.priority === "high"
                       ? "bg-risk-high/10 text-risk-high border-risk-high/20"
                       : clause.priority === "medium"
-                        ? "bg-accent/10 text-accent border-accent/20"
+                        ? "bg-risk-medium/10 text-risk-medium border-risk-medium/20"
                         : "bg-risk-low/10 text-risk-low border-risk-low/20"
                   }`}
                 >

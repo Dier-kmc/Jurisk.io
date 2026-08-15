@@ -27,7 +27,7 @@ export default function AnalysisRisksTab({ risks }: AnalysisRisksTabProps) {
               </span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-surface-2">
-              <div className="w-2 h-2 rounded-full bg-accent" />
+              <div className="w-2 h-2 rounded-full bg-risk-medium" />
               <span className="text-[10px] font-black uppercase tracking-widest text-muted">
                 Important
               </span>

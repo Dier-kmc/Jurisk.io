@@ -30,7 +30,6 @@ import AnalysisStrategyTab from "@/components/results/AnalysisStrategyTab";
 import AnalysisTimeline from "@/components/results/AnalysisTimeline";
 import AnalysisDisclaimer from "@/components/results/AnalysisDisclaimer";
 import AnalysisFooter from "@/components/results/AnalysisFooter";
-import { ContractDissection } from "@/components/results/ContractDissection";
 
 interface AnalysisData {
   contract: {
@@ -229,10 +228,6 @@ export default function ResultPage() {
               showDetailedView={showDetailedView}
               onCopy={copyToClipboard}
               analysisId={analysis.id}
-              onSelectClause={(n) => setActiveTab("clauses")}
-            />
-            <ContractDissection
-              clauses={analysis.critical_clauses}
               onSelectClause={(n) => setActiveTab("clauses")}
             />
           </TabsContent>
