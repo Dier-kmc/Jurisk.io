@@ -178,7 +178,7 @@ export default function Sidebar({
       }`}
     >
       {/* Header */}
-      <div className="p-6 border-b border-border flex items-center justify-between">
+      <div className="p-6 md:p-8 border-b border-border flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 px-2 group">
           <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
             <span className="font-bold text-gray-900 text-lg">J</span>
@@ -213,7 +213,7 @@ export default function Sidebar({
         )}
       </div>
 
-      <div className="p-6 pt-0 mt-6">
+      <div className="p-6 md:p-8 pt-0 mt-6">
         <Link
           href="/upload"
           className="w-full bg-accent hover:bg-accent-bright text-background font-black py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 text-xs mb-8"
@@ -271,7 +271,7 @@ export default function Sidebar({
 
       {/* Stats Overview */}
       {stats && (
-        <div className="px-6 py-4 border-b border-border">
+        <div className="px-8 py-6 border-b border-border">
           <div className="grid grid-cols-2 gap-4 text-[10px] font-black tracking-widest uppercase">
             <div className="flex flex-col">
               <span className="text-white/20 mb-1">Total</span>
@@ -398,7 +398,7 @@ export default function Sidebar({
       </div>
 
       {/* Footer - User Menu */}
-      <div className="p-4 border-t border-border relative">
+      <div className="p-6 md:p-8 border-t border-border relative">
         <button
           onClick={() => onSetUserMenuOpen(!userMenuOpen)}
           className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-white/5 transition-all group"

@@ -82,7 +82,7 @@ export default function FileUpload({
   return (
     <div className={className}>
       <div
-        className="group relative h-72 rounded-xl bg-surface-1 border border-border overflow-hidden transition-all hover:bg-surface-2 hover:border-accent/40 flex flex-col items-center justify-center cursor-pointer"
+        className="group relative h-72 rounded-xl bg-surface-1 border border-border overflow-hidden transition-all hover:bg-surface-2 hover:border-accent/40 flex flex-col items-center justify-center cursor-pointer p-8"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onClick={() => document.getElementById("file-input")?.click()}

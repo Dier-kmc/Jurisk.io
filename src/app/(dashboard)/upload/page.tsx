@@ -186,7 +186,7 @@ export default function UploadPage() {
         )}
 
         {/* Topbar crédits */}
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface-1 px-5 py-4">
+        <div className="mb-10 flex flex-wrap items-center justify-between gap-8 rounded-xl border border-border bg-surface-1 p-8">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-widest text-muted">
               Solde de crédits
@@ -275,7 +275,7 @@ export default function UploadPage() {
         </div>
 
         {/* Trust Bar Éditorial */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
           {[
             {
               icon: Shield,
@@ -318,7 +318,7 @@ export default function UploadPage() {
         </div>
 
         {/* Limites d'Exploration (Simplifiées) */}
-        <div className="p-12 rounded-xl bg-surface-1 border border-border relative overflow-hidden text-center">
+        <div className="p-8 md:p-12 rounded-xl bg-surface-1 border border-border relative overflow-hidden text-center">
           <span className="text-[10px] font-black tracking-[0.4em] uppercase text-muted block mb-6">
             Paramètres Unifiés
           </span>
@@ -326,7 +326,7 @@ export default function UploadPage() {
             Puissance Maximale Débloquée
           </h3>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16 px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 px-6">
             {[
               { label: "Analyse", value: "IA Gen 4" },
               { label: "Taille max", value: "50 MB" },
