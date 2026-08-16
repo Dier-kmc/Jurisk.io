@@ -40,7 +40,7 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-3 mb-6 group">
               <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center transition-transform duration-300">
-                <span className="font-bold text-gray-900 text-lg">CS</span>
+                <span className="font-bold text-background text-lg">J</span>
               </div>
               <span className="text-white font-bold text-xl tracking-tight">
                 Jurisk.io
