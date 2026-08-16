@@ -136,7 +136,7 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-gray-500 text-sm">
             © {currentYear} Jurisk.io. Fièrement développé pour les juristes
             de demain.
