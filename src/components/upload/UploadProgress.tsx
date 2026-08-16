@@ -26,16 +26,16 @@ const UploadProgress = ({
   const statusConfig = {
     idle: {
       icon: <Upload className="w-6 h-6" />,
-      color: 'text-gray-400',
-      bgColor: 'bg-gray-800',
+      color: 'text-muted',
+      bgColor: 'bg-surface-2',
       label: 'Prêt à uploader',
     },
     uploading: {
       icon: (
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-500" />
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent" />
       ),
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-600/10',
+      color: 'text-accent',
+      bgColor: 'bg-accent/10',
       label: 'Upload en cours...',
     },
     success: {
@@ -63,7 +63,7 @@ const UploadProgress = ({
             <div>
               <h4 className="font-semibold text-white">{config.label}</h4>
               {fileName && (
-                <p className="text-sm text-gray-400 truncate max-w-xs">
+                <p className="text-sm text-muted truncate max-w-xs">
                   {fileName}
                 </p>
               )}
@@ -74,7 +74,7 @@ const UploadProgress = ({
             <div className="text-lg font-semibold text-white">
               {current.toFixed(1)}/{total.toFixed(1)} MB
             </div>
-            <div className="text-sm text-gray-400">{percentage.toFixed(1)}%</div>
+            <div className="text-sm text-muted">{percentage.toFixed(1)}%</div>
           </div>
         </div>
 
@@ -86,7 +86,7 @@ const UploadProgress = ({
         />
 
         {status === 'uploading' && (
-          <div className="mt-4 text-sm text-gray-400">
+          <div className="mt-4 text-sm text-muted">
             Transfert en cours... Veuillez patienter.
           </div>
         )}
@@ -105,7 +105,7 @@ const UploadProgress = ({
       </div>
 
       {status === 'uploading' && (
-        <div className="mt-4 text-center text-sm text-gray-500">
+        <div className="mt-4 text-center text-sm text-faint">
           Ne fermez pas cette page pendant l'upload
         </div>
       )}

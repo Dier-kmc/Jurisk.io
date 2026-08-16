@@ -27,8 +27,8 @@ const FileList = ({
   if (files.length === 0) {
     return (
       <div className="text-center py-12">
-        <FileText className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-        <p className="text-gray-400">Aucun fichier sélectionné</p>
+        <FileText className="w-12 h-12 text-faint mx-auto mb-4" />
+        <p className="text-muted">Aucun fichier sélectionné</p>
       </div>
     );
   }
@@ -51,23 +51,23 @@ const FileList = ({
         {files.map((file) => (
           <div
             key={file.id}
-            className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 hover:border-gray-700 transition-colors"
+            className="bg-surface-1 border border-border rounded-xl p-4 hover:border-white/20 transition-colors"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3 flex-1 min-w-0">
-                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-5 h-5 text-gray-400" />
+                <div className="w-10 h-10 bg-surface-2 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-5 h-5 text-muted" />
                 </div>
                 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center space-x-2 mb-1">
-                    <p className="font-medium text-white truncate">
+                    <p className="font-medium text-foreground truncate">
                       {file.info.name}
                     </p>
                     {getStatusBadge(file.status)}
                   </div>
                   
-                  <div className="flex items-center space-x-4 text-sm text-gray-400">
+                  <div className="flex items-center space-x-4 text-sm text-muted">
                     <span>{formatFileSize(file.info.size)}</span>
                     <span>•</span>
                     <span>{file.info.type}</span>
@@ -122,13 +122,13 @@ const FileList = ({
 
             {file.status === 'uploading' && (
               <div className="mt-4">
-                <div className="flex justify-between text-sm text-gray-400 mb-1">
+                <div className="flex justify-between text-sm text-muted mb-1">
                   <span>Progression</span>
                   <span>{file.progress}%</span>
                 </div>
-                <div className="w-full bg-gray-800 rounded-full h-2">
+                <div className="w-full bg-surface-2 rounded-full h-2">
                   <div
-                    className="bg-yellow-600 h-2 rounded-full transition-all duration-300"
+                    className="bg-accent h-2 rounded-full transition-all duration-300"
                     style={{ width: `${file.progress}%` }}
                   />
                 </div>
@@ -138,7 +138,7 @@ const FileList = ({
         ))}
       </div>
 
-      <div className="mt-4 text-sm text-gray-500">
+      <div className="mt-4 text-sm text-faint">
         {files.length} fichier{files.length > 1 ? 's' : ''} sélectionné{files.length > 1 ? 's' : ''}
       </div>
     </div>

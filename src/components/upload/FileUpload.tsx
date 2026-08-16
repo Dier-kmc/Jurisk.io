@@ -82,36 +82,36 @@ export default function FileUpload({
   return (
     <div className={className}>
       <div
-        className="group relative h-72 rounded-[2.5rem] bg-white/[0.02] border border-white/5 overflow-hidden transition-all hover:bg-white/[0.04] hover:border-white/10 flex flex-col items-center justify-center cursor-pointer"
+        className="group relative h-72 rounded-xl bg-surface-1 border border-border overflow-hidden transition-all hover:bg-surface-2 hover:border-accent/40 flex flex-col items-center justify-center cursor-pointer"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onClick={() => document.getElementById("file-input")?.click()}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(250,204,21,0.03)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(52,211,153,0.03)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
         <div className="relative z-10 flex flex-col items-center">
-          <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-yellow-500/30 transition-all duration-500">
-            <Upload className="w-8 h-8 text-white/20 group-hover:text-yellow-500 transition-colors duration-500" />
+          <div className="w-20 h-20 rounded-xl bg-surface-2 border border-border flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-accent/40 transition-all duration-500">
+            <Upload className="w-8 h-8 text-muted group-hover:text-accent transition-colors duration-500" />
           </div>
 
-          <h3 className="serif-display text-3xl text-white mb-3">
+          <h3 className="text-3xl text-foreground mb-3">
             Déposez l'acte
           </h3>
-          <p className="text-[10px] font-black tracking-[0.3em] uppercase text-white/20 mb-8">
+          <p className="text-[10px] font-black tracking-[0.3em] uppercase text-faint mb-8">
             ou parcourez votre bibliothèque
           </p>
 
           <div className="flex items-center gap-6">
             {["PDF", "DOCX", "TXT"].map((ext) => (
               <div key={ext} className="flex items-center gap-2">
-                <div className="w-1 h-1 rounded-full bg-white/10" />
-                <span className="text-[10px] font-black tracking-widest text-white/20">
+                <div className="w-1 h-1 rounded-full bg-border" />
+                <span className="text-[10px] font-black tracking-widest text-faint">
                   {ext}
                 </span>
               </div>
             ))}
-            <div className="h-4 w-px bg-white/5" />
-            <span className="text-[10px] font-black tracking-widest text-white/20 uppercase">
+            <div className="h-4 w-px bg-border" />
+            <span className="text-[10px] font-black tracking-widest text-faint uppercase">
               Max {maxSizeMB}MB
             </span>
           </div>
