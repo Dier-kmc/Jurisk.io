@@ -9,7 +9,7 @@ interface AnalysisRisksTabProps {
 export default function AnalysisRisksTab({ risks }: AnalysisRisksTabProps) {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <div className="p-10 rounded-xl bg-surface-1 border border-border relative overflow-hidden">
+      <div className="p-8 rounded-xl bg-surface-1 border border-border relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
             <span className="text-[10px] font-black tracking-[0.3em] uppercase text-risk-high/60 block mb-4">

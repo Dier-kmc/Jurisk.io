@@ -32,7 +32,7 @@ export function ContractDissection({ clauses, onSelectClause }: ContractDissecti
 
   if (clauses.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-surface-1 p-6 text-sm text-muted">
+      <div className="rounded-xl border border-border bg-surface-1 p-8 text-sm text-muted">
         Aucune clause critique détectée.
       </div>
     );
@@ -40,7 +40,7 @@ export function ContractDissection({ clauses, onSelectClause }: ContractDissecti
 
   return (
     <div className="rounded-xl border border-border bg-surface-1 overflow-hidden">
-      <div className="border-b border-border px-4 py-3 flex items-center justify-between">
+      <div className="border-b border-border px-6 py-4 flex items-center justify-between">
         <span className="text-[10px] font-medium uppercase tracking-widest text-muted">
           Dissection du contrat
         </span>
@@ -53,7 +53,7 @@ export function ContractDissection({ clauses, onSelectClause }: ContractDissecti
           <li key={clause.clause_number}>
             <button
               onClick={() => onSelectClause?.(clause.clause_number)}
-              className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
+              className="w-full flex items-start gap-4 px-6 py-4 text-left hover:bg-white/[0.02] transition-colors"
             >
               <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${priorityColor[clause.priority] ?? "bg-faint"}`} />
               <span className="flex-1 min-w-0">

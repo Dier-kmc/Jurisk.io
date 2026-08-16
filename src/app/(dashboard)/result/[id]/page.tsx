@@ -184,10 +184,10 @@ export default function ResultPage() {
         getStatusColor={getStatusColor}
       />
 
-      <main className="container mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10">
+      <main className="container mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10 space-y-12">
         <AnalysisHero summary={analysis.summary} />
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-12">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="bg-surface-2 border border-border p-1 rounded-full h-14 w-full md:w-fit flex gap-1 overflow-x-auto no-scrollbar">
             {[
               { value: "overview", icon: BarChart3, label: "Vision Globale" },
