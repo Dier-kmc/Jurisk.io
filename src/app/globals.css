@@ -123,6 +123,18 @@
   .stagger-2 { animation-delay: 0.16s; }
   .stagger-3 { animation-delay: 0.24s; }
   .stagger-4 { animation-delay: 0.32s; }
+
+  .gradient-subtle {
+    @apply bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent;
+  }
+
+  .animate-progress-flow {
+    animation: progress-flow 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
 }
 
 @keyframes fadeIn {
@@ -139,6 +151,16 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(0.5deg); }
+}
+
+@keyframes progress-flow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 @media (prefers-reduced-motion: reduce) {

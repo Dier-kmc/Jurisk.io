@@ -1,12 +1,14 @@
 interface RiskGaugeProps {
   value: number;
   label: string;
+  invert?: boolean;
 }
 
-export function RiskGauge({ value, label }: RiskGaugeProps) {
+export function RiskGauge({ value, label, invert = false }: RiskGaugeProps) {
   const v = Math.max(0, Math.min(100, value));
-  const color =
-    v >= 66 ? "stroke-risk-high" : v >= 33 ? "stroke-risk-medium" : "stroke-risk-low";
+  const color = invert
+    ? v >= 66 ? "stroke-risk-low" : v >= 33 ? "stroke-risk-medium" : "stroke-risk-high"
+    : v >= 66 ? "stroke-risk-high" : v >= 33 ? "stroke-risk-medium" : "stroke-risk-low";
 
   return (
     <div className="flex flex-col items-center gap-2">

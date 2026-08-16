@@ -228,7 +228,6 @@ export default function ResultPage() {
               showDetailedView={showDetailedView}
               onCopy={copyToClipboard}
               analysisId={analysis.id}
-              onSelectClause={(n) => setActiveTab("clauses")}
             />
           </TabsContent>
           <TabsContent value="strategy">
