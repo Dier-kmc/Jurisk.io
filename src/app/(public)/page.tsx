@@ -89,7 +89,7 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section - Senior Designer Vision */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-16 md:pt-28 md:pb-20 overflow-hidden bg-[#050505]">
+      <section className="relative min-h-screen flex flex-col items-center justify-center py-24 md:py-32 overflow-hidden bg-[#050505]">
         {/* Enhanced Background Effects */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Main gradient */}
@@ -214,7 +214,7 @@ export default function HomePage() {
       </section>
 
       {/* Organic Features Section - The "Craftmanship" approach */}
-      <section className="py-32 bg-[#050505] relative overflow-hidden">
+      <section className="py-24 md:py-32 bg-[#050505] relative overflow-hidden">
         <div className="container px-6">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-center mb-20 lg:mb-40 reveal">
   {/* Texte - Gauche */}
@@ -251,7 +251,7 @@ export default function HomePage() {
 
   {/* Visual - Droite */}
   <div className="lg:w-1/2 relative order-1 lg:order-2 px-4 sm:px-0 w-full mb-10 lg:mb-0">
-    <div className="aspect-square sm:aspect-[4/5] max-w-sm mx-auto lg:max-w-none rounded-2xl border border-border bg-surface-1 flex items-center justify-center relative overflow-hidden group p-4 sm:p-0">
+    <div className="aspect-square sm:aspect-[4/5] max-w-sm mx-auto lg:max-w-none rounded-2xl border border-white/[0.06] bg-surface-1 flex items-center justify-center relative overflow-hidden group p-8">
       
       {/* Effet de gradient au hover */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(52,211,153,0.05)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
@@ -329,7 +329,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="lg:w-1/2">
-              <div className="aspect-square bg-surface-1 border border-border rounded-full flex flex-col items-center justify-center text-center p-12">
+              <div className="aspect-square bg-surface-1 border border-white/[0.06] rounded-full flex flex-col items-center justify-center text-center p-12">
                 <Zap className="w-12 h-12 text-accent/20 mb-8" />
                 <h3 className="text-3xl font-bold text-white mb-4 italic">
                   45s
@@ -345,7 +345,7 @@ export default function HomePage() {
       </section>
 
       {/* Témoignages */}
-      <section className="section-padding">
+      <section className="py-24 md:py-32 bg-[#050505]">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Ils nous font confiance</h2>
@@ -354,9 +354,9 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <div key={index} className="glass-card p-6 rounded-xl">
+              <div key={index} className="glass-card p-8 rounded-xl border border-white/[0.06]">
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => (
                     <svg
@@ -398,7 +398,7 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA Section - Massive minimalist close */}
-      <section className="py-48 bg-[#050505] relative overflow-hidden reveal">
+      <section className="py-24 md:py-32 bg-[#050505] relative overflow-hidden reveal">
         <div className="container relative z-10 px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-[clamp(2rem,6vw,4rem)] font-bold mb-12 tracking-tighter leading-[1] text-white">

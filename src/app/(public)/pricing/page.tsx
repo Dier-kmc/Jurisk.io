@@ -24,7 +24,7 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="bg-background min-h-screen pt-32 pb-24 overflow-hidden relative">
+    <div className="bg-background min-h-screen py-24 md:py-32 overflow-hidden relative">
       {/* Background Depth */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(52,211,153,0.03)_0%,transparent_50%)] pointer-events-none" />
 
@@ -52,11 +52,11 @@ export default function PricingPage() {
           {CREDIT_PACKS.map((pack, index) => (
             <div
               key={pack.id}
-              className={`p-10 rounded-xl border relative group transition-all duration-500 hover:-translate-y-2
+              className={`p-8 rounded-xl border relative group transition-all duration-500 hover:-translate-y-2
                 ${
                   pack.popular
                     ? "border-accent bg-accent/5 z-10 scale-105"
-                    : "bg-surface-1 border-border hover:bg-white/[0.04]"
+                    : "bg-surface-1 border-white/[0.06] hover:bg-white/[0.04]"
                 }`}
             >
               {pack.popular && (
@@ -109,7 +109,7 @@ export default function PricingPage() {
                     ${
                       pack.popular
                         ? "bg-accent hover:bg-accent-bright text-background"
-                        : "bg-surface-2 hover:bg-white/[0.06] text-foreground border border-border"
+                        : "bg-surface-2 hover:bg-white/[0.06] text-foreground border border-white/[0.06]"
                     }`}
                 >
                   Choisir ce pack
@@ -120,7 +120,7 @@ export default function PricingPage() {
         </div>
 
         {/* Free Tier Info */}
-        <div className="mt-24 max-w-4xl mx-auto rounded-xl bg-surface-1 border border-border p-12 relative overflow-hidden reveal">
+        <div className="mt-24 max-w-4xl mx-auto rounded-xl bg-surface-1 border border-white/[0.06] p-8 md:p-12 relative overflow-hidden reveal">
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
             <div className="w-20 h-20 rounded-3xl bg-surface-2 flex items-center justify-center shrink-0">
               <Gift className="w-10 h-10 text-accent" />

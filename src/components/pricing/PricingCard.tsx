@@ -33,7 +33,7 @@ const PricingCard = ({
         'relative rounded-xl p-8 transition-all duration-300 border',
         isPopular
           ? 'border-accent bg-accent/5'
-          : 'border-border bg-surface-1',
+          : 'border-white/[0.06] bg-surface-1',
         selected && 'ring-1 ring-accent',
         className
       )}
