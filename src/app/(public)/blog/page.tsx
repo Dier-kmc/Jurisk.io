@@ -35,17 +35,17 @@ export default function BlogPage() {
   ];
 
   return (
-    <div className="bg-[#050505] min-h-screen pt-32 pb-24 relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.02)_0%,transparent_50%)] pointer-events-none" />
+    <div className="bg-background min-h-screen pt-32 pb-24 relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(52,211,153,0.03)_0%,transparent_50%)] pointer-events-none" />
 
       <div className="container max-w-7xl relative z-10 px-6">
         <header className="max-w-4xl mb-32 animate-slide-up">
-          <span className="text-yellow-500/80 text-xs font-black tracking-[0.3em] uppercase mb-6 block">
+          <span className="text-accent/80 text-xs font-black tracking-[0.3em] uppercase mb-6 block">
             Le Journal
           </span>
           <h1 className="text-[clamp(2.5rem,8vw,5.5rem)] font-bold tracking-tighter leading-[0.9] text-white mb-12">
             Perspectives <br />
-            <span className="serif-display text-white/30">& réflexions.</span>
+            <span className="text-white/30">& réflexions.</span>
           </h1>
           <p className="max-w-xl text-xl text-white/30 leading-relaxed">
             Analyses juridiques approfondies, actualités de l&apos;IA et visions
@@ -60,8 +60,8 @@ export default function BlogPage() {
               className="group relative flex flex-col md:flex-row gap-16 items-start"
             >
               <div className="md:w-1/3">
-                <div className="aspect-[4/3] bg-white/[0.02] border border-white/10 rounded-[3rem] overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="aspect-[4/3] bg-white/[0.02] border border-border rounded-xl overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <span className="text-white/5 font-black text-8xl italic uppercase select-none">
                       {post.category.charAt(0)}
@@ -71,7 +71,7 @@ export default function BlogPage() {
               </div>
               <div className="md:w-2/3">
                 <div className="flex items-center gap-6 mb-8 text-[10px] font-black tracking-widest uppercase text-white/20">
-                  <span className="text-yellow-500">{post.category}</span>
+                  <span className="text-accent">{post.category}</span>
                   <div className="flex items-center gap-2">
                     <Calendar className="w-3 h-3" /> {post.date}
                   </div>
@@ -79,7 +79,7 @@ export default function BlogPage() {
                     <User className="w-3 h-3" /> {post.author}
                   </div>
                 </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 group-hover:text-yellow-500 transition-colors tracking-tight">
+                <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 group-hover:text-accent transition-colors tracking-tight">
                   {post.title}
                 </h2>
                 <p className="text-xl text-white/30 leading-relaxed mb-10 max-w-2xl">
