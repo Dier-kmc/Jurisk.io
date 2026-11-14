@@ -74,6 +74,12 @@
 }
 
 @layer utilities {
+  /* Palette autonome du site public : le bleu remplace les anciens appels verts. */
+  .public-v2 .bg-\[\#1f4a3a\] { background-color: #2848c7 !important; }
+  .public-v2 .text-\[\#1f4a3a\] { color: #2848c7 !important; }
+  .public-v2 .border-\[\#1f4a3a\] { border-color: #2848c7 !important; }
+  .public-v2 .hover\:bg-\[\#17372b\]:hover { background-color: #203aa3 !important; }
+
   .tnum {
     font-variant-numeric: tabular-nums;
   }

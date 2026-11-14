@@ -1,4 +1,5 @@
 // types/contract.ts - Version 100% anglaise
+import type { AnalysisContext, NegotiationFinding, SourceSegment } from "@/types/contractAnalysis";
 export interface Risk {
   id?: string;
   type: string;
@@ -151,6 +152,13 @@ export interface ContractAnalysis {
   cost?: number;
   errorMessage?: string;
 
+  analysisContext?: AnalysisContext;
+  sourceSegments?: SourceSegment[];
+  negotiationFindings?: NegotiationFinding[];
+  contractInventory?: Record<string, unknown>;
+  topPriorities?: string[];
+  openQuestions?: string[];
+
   createdAt: string;
   contract?: {
     id: string;
@@ -187,6 +195,12 @@ export interface RawAnalysisData {
   tokenCount: number;
   cost?: number;
   errorMessage?: string;
+  analysisContext?: string;
+  sourceSegments?: string;
+  negotiationFindings?: string;
+  contractInventory?: string;
+  topPriorities?: string;
+  openQuestions?: string;
   createdAt: string;
 }
 
@@ -204,6 +218,10 @@ export interface AnalysisResponse {
     mimeType: string;
     extractedText?: string;
     errorMessage?: string;
+    jurisdiction?: string;
+    contractType?: string;
+    representedParty?: string;
+    analysisObjective?: string;
   };
   analysis: ContractAnalysis | null;
 }
@@ -281,6 +299,12 @@ export function parseAnalysisData(rawData: RawAnalysisData): ContractAnalysis {
       critical_clauses: parsedCriticalClauses,
       party_analysis: parsedPartyAnalysis,
       probable_scenarios: parsedScenarios,
+      analysisContext: safeParseObject(rawData.analysisContext) as unknown as AnalysisContext,
+      sourceSegments: safeParseArray(rawData.sourceSegments) as SourceSegment[],
+      negotiationFindings: safeParseArray(rawData.negotiationFindings) as NegotiationFinding[],
+      contractInventory: safeParseObject(rawData.contractInventory),
+      topPriorities: safeParseArray(rawData.topPriorities) as string[],
+      openQuestions: safeParseArray(rawData.openQuestions) as string[],
       modelUsed: rawData.modelUsed,
       processingTime: rawData.processingTime,
       tokenCount: rawData.tokenCount,
@@ -366,6 +390,20 @@ export function createRawAnalysisData(prismaAnalysis: any): RawAnalysisData {
     tokenCount: prismaAnalysis.tokenCount,
     cost: prismaAnalysis.cost,
     errorMessage: prismaAnalysis.errorMessage,
+    analysisContext: prismaAnalysis.analysisContext || "{}",
+    sourceSegments: prismaAnalysis.sourceSegments || "[]",
+    negotiationFindings: prismaAnalysis.negotiationFindings || "[]",
+    contractInventory: prismaAnalysis.contractInventory || "{}",
+    topPriorities: prismaAnalysis.topPriorities || "[]",
+    openQuestions: prismaAnalysis.openQuestions || "[]",
     createdAt: prismaAnalysis.createdAt.toISOString(),
   };
+}
+
+function safeParseObject(value?: string): Record<string, unknown> {
+  try { const parsed = JSON.parse(value || "{}"); return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {}; } catch { return {}; }
+}
+
+function safeParseArray(value?: string): unknown[] {
+  try { const parsed = JSON.parse(value || "[]"); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
 }

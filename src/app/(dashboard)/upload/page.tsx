@@ -29,6 +29,12 @@ export default function UploadPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [userCredits, setUserCredits] = useState<UserCredits | null>(null);
   const [loadingCredits, setLoadingCredits] = useState(true);
+  const [analysisContext, setAnalysisContext] = useState({
+    jurisdiction: "FR",
+    contractType: "commercial_general",
+    representedParty: "client",
+    objective: "renegotiate",
+  });
 
   // Récupérer les crédits de l'utilisateur
   useEffect(() => {
@@ -79,6 +85,10 @@ export default function UploadPage() {
     try {
       const formData = new FormData();
       formData.append("file", files[0]);
+      formData.append("jurisdiction", analysisContext.jurisdiction);
+      formData.append("contractType", analysisContext.contractType);
+      formData.append("representedParty", analysisContext.representedParty);
+      formData.append("objective", analysisContext.objective);
 
       // Appel à votre API réelle
       const response = await fetch("/api/upload", {
@@ -201,6 +211,17 @@ export default function UploadPage() {
           >
             Recharger mon compte →
           </Link>
+        </div>
+
+        <div className="mb-10 rounded-xl border border-border bg-surface-1 p-8">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-muted">Contexte de lecture</p>
+          <p className="mt-2 max-w-2xl text-sm text-muted">Ces informations permettent de classer les priorités pour votre situation, plutôt que de produire un score générique.</p>
+          <div className="mt-6 grid gap-5 md:grid-cols-2">
+            <label className="text-xs font-semibold text-foreground">Juridiction<select value={analysisContext.jurisdiction} onChange={(event) => setAnalysisContext((current) => ({ ...current, jurisdiction: event.target.value }))} className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-3 py-3 text-sm text-foreground outline-none focus:border-accent"><option value="FR">France</option><option value="BE">Belgique</option><option value="CA">Canada</option><option value="OHADA">Espace OHADA</option></select></label>
+            <label className="text-xs font-semibold text-foreground">Famille de contrat<select value={analysisContext.contractType} onChange={(event) => setAnalysisContext((current) => ({ ...current, contractType: event.target.value }))} className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-3 py-3 text-sm text-foreground outline-none focus:border-accent"><option value="commercial_general">Contrat commercial général</option><option value="employment">Contrat de travail</option></select></label>
+            <label className="text-xs font-semibold text-foreground">Votre partie<select value={analysisContext.representedParty} onChange={(event) => setAnalysisContext((current) => ({ ...current, representedParty: event.target.value }))} className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-3 py-3 text-sm text-foreground outline-none focus:border-accent"><option value="client">Client / employeur</option><option value="provider">Prestataire / salarié</option><option value="party_a">Partie A</option><option value="party_b">Partie B</option></select></label>
+            <label className="text-xs font-semibold text-foreground">Votre objectif<select value={analysisContext.objective} onChange={(event) => setAnalysisContext((current) => ({ ...current, objective: event.target.value }))} className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-3 py-3 text-sm text-foreground outline-none focus:border-accent"><option value="renegotiate">Préparer une négociation</option><option value="sign">Décider avant signature</option><option value="renew">Préparer un renouvellement</option><option value="review">Comprendre le contrat</option></select></label>
+          </div>
         </div>
 
         {/* Zone d'upload Éditoriale */}

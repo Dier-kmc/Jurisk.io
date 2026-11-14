@@ -64,12 +64,21 @@ export async function GET(
       mimeType: contract.mimeType,
       extractedText: contract.extractedText || undefined
     };
+    const contextRows = await prisma.$queryRawUnsafe<Array<Record<string, string | null>>>(
+      'SELECT "jurisdiction", "contractType", "representedParty", "analysisObjective" FROM "Contract" WHERE "id" = $1 LIMIT 1',
+      contract.id,
+    );
+    Object.assign(formattedContract, contextRows[0] || {});
     
     let formattedAnalysis = null;
     
     if (contract.analysis) {
+      const negotiationRows = await prisma.$queryRawUnsafe<Array<Record<string, unknown>>>(
+        'SELECT "analysisContext", "sourceSegments", "negotiationFindings", "contractInventory", "topPriorities", "openQuestions" FROM "Analysis" WHERE "id" = $1 LIMIT 1',
+        contract.analysis.id,
+      );
       // Utiliser la fonction utilitaire qui sait gérer les champs
-      const rawAnalysisData: RawAnalysisData = createRawAnalysisData(contract.analysis);
+      const rawAnalysisData: RawAnalysisData = createRawAnalysisData({ ...contract.analysis, ...(negotiationRows[0] || {}) });
       
       // Parser les données
       formattedAnalysis = parseAnalysisData(rawAnalysisData);

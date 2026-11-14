@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const PUBLIC_PATHS = ['/', '/pricing', '/features', '/docs', '/blog', '/guides', '/privacy', '/terms', '/legal', '/cookie-policy', '/accessibility']
+const PUBLIC_PATHS = [
+  '/',
+  '/method',
+  '/report',
+  '/resources',
+  '/pricing',
+  '/status',
+  '/privacy',
+  '/terms',
+  '/accessibility',
+]
 
 export function allowPublicRoutes(
   request: NextRequest

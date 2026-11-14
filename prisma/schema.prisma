@@ -25,6 +25,7 @@ model User {
   
   contracts Contract[]
   analyses  Analysis[]
+  analysisMessages AnalysisMessage[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
@@ -74,6 +75,11 @@ model Contract {
   fileUrl     String?
   mimeType    String
   extractedText String?
+  sourceSegments String @default("[]")
+  jurisdiction String?
+  contractType String?
+  representedParty String?
+  analysisObjective String?
   status      String    @default("PENDING")
   errorMessage String?  // <-- Ajouté ici
   createdAt   DateTime  @default(now())
@@ -99,6 +105,12 @@ model Analysis {
   critical_clauses     String @default("[]")
   party_analysis       String @default("{}")
   probable_scenarios   String @default("[]")
+  analysisContext      String @default("{}")
+  sourceSegments       String @default("[]")
+  negotiationFindings  String @default("[]")
+  contractInventory    String @default("{}")
+  topPriorities        String @default("[]")
+  openQuestions        String @default("[]")
   
   detectedLanguage String? @default("en") // Langue détectée du contrat (ISO 639-1)
   
@@ -108,5 +120,23 @@ model Analysis {
   cost           Float?
   errorMessage   String?
 
+  messages AnalysisMessage[]
+
   createdAt      DateTime @default(now())
+}
+
+model AnalysisMessage {
+  id         String   @id @default(cuid())
+  analysisId String
+  userId     String
+  role       String
+  content    String
+  citations  String   @default("[]")
+  pinned     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  analysis Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId, createdAt])
 }

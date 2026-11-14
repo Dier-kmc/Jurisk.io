@@ -8,6 +8,7 @@ import { DocumentExtractor } from '@/lib/pdf/extractText'
 import { analyzeContract } from '@/lib/services/analysisService'
 import { AuthService } from '@/lib/auth/auth-service'
 import { supabase } from '@/lib/supabase/client'
+import { contextFromFormData } from '@/lib/analysis/analysisContext'
 
 
 export async function POST(request: NextRequest) {
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest) {
     // Récupérer le fichier
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const analysisContext = contextFromFormData(formData);
 
     if (!file) {
       console.log('Aucun fichier fourni');
@@ -91,7 +93,8 @@ export async function POST(request: NextRequest) {
 
     // Extraire le texte pour validation rapide
     console.log('Début de l\'extraction du texte...');
-    const text = await DocumentExtractor.extractText(buffer, file.type);
+    const extraction = await DocumentExtractor.extractDocument(buffer, file.type);
+    const text = extraction.text;
     console.log('Texte extrait avec succès:', text.length, 'caractères');
     
     const textValidation = DocumentExtractor.isTextValidForAnalysis(text);
@@ -156,6 +159,16 @@ export async function POST(request: NextRequest) {
         // updatedAt: new Date()
       }
     });
+
+    await prisma.$executeRawUnsafe(
+      'UPDATE "Contract" SET "sourceSegments" = $1, "jurisdiction" = $2, "contractType" = $3, "representedParty" = $4, "analysisObjective" = $5 WHERE "id" = $6',
+      JSON.stringify(extraction.segments),
+      analysisContext.jurisdiction,
+      analysisContext.contractType,
+      analysisContext.representedParty,
+      analysisContext.objective,
+      contract.id,
+    );
 
     console.log('Contrat créé en DB:', contract.id);
 

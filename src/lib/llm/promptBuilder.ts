@@ -1,3 +1,5 @@
+import type { AnalysisContext, SourceSegment } from "@/types/contractAnalysis";
+
 // // src/lib/llm/promptBuilder.ts
 // export class PromptBuilder {
 //   static getContractAnalysisPrompt(
@@ -405,6 +407,79 @@ CONTRACT CHUNK (PART ${chunkNumber}/${totalChunks}):
 "${chunkText.substring(0, 6000)}"
 
 Return ONLY JSON:`;
+  }
+
+  static getNegotiationAnalysisPrompt(
+    context: AnalysisContext,
+    segments: SourceSegment[],
+    languageCode: string,
+  ): string {
+    const language = this.getLanguageInstructions(languageCode);
+    const sourceText = segments.map((segment) => {
+      const location = segment.page ? `page ${segment.page}` : segment.section || "section non précisée";
+      return `[SOURCE ${segment.id} | ${location}]\n${segment.text}`;
+    }).join("\n\n");
+
+    return `You are a contract negotiation copilot. Analyze only the supplied contract sources and never invent facts.
+
+${language}
+
+USER CONTEXT:
+- Jurisdiction: ${context.jurisdiction}
+- Contract family: ${context.contractType}
+- Represented party: ${context.representedParty}
+- Objective: ${context.objective}
+
+TASK:
+1. Inventory the parties, obligations, deadlines, costs, penalties and missing clauses.
+2. Identify the most important issues for the represented party.
+3. Return at most 5 findings with action priorities: urgent, important, monitor.
+4. Every finding MUST cite one or more SOURCE ids and quote exact text from those sources.
+5. Separate contractual evidence from interpretation. If evidence is absent, do not assert the fact.
+6. Give a concrete negotiation position and a wording the user can send or discuss.
+7. Use a confidence number from 0 to 100. Do not provide a legal conclusion or pretend to be a lawyer.
+
+RETURN ONLY VALID JSON:
+{
+  "parties": [{"name": "string", "role": "string"}],
+  "missingClauses": ["string"],
+  "obligations": [{"id":"string","party":"string","action":"string","deadline":"string","cost":"string","consequence":"string","source":{"segmentId":"string","quote":"exact quote","page":1,"section":"string"}}],
+  "findings": [{
+    "id":"finding-1",
+    "priority":"urgent | important | monitor",
+    "category":"liability | termination | payment | ip | confidentiality | employment | deadline | other",
+    "title":"string",
+    "issue":"string",
+    "consequence":"string",
+    "confidence":0,
+    "sources":[{"segmentId":"string","quote":"exact quote","page":1,"section":"string"}],
+    "recommendedPosition":"string",
+    "negotiationWording":"string",
+    "question":"string"
+  }],
+  "openQuestions":["string"]
+}
+
+SOURCE MATERIAL:
+${sourceText}`;
+  }
+
+  static getCopilotPrompt(
+    question: string,
+    context: AnalysisContext,
+    sources: SourceSegment[],
+  ): string {
+    const sourceText = sources.map((source) => `[SOURCE ${source.id}] ${source.text}`).join("\n\n");
+    return `You are a contract copilot. Answer the user's question using ONLY the source material below.
+The user represents: ${context.representedParty}. Jurisdiction context: ${context.jurisdiction}.
+If the answer is not present, say exactly that it was not found in the contract. Do not invent legal rules.
+Return JSON only with this shape: {"answer":"string","citations":[{"segmentId":"string","quote":"exact quote","page":1,"section":"string"}],"confidence":0}
+
+QUESTION:
+${question}
+
+SOURCE MATERIAL:
+${sourceText}`;
   }
   // ... keep existing getLanguageInstructions method ...
 }

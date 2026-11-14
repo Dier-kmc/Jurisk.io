@@ -12,6 +12,9 @@ import {
 import { PromptBuilder } from "../llm/promptBuilder";
 import { LanguageDetector } from "../analysis/languageDetector";
 import { RiskCalculator } from "../analysis/riskCalculator";
+import { normalizeAnalysisContext } from "@/lib/analysis/analysisContext";
+import { runNegotiationAnalysis, priorityToLegacy } from "@/lib/analysis/negotiationService";
+import type { NegotiationFinding, SourceSegment } from "@/types/contractAnalysis";
 
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
 const MODELS = [
@@ -562,6 +565,87 @@ export async function analyzeContract(
     });
     if (!contract) throw new Error("Contrat non trouvé");
     console.log(`User ID du contrat: ${contract.userId}`);
+    const contextRows = await prisma.$queryRawUnsafe<Array<Record<string, string | null>>>(
+      'SELECT "sourceSegments", "jurisdiction", "contractType", "representedParty", "analysisObjective" FROM "Contract" WHERE "id" = $1 LIMIT 1',
+      contractId,
+    );
+    const contractWithContext = { ...contract, ...(contextRows[0] || {}) } as any;
+
+    // Nouvelle analyse sourcée et orientée négociation. Les anciens champs
+    // sont dérivés plus bas pour conserver la compatibilité du dashboard.
+    const context = normalizeAnalysisContext({
+      jurisdiction: contractWithContext.jurisdiction || "FR",
+      contractType: contractWithContext.contractType || "commercial_general",
+      representedParty: contractWithContext.representedParty || "client",
+      objective: contractWithContext.analysisObjective || "renegotiate",
+    });
+    const extraction = contractWithContext.sourceSegments
+      ? JSON.parse(contractWithContext.sourceSegments) as SourceSegment[]
+      : (await DocumentExtractor.extractDocument(fileBuffer, mimeType)).segments;
+    const sourceSegments = extraction.length
+      ? extraction
+      : [{ id: "document-1", text: contract.extractedText || "", section: "Document", start: 0, end: (contract.extractedText || "").length }];
+    const negotiationResult = await runNegotiationAnalysis(context, sourceSegments, contract.extractedText || sourceSegments.map((segment) => segment.text).join("\n"));
+    const negotiation = negotiationResult.analysis;
+    const legacyRisks = negotiation.findings.map((finding) => ({
+      type: finding.category,
+      description: finding.issue,
+      severity: priorityToLegacy(finding.priority),
+      clause: finding.sources.map((source) => source.page ? `Page ${source.page}` : source.section || source.segmentId).join(", "),
+      recommendation: `${finding.recommendedPosition} ${finding.negotiationWording}`.trim(),
+      impact: "legal",
+      probability: finding.confidence,
+      impact_magnitude: finding.priority === "urgent" ? 8 : finding.priority === "important" ? 5 : 3,
+      priority: priorityToLegacy(finding.priority),
+      deadline: finding.priority === "urgent" ? "immediate" : finding.priority === "important" ? "short_term" : "long_term",
+      sourceReferences: finding.sources,
+    }));
+    const legacyObligations = negotiation.inventory.obligations.map((obligation) => ({
+      description: obligation.action,
+      party: "both",
+      deadline: obligation.deadline,
+      penalties: obligation.consequence,
+      costs: obligation.cost,
+      associated_clause: obligation.source?.page ? `Page ${obligation.source.page}` : obligation.source?.section,
+      source: obligation.source,
+    }));
+    const negotiationAnalysisRecord = await (prisma.analysis as any).create({
+      data: {
+        contractId,
+        userId: contract.userId,
+        summary: JSON.stringify({
+          global_risk_score: negotiation.findings.length ? Math.round(negotiation.findings.reduce((sum, finding) => sum + (finding.priority === "urgent" ? 85 : finding.priority === "important" ? 60 : 30), 0) / negotiation.findings.length) : 0,
+          balance_score: 50,
+          clarity_score: negotiation.confidence,
+          key_points: negotiation.topPriorities,
+          strategic_advice: negotiation.findings.slice(0, 5).map((finding) => finding.negotiationWording),
+          risk_timeline: { immediate: [], short_term: [], long_term: [] },
+        }),
+        identified_parties: JSON.stringify({ party_a: negotiation.inventory.parties[0] || { name: "Partie A", role: "" }, party_b: negotiation.inventory.parties[1] || { name: "Partie B", role: "" } }),
+        risks: JSON.stringify(legacyRisks),
+        obligations: JSON.stringify(legacyObligations),
+        powers: "[]",
+        critical_clauses: JSON.stringify(negotiation.findings.slice(0, 15).map((finding) => ({ clause_number: finding.sources[0]?.page ? `Page ${finding.sources[0].page}` : finding.sources[0]?.segmentId, title: finding.title, problem: finding.issue, legal_impact: finding.consequence, proposed_solution: finding.negotiationWording, priority: priorityToLegacy(finding.priority), sources: finding.sources }))),
+        party_analysis: JSON.stringify({ party_a: { party_name: context.representedParty, risk_score: 0, opportunity_score: 0, negotiation_power: "medium", major_risks: [], advantages: [], specific_recommendations: [] }, party_b: { party_name: negotiation.inventory.parties[1]?.name || "Autre partie", risk_score: 0, opportunity_score: 0, negotiation_power: "medium", major_risks: [], advantages: [], specific_recommendations: [] } }),
+        probable_scenarios: "[]",
+        detectedLanguage: LanguageDetector.detectLanguage(contract.extractedText || ""),
+        modelUsed: negotiationResult.models.join(", "),
+        processingTime: Math.round((Date.now() - startTime) / 1000),
+        tokenCount: DocumentExtractor.estimateTokenCount(contract.extractedText || ""),
+      },
+    });
+    await prisma.$executeRawUnsafe(
+      'UPDATE "Analysis" SET "analysisContext" = $1, "sourceSegments" = $2, "negotiationFindings" = $3, "contractInventory" = $4, "topPriorities" = $5, "openQuestions" = $6 WHERE "id" = $7',
+      JSON.stringify(negotiation.context),
+      JSON.stringify(negotiation.sourceSegments),
+      JSON.stringify(negotiation.findings),
+      JSON.stringify(negotiation.inventory),
+      JSON.stringify(negotiation.topPriorities),
+      JSON.stringify(negotiation.openQuestions),
+      negotiationAnalysisRecord.id,
+    );
+    await prisma.contract.update({ where: { id: contractId }, data: { status: "COMPLETED" } });
+    return negotiationAnalysisRecord;
 
     // Extraire texte
     const text = await DocumentExtractor.extractText(fileBuffer, mimeType);
@@ -585,7 +669,7 @@ export async function analyzeContract(
       const { content, modelUsed } = await callOpenRouterWithFallback(prompt);
       const parsed = safeParseJSON(content);
       if (parsed) {
-        parsed.modelUsed = modelUsed;
+        (parsed as ContractAnalysis).modelUsed = modelUsed;
       }
       if (!parsed) console.warn("Chunk non parsé correctement");
       partials.push(parsed);
@@ -647,7 +731,7 @@ export async function analyzeContract(
     const analysis = await prisma.analysis.create({
       data: {
         contractId,
-        userId: contract.userId,
+        userId: contract!.userId,
         risks: risksString,
         obligations: obligationsString,
         powers: powersString,
