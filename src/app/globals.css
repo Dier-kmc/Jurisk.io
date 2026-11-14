@@ -80,6 +80,44 @@
   .public-v2 .border-\[\#1f4a3a\] { border-color: #2848c7 !important; }
   .public-v2 .hover\:bg-\[\#17372b\]:hover { background-color: #203aa3 !important; }
 
+  .public-v2 .public-blue-button,
+  .public-v2 a.bg-\[\#2848c7\],
+  .public-v2 button.bg-\[\#2848c7\],
+  .public-v2 a.bg-\[\#1f4a3a\],
+  .public-v2 button.bg-\[\#1f4a3a\] {
+    transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  }
+
+  .public-v2 .public-blue-button:hover,
+  .public-v2 a.bg-\[\#2848c7\]:hover,
+  .public-v2 button.bg-\[\#2848c7\]:hover,
+  .public-v2 a.bg-\[\#1f4a3a\]:hover,
+  .public-v2 button.bg-\[\#1f4a3a\]:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 #17191d;
+  }
+
+  .contract-drift {
+    animation: contract-drift 60s ease-in-out infinite;
+    transform-origin: 50% 50%;
+  }
+
+  @keyframes contract-drift {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    25% { transform: translate3d(5px, -4px, 0) rotate(0.35deg); }
+    50% { transform: translate3d(-3px, -7px, 0) rotate(-0.25deg); }
+    75% { transform: translate3d(-6px, 2px, 0) rotate(0.2deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contract-drift { animation: none; }
+    .public-v2 .public-blue-button,
+    .public-v2 a.bg-\[\#2848c7\],
+    .public-v2 button.bg-\[\#2848c7\],
+    .public-v2 a.bg-\[\#1f4a3a\],
+    .public-v2 button.bg-\[\#1f4a3a\] { transition: none; }
+  }
+
   .tnum {
     font-variant-numeric: tabular-nums;
   }

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/lib/hooks/useAuth";
 const links = [
   ["La méthode", "/method"],
   ["Un rapport", "/report"],
@@ -14,6 +15,8 @@ export default function PublicShell({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const analysisHref = isAuthenticated ? "/upload" : "/login?callbackUrl=%2Fupload";
   return (
     <div className="public-v2 min-h-screen bg-[#f0eee8] text-[#17191d]">
       <header className="sticky top-0 z-40 border-b border-[#17191d]/15 bg-[#f0eee8]/90 backdrop-blur-md">
@@ -23,8 +26,8 @@ export default function PublicShell({
             className="flex items-center gap-3"
             onClick={() => setOpen(false)}
           >
-            <span className="flex h-9 w-9 items-center justify-center bg-[#2848c7] font-serif text-xl text-white">
-              J
+            <span className="flex h-9 w-9 items-center justify-center bg-[#2848c7] font-serif text-xl text-white shadow-[4px_4px_0_#17191d]">
+              J/
             </span>
             <span className="font-semibold tracking-[-.04em]">
               jurisk<span className="text-[#e86a3a]">.io</span>
@@ -42,17 +45,17 @@ export default function PublicShell({
             ))}
           </nav>
           <div className="hidden items-center gap-4 lg:flex">
-            <Link
+            {!isAuthenticated && <Link
               href="/login"
               className="text-sm font-medium text-[#17191d]/65 hover:text-[#17191d]"
             >
               Se connecter
-            </Link>
+            </Link>}
             <Link
-              href="/login?callbackUrl=%2Fupload"
+              href={analysisHref}
               className="bg-[#2848c7] px-5 py-3 text-sm font-semibold text-white hover:bg-[#203aa3]"
             >
-              Analyser un contrat <span className="ml-1">↗</span>
+              {isAuthenticated ? "Analyser mon contrat" : "Analyser un contrat"} <span className="ml-1">↗</span>
             </Link>
           </div>
           <button
@@ -78,11 +81,11 @@ export default function PublicShell({
               ))}
             </nav>
             <Link
-              href="/login?callbackUrl=%2Fupload"
+              href={analysisHref}
               onClick={() => setOpen(false)}
               className="mt-4 block bg-[#2848c7] px-4 py-3 text-center text-sm font-semibold text-white"
             >
-              Analyser un contrat
+              {isAuthenticated ? "Analyser mon contrat" : "Analyser un contrat"}
             </Link>
           </div>
         )}

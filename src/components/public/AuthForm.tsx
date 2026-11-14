@@ -45,7 +45,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   return (
     <div className="grid w-full max-w-4xl overflow-hidden border border-[#17191d]/15 bg-[#fffdf8] lg:grid-cols-[.75fr_1.25fr]">
       <div className="hidden bg-[#2848c7] p-10 text-white lg:block">
-        <span className="flex h-10 w-10 items-center justify-center bg-[#e9d98a] font-bold text-[#17211b]">J</span>
+        <span className="flex h-10 w-10 items-center justify-center bg-[#e9d98a] font-bold text-[#17211b] shadow-[4px_4px_0_#17191d]">J/</span>
         <h2 className="mt-20 font-serif text-4xl leading-tight">{mode === "login" ? "Reprenez votre lecture là où vous l’avez laissée." : "Trois crédits pour regarder votre contrat autrement."}</h2>
         <p className="mt-6 text-sm leading-6 text-white/70">Les résultats relient chaque signal au texte qui le justifie.</p>
       </div>

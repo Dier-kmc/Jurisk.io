@@ -36,7 +36,7 @@ export function Rule({ children }: { children: React.ReactNode }) {
 
 export function ClauseMap() {
   return (
-    <div className="border border-[#17191d] bg-[#f8f7f2] shadow-[8px_8px_0_#2848c7]">
+    <div className="contract-drift border border-[#17191d] bg-[#f8f7f2] shadow-[8px_8px_0_#2848c7]">
       <div className="flex items-center justify-between border-b border-[#17191d]/15 px-5 py-4 text-xs">
         <span className="font-mono">contrat_prestation.pdf</span>
         <span className="font-bold tracking-[.18em] text-[#e86a3a]">JURISK</span>
@@ -62,6 +62,22 @@ export function ClauseMap() {
   );
 }
 
+export function PublicButton({
+  href,
+  children,
+  className = "",
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <Link href={href} className={`public-blue-button inline-flex items-center gap-2 bg-[#2848c7] px-5 py-3 text-sm font-bold text-white ${className}`}>
+      {children}
+    </Link>
+  );
+}
+
 export function Feature({ icon: Icon, title, children }: { icon: typeof Shield; title: string; children: React.ReactNode }) {
   return (
     <div className="border-t border-[#17191d]/25 pt-5">
@@ -77,7 +93,7 @@ export function EndNote() {
     <section className="mx-auto max-w-7xl px-5 py-20 lg:px-10">
       <div className="bg-[#e9d98a] p-7 sm:p-12">
         <p className="max-w-2xl font-serif text-4xl leading-none tracking-[-.05em] sm:text-6xl">Votre prochain contrat mérite mieux qu’un survol.</p>
-        <Link href="/login?callbackUrl=%2Fupload" className="mt-8 inline-flex items-center gap-2 bg-[#2848c7] px-5 py-3 text-sm font-bold text-white">Commencer une analyse <ArrowUpRight size={16} /></Link>
+        <PublicButton href="/login?callbackUrl=%2Fupload" className="mt-8">Commencer une analyse <ArrowUpRight size={16} /></PublicButton>
       </div>
     </section>
   );
