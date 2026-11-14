@@ -16,7 +16,14 @@ import { normalizeAnalysisContext } from "@/lib/analysis/analysisContext";
 import { runNegotiationAnalysis, priorityToLegacy } from "@/lib/analysis/negotiationService";
 import type { NegotiationFinding, SourceSegment } from "@/types/contractAnalysis";
 
-const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
+function getOpenRouterKey() {
+  const rawKey = process.env.OPENROUTER_API_KEY?.trim() || "";
+  const key = rawKey.replace(/^[\"']|[\"']$/g, "");
+  if (!key || key.length < 20 || /[\r\n\"']/.test(key)) {
+    throw new Error("Configuration OpenRouter invalide : renseignez une clé OPENROUTER_API_KEY complète dans .env.");
+  }
+  return key;
+}
 const MODELS = [
   process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free",
   "meta-llama/llama-3.1-405b-instruct:free",
@@ -52,7 +59,7 @@ async function callOpenRouter(
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${OPENROUTER_KEY}`,
+          Authorization: `Bearer ${getOpenRouterKey()}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -617,6 +624,7 @@ export async function analyzeContract(
           global_risk_score: negotiation.findings.length ? Math.round(negotiation.findings.reduce((sum, finding) => sum + (finding.priority === "urgent" ? 85 : finding.priority === "important" ? 60 : 30), 0) / negotiation.findings.length) : 0,
           balance_score: 50,
           clarity_score: negotiation.confidence,
+          confidenceScore: negotiation.confidence,
           key_points: negotiation.topPriorities,
           strategic_advice: negotiation.findings.slice(0, 5).map((finding) => finding.negotiationWording),
           risk_timeline: { immediate: [], short_term: [], long_term: [] },

@@ -1,383 +1,63 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  AlertCircle,
-  FileText,
-  Shield,
-  CheckCircle,
-  Loader2,
-  Zap,
-} from "lucide-react";
-import FileUpload from "@/components/upload/FileUpload";
-import CustomButton from "@/components/ui/custom/CustomButton";
-import Alert from "@/components/ui/custom/Alert";
+import { useRef, useState } from "react";
+import { AlertTriangle, ArrowUpRight, Check, FilePlus2, LoaderCircle, UploadCloud } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { useCredits } from "@/lib/hooks/useCredits";
 
-interface UserCredits {
-  credits: number;
-  plan: string;
-}
+type Context = { jurisdiction: string; contractType: string; representedParty: string; objective: string };
 
 export default function UploadPage() {
   const router = useRouter();
-  const [files, setFiles] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [userCredits, setUserCredits] = useState<UserCredits | null>(null);
-  const [loadingCredits, setLoadingCredits] = useState(true);
-  const [analysisContext, setAnalysisContext] = useState({
-    jurisdiction: "FR",
-    contractType: "commercial_general",
-    representedParty: "client",
-    objective: "renegotiate",
-  });
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const { credits, refreshCredits } = useCredits();
+  const [context, setContext] = useState<Context>({ jurisdiction: "FR", contractType: "commercial_general", representedParty: "client", objective: "renegotiate" });
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
-  // Récupérer les crédits de l'utilisateur
-  useEffect(() => {
-    const fetchUserCredits = async () => {
-      try {
-        const response = await fetch("/api/user/credits");
-        const data = await response.json();
-
-        if (data.success) {
-          setUserCredits({
-            credits: data.credits,
-            plan: data.plan,
-          });
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des crédits:", error);
-      } finally {
-        setLoadingCredits(false);
-      }
-    };
-
-    fetchUserCredits();
-  }, []);
-
-  const handleUploadComplete = (uploadedFiles: File[]) => {
-    setFiles(uploadedFiles);
-    setError(null);
+  const chooseFile = (candidate?: File) => {
+    if (!candidate) return;
+    const allowed = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword", "text/plain"];
+    if (!allowed.includes(candidate.type)) return setMessage({ type: "error", text: "Choisissez un PDF, DOCX, DOC ou TXT." });
+    if (candidate.size > 50 * 1024 * 1024) return setMessage({ type: "error", text: "Le fichier doit faire moins de 50 Mo." });
+    setFile(candidate);
+    setMessage(null);
   };
 
-  const handleAnalyze = async () => {
-    // Vérifier les crédits
-    if (userCredits && userCredits.credits <= 0) {
-      setError(
-        "Vous n'avez plus de crédits disponibles. Veuillez recharger votre compte.",
-      );
-      return;
-    }
-
-    if (files.length === 0) {
-      setError("Veuillez sélectionner un fichier à analyser.");
-      return;
-    }
-
-    setIsUploading(true);
-    setError(null);
-    setSuccess(null);
-
+  async function analyze() {
+    if (!file) return setMessage({ type: "error", text: "Ajoutez un contrat avant de lancer l’analyse." });
+    if (credits === 0) return setMessage({ type: "error", text: "Vous n’avez plus de crédit disponible." });
+    setBusy(true); setMessage(null);
     try {
       const formData = new FormData();
-      formData.append("file", files[0]);
-      formData.append("jurisdiction", analysisContext.jurisdiction);
-      formData.append("contractType", analysisContext.contractType);
-      formData.append("representedParty", analysisContext.representedParty);
-      formData.append("objective", analysisContext.objective);
-
-      // Appel à votre API réelle
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
+      formData.append("file", file);
+      Object.entries(context).forEach(([key, value]) => formData.append(key, value));
+      const response = await fetch("/api/upload", { method: "POST", body: formData });
       const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || "Impossible de lancer l’analyse.");
+      await refreshCredits();
+      window.dispatchEvent(new Event("jurisk:credits-updated"));
+      setMessage({ type: "success", text: "Contrat reçu. Préparation de votre lecture…" });
+      router.push(`/result/${data.contractId}`);
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Une erreur est survenue." });
+    } finally { setBusy(false); }
+  }
 
-      if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de l'upload");
-      }
+  const updateContext = (key: keyof Context, value: string) => setContext((current) => ({ ...current, [key]: value }));
 
-      if (!data.success) {
-        throw new Error(data.error || "Échec de l'upload");
-      }
-
-      // Mettre à jour les crédits localement
-      if (userCredits) {
-        setUserCredits({
-          ...userCredits,
-          credits: data.creditsRemaining,
-        });
-      }
-
-      setSuccess("Fichier uploadé avec succès ! Redirection vers l'analyse...");
-
-      // Rediriger vers la page de résultat avec l'ID du contrat
-      setTimeout(() => {
-        router.push(`/result/${data.contractId}`);
-      }, 1500);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Une erreur est survenue lors de l'analyse. Veuillez réessayer.";
-      setError(errorMessage);
-      console.error("Upload error:", err);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const limits = [
-    {
-      label: "Crédits disponibles",
-      value: userCredits
-        ? `${userCredits.credits} crédit${userCredits.credits > 1 ? "s" : ""}`
-        : "Chargement...",
-    },
-    { label: "Taille max", value: "10 MB" },
-    { label: "Formats", value: "PDF, DOC, DOCX, TXT" },
-    { label: "Traitement", value: "30 secondes" },
-  ];
-
-  const calculateProgress = () => {
-    if (!userCredits) return "0%";
-    // Pour un utilisateur FREE, maximum 10 crédits initialement
-    const maxCredits = userCredits.plan === "PREMIUM" ? 100 : 10;
-    return `${((maxCredits - userCredits.credits) / maxCredits) * 100}%`;
-  };
-
-  return (
-    <div className="bg-background text-foreground relative">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(52,211,153,0.03)_0%,transparent_50%)] pointer-events-none" />
-
-      <main className="container max-w-5xl px-6 py-24 relative z-10">
-        {/* En-tête Méditorial */}
-        <div className="mb-20 text-center">
-          <span className="text-[10px] font-black tracking-[0.4em] uppercase text-muted block mb-6 animate-fade-in">
-            Protocole de Lancement
-          </span>
-          <h1 className="text-5xl md:text-7xl text-foreground mb-8 tracking-tight animate-slide-up">
-            Engager la <span className="gradient-text italic">Lucidité</span>
-          </h1>
-          <p className="text-muted max-w-xl mx-auto leading-relaxed animate-slide-up stagger-1">
-            Activez la puissance de l'intelligence souveraine pour une
-            dissection chirurgicale de vos structures contractuelles.
-          </p>
+  return <div className="mx-auto max-w-[1440px] px-5 py-12 lg:px-10 lg:py-20">
+    <div className="grid gap-14 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
+      <section><p className="text-xs font-bold uppercase tracking-[.2em] text-[#e86a3a]">Nouvelle analyse</p><h1 className="mt-5 max-w-xl font-serif text-6xl leading-[.9] tracking-[-.07em] sm:text-8xl">Lire avant de <em className="text-[#2848c7]">décider.</em></h1><p className="mt-8 max-w-lg text-lg leading-8 text-[#17191d]/60">Donnez à Jurisk le contexte de votre contrat. L’analyse organisera les obligations, les priorités et les leviers de négociation pour votre situation.</p><div className="mt-10 flex items-center gap-3 border-t border-[#17191d]/20 pt-5 text-sm"><FilePlus2 size={18} className="text-[#2848c7]" /><span>{credits === null ? "Crédits disponibles : …" : `${credits} crédit${credits === 1 ? "" : "s"} disponible${credits === 1 ? "" : "s"}`}</span></div></section>
+      <section className="border border-[#17191d] bg-[#fffdf8] shadow-[8px_8px_0_#2848c7]">
+        <div className="border-b border-[#17191d]/15 px-6 py-5 sm:px-8"><p className="text-xs font-bold uppercase tracking-[.18em] text-[#2848c7]">01 / Le document</p><h2 className="mt-3 font-serif text-3xl tracking-[-.04em]">Déposez votre contrat</h2></div>
+        <div className="p-6 sm:p-8"><button type="button" onClick={() => inputRef.current?.click()} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); chooseFile(event.dataTransfer.files[0]); }} className="flex min-h-64 w-full flex-col items-center justify-center border border-dashed border-[#17191d]/35 bg-[#f0eee8] px-6 text-center hover:border-[#2848c7]"><UploadCloud size={34} strokeWidth={1.4} className="text-[#2848c7]" /><p className="mt-6 font-serif text-2xl">{file ? file.name : "Déposez le document ici"}</p><p className="mt-3 text-sm text-[#17191d]/50">PDF, DOCX, DOC ou TXT · 50 Mo maximum</p><input ref={inputRef} type="file" hidden accept=".pdf,.doc,.docx,.txt" onChange={(event) => chooseFile(event.target.files?.[0])} /></button>
+          <div className="mt-8 border-t border-[#17191d]/15 pt-7"><p className="text-xs font-bold uppercase tracking-[.18em] text-[#2848c7]">02 / Votre situation</p><p className="mt-2 text-sm text-[#17191d]/55">Ces choix déterminent les priorités de lecture.</p><div className="mt-6 grid gap-5 sm:grid-cols-2">{[["jurisdiction", "Juridiction", [["FR", "France"], ["BE", "Belgique"], ["CA", "Canada"], ["OHADA", "Espace OHADA"]]], ["contractType", "Famille de contrat", [["commercial_general", "Contrat commercial"], ["employment", "Contrat de travail"]]], ["representedParty", "Votre partie", [["client", "Client / employeur"], ["provider", "Prestataire / salarié"], ["party_a", "Partie A"], ["party_b", "Partie B"]]], ["objective", "Votre objectif", [["renegotiate", "Préparer une négociation"], ["sign", "Décider avant signature"], ["renew", "Préparer un renouvellement"], ["review", "Comprendre le contrat"]]]].map(([key, label, options]) => <label key={key as string} className="text-xs font-semibold">{label as string}<select value={context[key as keyof Context]} onChange={(event) => updateContext(key as keyof Context, event.target.value)} className="mt-2 w-full border border-[#17191d]/20 bg-transparent px-3 py-3 text-sm outline-none focus:border-[#2848c7]">{(options as string[][]).map(([value, text]) => <option key={value} value={value}>{text}</option>)}</select></label>)}</div></div>
+          {message && <div className={`mt-6 flex gap-3 border px-4 py-3 text-sm ${message.type === "error" ? "border-[#e86a3a]/40 bg-[#e86a3a]/10 text-[#9b351e]" : "border-[#2848c7]/30 bg-[#2848c7]/10 text-[#2848c7]"}`}>{message.type === "error" ? <AlertTriangle size={17} /> : <Check size={17} />}{message.text}</div>}
+          <button type="button" onClick={analyze} disabled={busy || !file} className="mt-7 flex w-full items-center justify-center gap-2 bg-[#2848c7] px-5 py-4 text-sm font-bold text-white shadow-[4px_4px_0_#17191d] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:bg-[#17191d]/20 disabled:text-[#17191d]/40 disabled:shadow-none">{busy ? <><LoaderCircle size={17} className="animate-spin" />Préparation…</> : <>Lancer la lecture <ArrowUpRight size={17} /></>}</button>
         </div>
-
-        {/* Messages d'erreur/succès */}
-        {error && (
-          <div className="mb-6">
-            <Alert
-              type="error"
-              title="Erreur"
-              children={error}
-              icon={<AlertCircle className="w-5 h-5" />}
-              onClose={() => setError(null)}
-            />
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-6">
-            <Alert
-              type="success"
-              title="Succès"
-              children={success}
-              icon={<CheckCircle className="w-5 h-5" />}
-              onClose={() => setSuccess(null)}
-            />
-          </div>
-        )}
-
-        {/* Topbar crédits */}
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-8 rounded-xl border border-border bg-surface-1 p-8">
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-widest text-muted">
-              Solde de crédits
-            </p>
-            <p className="text-2xl font-semibold text-foreground tnum">
-              {loadingCredits ? "…" : userCredits?.credits ?? 0} crédits
-            </p>
-          </div>
-          <Link
-            href="/pricing"
-            className="inline-flex items-center gap-1 text-accent hover:text-accent-bright text-xs font-medium transition-colors"
-          >
-            Recharger mon compte →
-          </Link>
-        </div>
-
-        <div className="mb-10 rounded-xl border border-border bg-surface-1 p-8">
-          <p className="text-[10px] font-medium uppercase tracking-widest text-muted">Contexte de lecture</p>
-          <p className="mt-2 max-w-2xl text-sm text-muted">Ces informations permettent de classer les priorités pour votre situation, plutôt que de produire un score générique.</p>
-          <div className="mt-6 grid gap-5 md:grid-cols-2">
-            <label className="text-xs font-semibold text-foreground">Juridiction<select value={analysisContext.jurisdiction} onChange={(event) => setAnalysisContext((current) => ({ ...current, jurisdiction: event.target.value }))} className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-3 py-3 text-sm text-foreground outline-none focus:border-accent"><option value="FR">France</option><option value="BE">Belgique</option><option value="CA">Canada</option><option value="OHADA">Espace OHADA</option></select></label>
-            <label className="text-xs font-semibold text-foreground">Famille de contrat<select value={analysisContext.contractType} onChange={(event) => setAnalysisContext((current) => ({ ...current, contractType: event.target.value }))} className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-3 py-3 text-sm text-foreground outline-none focus:border-accent"><option value="commercial_general">Contrat commercial général</option><option value="employment">Contrat de travail</option></select></label>
-            <label className="text-xs font-semibold text-foreground">Votre partie<select value={analysisContext.representedParty} onChange={(event) => setAnalysisContext((current) => ({ ...current, representedParty: event.target.value }))} className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-3 py-3 text-sm text-foreground outline-none focus:border-accent"><option value="client">Client / employeur</option><option value="provider">Prestataire / salarié</option><option value="party_a">Partie A</option><option value="party_b">Partie B</option></select></label>
-            <label className="text-xs font-semibold text-foreground">Votre objectif<select value={analysisContext.objective} onChange={(event) => setAnalysisContext((current) => ({ ...current, objective: event.target.value }))} className="mt-2 w-full rounded-lg border border-border bg-surface-2 px-3 py-3 text-sm text-foreground outline-none focus:border-accent"><option value="renegotiate">Préparer une négociation</option><option value="sign">Décider avant signature</option><option value="renew">Préparer un renouvellement</option><option value="review">Comprendre le contrat</option></select></label>
-          </div>
-        </div>
-
-        {/* Zone d'upload Éditoriale */}
-        <div className="mb-24">
-          <FileUpload
-            onUploadComplete={handleUploadComplete}
-            maxFiles={1}
-            maxSizeMB={50} // Increased limit for everyone since no premium
-            allowedTypes={[
-              "application/pdf",
-              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-              "application/msword",
-              "text/plain",
-            ]}
-            className="mb-12"
-          />
-
-          <div className="flex flex-col items-center gap-6">
-            <button
-              onClick={handleAnalyze}
-              disabled={
-                loadingCredits ||
-                (userCredits && userCredits.credits <= 0) ||
-                files.length === 0 ||
-                isUploading
-              }
-              className={`h-20 px-16 rounded-lg text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-500 flex items-center gap-3 ${
-                files.length > 0
-                  ? "bg-accent text-background hover:bg-accent-bright hover:scale-[1.02]"
-                  : "bg-surface-1 text-faint cursor-not-allowed border border-border"
-              }`}
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Initialisation...
-                </>
-              ) : (
-                <>
-                  <Zap
-                    className={`w-4 h-4 ${files.length > 0 ? "text-background" : "text-faint"}`}
-                  />
-                  Engager l'Analyse (-1 Crédit)
-                </>
-              )}
-            </button>
-
-            {userCredits && userCredits.credits <= 0 && (
-              <div className="mt-2 text-center">
-                <p className="text-red-500/60 text-[10px] font-black tracking-widest uppercase mb-2">
-                  Solde insuffisant
-                </p>
-                <Link
-                  href="/pricing"
-                  className="text-accent hover:text-accent-bright text-[10px] font-black tracking-widest uppercase underline underline-offset-4"
-                >
-                  Recharger mon compte →
-                </Link>
-              </div>
-            )}
-
-            <p className="text-faint text-[9px] font-bold tracking-[0.2em] uppercase max-w-sm text-center leading-relaxed">
-              En engageant l'analyse, vous adhérez à notre <br />
-              <a
-                href="#"
-                className="text-muted hover:text-foreground transition-colors"
-              >
-                Charte de Confidentialité Radicale
-              </a>
-            </p>
-          </div>
-        </div>
-
-        {/* Trust Bar Éditorial */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-          {[
-            {
-              icon: Shield,
-              title: "Sanctuaire de Données",
-              desc: "Chiffrement post-quantique. Suppression automatique sous 30 jours.",
-              color: "text-emerald-500",
-            },
-            {
-              icon: FileText,
-              title: "Omnivore Numérique",
-              desc: "Extraction native sur PDF, Word et documents scannés haute définition.",
-              color: "text-blue-500",
-            },
-            {
-              icon: CheckCircle,
-              title: "Certitude Académique",
-              desc: "Précision chirurgicale sur 94% des clauses de force majeure et d'indemnité.",
-              color: "text-accent",
-            },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="flex flex-col items-center md:items-start text-center md:text-left group"
-            >
-              <div
-                className={`w-12 h-12 rounded-xl bg-surface-1 border border-border flex items-center justify-center mb-6 group-hover:border-accent/40 transition-all`}
-              >
-                <item.icon
-                  className={`w-5 h-5 ${item.color} opacity-40 group-hover:opacity-100 transition-opacity`}
-                />
-              </div>
-              <h4 className="text-xl text-foreground mb-3 tracking-tight">
-                {item.title}
-              </h4>
-              <p className="text-muted text-xs leading-relaxed max-w-[200px]">
-                {item.desc}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Limites d'Exploration (Simplifiées) */}
-        <div className="p-8 md:p-12 rounded-xl bg-surface-1 border border-border relative overflow-hidden text-center">
-          <span className="text-[10px] font-black tracking-[0.4em] uppercase text-muted block mb-6">
-            Paramètres Unifiés
-          </span>
-          <h3 className="text-4xl text-foreground mb-16">
-            Puissance Maximale Débloquée
-          </h3>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 px-6">
-            {[
-              { label: "Analyse", value: "IA Gen 4" },
-              { label: "Taille max", value: "50 MB" },
-              { label: "Formats", value: "PDF, Office" },
-              { label: "Vitesse", value: "~15s/page" },
-            ].map((limit, index) => (
-              <div key={index} className="flex flex-col gap-4">
-                <span className="text-[10px] font-black tracking-widest text-faint uppercase">
-                  {limit.label}
-                </span>
-                <span className="text-3xl text-accent font-bold">
-                  {limit.value}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-12 border-t border-border">
-            <p className="text-muted text-sm mb-10 max-w-sm mx-auto italic">
-              Vous bénéficiez de toutes les fonctionnalités avancées, sans
-              restriction de niveau.
-            </p>
-            <Link href="/pricing" className="block">
-              <button className="h-14 px-10 rounded-lg bg-accent text-background text-[10px] font-black uppercase tracking-[0.2em] hover:bg-accent-bright transition-all hover:scale-[1.02]">
-                Ajouter des Crédits
-              </button>
-            </Link>
-          </div>
-        </div>
-      </main>
+      </section>
     </div>
-  );
+  </div>;
 }

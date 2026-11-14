@@ -5,6 +5,7 @@ const PUBLIC_PATHS = [
   '/method',
   '/report',
   '/resources',
+  '/guides',
   '/pricing',
   '/status',
   '/privacy',

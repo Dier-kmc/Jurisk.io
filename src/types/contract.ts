@@ -153,6 +153,7 @@ export interface ContractAnalysis {
   errorMessage?: string;
 
   analysisContext?: AnalysisContext;
+  confidence?: number;
   sourceSegments?: SourceSegment[];
   negotiationFindings?: NegotiationFinding[];
   contractInventory?: Record<string, unknown>;
@@ -284,6 +285,7 @@ export function parseAnalysisData(rawData: RawAnalysisData): ContractAnalysis {
         global_risk_score: parsedSummary.global_risk_score || 0,
         balance_score: parsedSummary.balance_score || 0,
         clarity_score: parsedSummary.clarity_score || 0,
+        confidenceScore: parsedSummary.confidenceScore ?? parsedSummary.clarity_score ?? 0,
         key_points: parsedSummary.key_points || [],
         strategic_advice: parsedSummary.strategic_advice || [],
         risk_timeline: parsedSummary.risk_timeline || {

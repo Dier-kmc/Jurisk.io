@@ -12,6 +12,15 @@ import type {
 
 const MODELS = [process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free", "meta-llama/llama-3.1-405b-instruct:free"];
 
+function getOpenRouterKey() {
+  const rawKey = process.env.OPENROUTER_API_KEY?.trim() || "";
+  const key = rawKey.replace(/^[\"']|[\"']$/g, "");
+  if (!key || key.length < 20 || /[\r\n\"']/.test(key)) {
+    throw new Error("Configuration OpenRouter invalide : renseignez une clé OPENROUTER_API_KEY complète dans .env.");
+  }
+  return key;
+}
+
 function parseJson(raw: string): any {
   const start = raw.indexOf("{");
   const end = raw.lastIndexOf("}");
@@ -25,7 +34,7 @@ async function callModel(prompt: string): Promise<{ content: string; model: stri
     try {
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
-        headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${getOpenRouterKey()}`, "Content-Type": "application/json" },
         body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], max_tokens: 10000 }),
       });
       if (!response.ok) throw new Error(`OpenRouter ${response.status}`);

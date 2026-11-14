@@ -112,8 +112,8 @@ export default function PublicShell({
           <Footer
             title="Ressources"
             items={[
-              ["Guides", "/resources"],
-              ["État du service", "/status"],
+              ["Guides", "/guides"],
+              ["Ressources", "/resources"],
             ]}
           />
           <Footer
