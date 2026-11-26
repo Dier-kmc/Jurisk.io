@@ -1,82 +1,43 @@
 import Link from "next/link";
-import { FileSearch, Home, Upload, ArrowRight, Shield } from "lucide-react";
-import CustomButton from "@/components/ui/custom/CustomButton";
+import { ArrowRight, FilePlus2, FileSearch, Home, Sparkles } from "lucide-react";
 
 export default function NotFoundPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(52,211,153,0.03)_0%,transparent_50%)] pointer-events-none" />
+    <main className="min-h-screen bg-[#f0eee8] text-[#17191d]">
+      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-5 py-8 lg:px-10">
+        <header className="flex items-center justify-between border-b border-[#17191d]/15 pb-6">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center bg-[#2848c7] font-serif text-xl text-white shadow-[4px_4px_0_#17191d]">J/</span>
+            <span className="font-semibold tracking-[-.04em]">jurisk<span className="text-[#e86a3a]">.io</span></span>
+          </Link>
+          <span className="text-xs font-bold uppercase tracking-[.2em] text-[#17191d]/40">Erreur 404</span>
+        </header>
 
-      <div className="container relative z-10 px-6 max-w-4xl mx-auto text-center">
-        {/* Abstract 404 Visual */}
-        <div className="relative mb-12 inline-block">
-          <div className="absolute inset-0 bg-accent/20 blur-[100px] pointer-events-none" />
-          <div className="relative text-[12rem] font-bold leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white/[0.05] to-transparent select-none">
-            404
-          </div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className="w-24 h-24 rounded-3xl bg-white/[0.03] border border-border backdrop-blur-md flex items-center justify-center shadow-2xl animate-float">
-              <FileSearch className="w-10 h-10 text-accent" />
+        <section className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-[1fr_.8fr] lg:py-24">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[.2em] text-[#e86a3a]">Cette page n’est pas dans le dossier</p>
+            <h1 className="mt-6 max-w-3xl font-serif text-6xl leading-[.9] tracking-[-.08em] sm:text-8xl">On a perdu la clause.</h1>
+            <p className="mt-8 max-w-xl text-lg leading-8 text-[#17191d]/60">L’adresse demandée n’existe pas ou a été déplacée. Revenez à votre espace pour continuer à lire votre contrat.</p>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Link href="/" className="inline-flex items-center gap-2 bg-[#2848c7] px-5 py-3 text-sm font-bold text-white shadow-[4px_4px_0_#17191d]"><Home size={16} /> Accueil</Link>
+              <Link href="/upload" className="inline-flex items-center gap-2 border border-[#17191d]/25 px-5 py-3 text-sm font-bold"><FilePlus2 size={16} /> Nouvelle analyse</Link>
             </div>
           </div>
-        </div>
 
-        <div className="space-y-6 mb-16 animate-slide-up [animation-delay:0.2s]">
-          <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-            Page introuvable
-          </h1>
-          <p className="text-lg text-white/40 max-w-xl mx-auto leading-relaxed">
-            La page que vous recherchez semble avoir été déplacée, supprimée ou
-            n'a jamais existé.
-          </p>
-        </div>
-
-        {/* Action Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-16 animate-slide-up [animation-delay:0.4s]">
-          <Link href="/">
-            <div className="group p-6 rounded-2xl bg-white/[0.02] border border-border hover:border-accent/20 hover:bg-white/[0.04] transition-all text-left h-full">
-              <div className="mb-4 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                <Home className="w-5 h-5 text-white/40 group-hover:text-accent transition-colors" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-accent transition-colors">
-                Accueil
-              </h3>
-              <p className="text-sm text-white/30">
-                Retourner à la page principale
-              </p>
+          <div className="relative mx-auto w-full max-w-md lg:justify-self-end">
+            <div className="absolute -inset-8 bg-[#e9d98a]/40 blur-3xl" aria-hidden="true" />
+            <div className="relative border border-[#17191d]/20 bg-[#fffdf8] p-7 shadow-[8px_8px_0_#17191d]">
+              <div className="flex items-center justify-between border-b border-[#17191d]/15 pb-5"><span className="font-serif text-5xl tracking-[-.08em] text-[#2848c7]">404</span><FileSearch size={28} className="text-[#e86a3a]" /></div>
+              <div className="mt-8 space-y-5"><div className="h-3 w-4/5 bg-[#17191d]/10" /><div className="h-3 w-full bg-[#17191d]/10" /><div className="h-3 w-3/5 bg-[#17191d]/10" /></div>
+              <div className="mt-10 border-l-2 border-[#2848c7] pl-4 text-sm leading-6 text-[#17191d]/60">« Le document demandé reste à retrouver. »</div>
+              <Link href="/pricing" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#2848c7]">Découvrir Jurisk <ArrowRight size={15} /></Link>
             </div>
-          </Link>
+            <Sparkles className="absolute -right-4 -top-5 text-[#e86a3a]" size={22} aria-hidden="true" />
+          </div>
+        </section>
 
-          <Link href="/upload">
-            <div className="group p-6 rounded-2xl bg-white/[0.02] border border-border hover:border-accent/20 hover:bg-white/[0.04] transition-all text-left h-full">
-              <div className="mb-4 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                <Upload className="w-5 h-5 text-white/40 group-hover:text-accent transition-colors" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-accent transition-colors">
-                Nouvelle analyse
-              </h3>
-              <p className="text-sm text-white/30">
-                Lancer une analyse de contrat
-              </p>
-            </div>
-          </Link>
-        </div>
-
-        <div className="animate-slide-up [animation-delay:0.6s]">
-          <Link href="/">
-            <CustomButton
-              variant="outline"
-              className="px-8 border-border hover:bg-white/5 text-white/60 hover:text-white"
-            >
-              Retour en lieu sûr
-            </CustomButton>
-          </Link>
-        </div>
+        <footer className="border-t border-[#17191d]/15 pt-5 text-xs text-[#17191d]/45">Une aide à la décision, pas un avis juridique.</footer>
       </div>
-
-      {/* Decorative Elements */}
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-    </div>
+    </main>
   );
 }
